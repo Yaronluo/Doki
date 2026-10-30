@@ -270,3 +270,46 @@ REWORK-007 后续视觉与动效复查：`ui-final.log / xcresult` 的五项组�
 ## 2026-10-30 · REWORK-006/007 GitHub 归档
 
 用户明确要求“提交到 github”，授权提交并推送本聊天累计的 tvOS 高斯背景、统一标题、货架动画/焦点与测试/文档至既有 origin/main。归档前 git fetch 确认本地 HEAD 与 origin/main 相同；21 个变更文件均属于本批。逐文件与本地秘密值及常见凭据格式检查无命中，未打印秘密值；.env、.local、截图/录屏、xcresult 和构建产物不进入提交。最终 ui-final-adjacent 五项成功记录已核对，不因归档重新扩大验证范围。文档与暂存差异检查通过后归档，交付以远端 main、本地 HEAD 一致和工作树清洁为核验；没有 PR、部署、真机或实播新增结论。
+
+
+## 2026-10-30 · NET-001：电视端 Bangumi 线路回落与图片抢跑
+
+状态：NET-001 `implemented_unverified`。用户确认当前没有配 Hub，公开 Bangumi 直连不稳定，要求先按 izuko 的线路思路改一版看效果。本批只改 tvOS/DokiCore/DokiUI、单元测试和本机证据；无 Hub、数据库迁移、依赖版本或播放源变化；未 commit/push。
+
+改动与理由：
+
+- 新增 `Packages/DokiCore/Sources/DokiCore/BangumiRoute.swift`：`BangumiRoute` 做官方/镜像/自建的 `*.bgm.tv` host 映射；`BangumiRoutePolicy` 按顺序发送，官方不是最后一站时 6 秒探测、最后一站 18 秒；连接失败/3xx/5xx/API 返回 HTML 换线，4xx 原样返回；非官方成功后粘 30 分钟；官方连接失败后 60 秒内不再先试官方。带 `Authorization` 的请求只保留官方/自建。镜像根校验拒绝 IP、端口、路径、userinfo 和非 ASCII。
+- `CatalogClient` 仅在 `hub == nil` 时启用线路层；Hub 模式保持原逻辑。`CatalogModel` 把 `Subject.posterURL`/`backdropURL` 的 `lain.*` host 映射到当前线路，切换线路时重写缓存快照；`AppModel` 保存自动/官方/镜像/自建设置，支持 `--bangumi-route`、`DOKI_BANGUMI_ROUTE`、`--bangumi-mirror`、`DOKI_BANGUMI_MIRROR`。
+- 图片路径：`ArtworkLoader` 原来逐字节累积响应体，1 MB 海报要数秒 CPU；改为 `session.data(for:)` 一次读取，超时 15→30 秒。`DokiArtworkView` 通过 App 注入的 provider 同时向官方和镜像图床发请求，先解码成功者赢，慢的一方取消；`RootTabView` 在启动任务里注入 `BangumiRoutePolicy.alternateImageURL`。这只用于匿名公开图片，不发送账号凭证。
+- 设置页“我的 → 数据服务与配置 → Bangumi 线路”增加自动/官方/镜像/自建选择、自建地址、重新加载；自建地址先编辑草稿再“应用”，避免每次按键重写 126 KB 快照。诊断页增加当前线路和最近耗时。
+
+实际执行的命令与结果：
+
+```sh
+swift test --package-path Packages/DokiCore
+# 25 tests / 4 suites passed，新增线路、4xx、5xx、HTML、凭证、粘性、图床映射、根校验测试
+
+xcodebuild -project Doki.xcodeproj -scheme DokiTV \
+  -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' \
+  -derivedDataPath .local/DerivedData/APP-001 CODE_SIGNING_ALLOWED=NO build
+# BUILD SUCCEEDED
+
+xcrun simctl launch <UDID> com.doki.tv --bangumi-route mirror
+# 首页 8 张海报实际显示；快照 127 张 lain.bangumi.lat + 30 张 image.tmdb.org
+# 诊断：镜像 bangumi.lat，一次请求 2,680 ms
+
+xcrun simctl launch <UDID> com.doki.tv --bangumi-route auto --demo-route diagnostics
+# 诊断：官方，一次请求 3,267 ms；快照重新映射回 127 张 lain.bgm.tv
+```
+
+证据：`.local/artifacts/NET-001/mirror-home.png`、`mirror-diagnostics.png`、`auto-diagnostics.png`、`route-card.png`。截图只证明该模拟器、该网络、该次启动；不证明真机或大陆裸网。
+
+未覆盖项 / 限制：
+
+- 未在 Apple TV 真机或大陆裸网验证首屏回落耗时；本机透明代理能到官方，自动模式没有触发真实回落，回落分支由单元测试覆盖。
+- 内置镜像只有 `bangumi.lat`；它是第三方通配反代，API/图片延迟在本机观测到 1.2–10.7 s / 0.4–15.6 s 的波动，不能当作官方 SLA。`bangumi.vip` 301 到 `.lat`，未加入。
+- 未接远端镜像清单、镜像失效切换、自建反代实测；角色/声优头像仍只认官方图床；Hub 已配置时的 Hub 端线路层未做；没有账号请求，带凭证的过滤只由测试验证。
+
+下一步及依赖：真机/大陆网络复测；补自建反代示例；把同一策略独立实现进 Hub `CatalogService`，登录/令牌仍只走官方/自建；再决定公开清单的来源与更新频率。
+
+更新文档：CURRENT_STATE、WORK_LOG、DECISIONS（ADR-018）、INTEGRATIONS_SETUP。

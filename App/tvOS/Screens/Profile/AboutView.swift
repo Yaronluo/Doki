@@ -157,6 +157,8 @@ struct DiagnosticsView: View {
                             status("目标", targetName)
                             status("Hub 状态", model.hubState.title)
                             status("Hub 地址", sanitizedHubURL)
+                            status("Bangumi 线路", model.configuredHubURL == nil ? model.bangumiRouteLabel : "经 Hub")
+                            status("线路耗时", model.bangumiRouteLatencyMilliseconds.map { "\($0) ms" } ?? "尚未请求")
                             status("样片", model.demoMediaURL == nil ? "缺失（播放器会失败）" : "doki-demo-24min.mp4 已打包")
                             status("最后刷新", model.lastRefresh.map { DokiDate.relativeUpdate($0) } ?? "尚未刷新")
                         }

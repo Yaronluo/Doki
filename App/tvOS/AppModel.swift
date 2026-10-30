@@ -306,6 +306,15 @@ final class AppModel {
         didSet { defaults.set(hubURLString, forKey: Keys.hubURL) }
     }
     var hubState: HubConnectionState
+    var bangumiRouteMode: BangumiRouteMode = .auto {
+        didSet { persistBangumiRoute() }
+    }
+    var bangumiCustomRoot: String = "" {
+        didSet { persistBangumiRoute() }
+    }
+    var bangumiRouteLabel: String = ""
+    var bangumiRouteLatencyMilliseconds: Int?
+    @ObservationIgnored let bangumiRoutePolicy: BangumiRoutePolicy
     var appearanceMode: AppearanceMode {
         didSet { defaults.set(appearanceMode.rawValue, forKey: Keys.appearance) }
     }
@@ -332,6 +341,28 @@ final class AppModel {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+        let launchArguments = ProcessInfo.processInfo.arguments
+        let launchEnvironment = ProcessInfo.processInfo.environment
+        func launchValue(_ name: String) -> String? {
+            guard let index = launchArguments.firstIndex(of: name), index + 1 < launchArguments.count else { return nil }
+            return launchArguments[index + 1]
+        }
+        let storedMode = BangumiRouteMode(rawValue: defaults.string(forKey: Keys.bangumiRouteMode) ?? "") ?? .auto
+        let routeMode = (launchEnvironment["DOKI_BANGUMI_ROUTE"] ?? launchValue("--bangumi-route"))
+            .flatMap(BangumiRouteMode.init(rawValue:)) ?? storedMode
+        let storedMirror = defaults.string(forKey: Keys.bangumiCustomRoot) ?? ""
+        let customRoot = launchEnvironment["DOKI_BANGUMI_MIRROR"] ?? launchValue("--bangumi-mirror") ?? storedMirror
+        let routePolicy = BangumiRoutePolicy(
+            configuration: BangumiRouteConfiguration(
+                mode: routeMode,
+                customRoot: customRoot,
+                mirrorRoots: BangumiRoute.bundledMirrorRoots
+            )
+        )
+        self.bangumiRouteMode = routeMode
+        self.bangumiCustomRoot = customRoot
+        self.bangumiRoutePolicy = routePolicy
+        self.bangumiRouteLabel = routePolicy.preferredRoute.label
         usesFixtures = ProcessInfo.processInfo.arguments.contains("--demo-fixtures")
         let library = DemoLibrary()
         self.library = library
@@ -403,6 +434,7 @@ final class AppModel {
 
         restoreCatalog()
         applyFollowOverrides()
+        applyBangumiImageRoute()
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         if arguments.contains("--demo-reset-progress") {
@@ -435,6 +467,7 @@ final class AppModel {
             case "danmaku": profilePath = [.danmakuSettings]
             case "hub": profilePath = [.hubSettings]
             case "auth": profilePath = [.bangumiAuth]
+            case "integration": profilePath = [.integrationSettings]
             case "real-source": profilePath = [.realSourcePreview]
             case "player":
                 selectedTab = .discover
@@ -902,6 +935,22 @@ final class AppModel {
         defaults.set(Array(enabledSourceIDs).sorted(), forKey: Keys.enabledSources)
     }
 
+    private func persistBangumiRoute() {
+        defaults.set(bangumiRouteMode.rawValue, forKey: Keys.bangumiRouteMode)
+        defaults.set(bangumiCustomRoot, forKey: Keys.bangumiCustomRoot)
+        bangumiRoutePolicy.update(
+            configuration: BangumiRouteConfiguration(
+                mode: bangumiRouteMode,
+                customRoot: bangumiCustomRoot,
+                mirrorRoots: BangumiRoute.bundledMirrorRoots
+            )
+        )
+        bangumiRouteLabel = bangumiRoutePolicy.preferredRoute.label
+        bangumiRouteLatencyMilliseconds = nil
+        applyBangumiImageRoute()
+        persistCatalog()
+    }
+
     private enum Keys {
         static let progress = "doki.progress.v1"
         static let followOverrides = "doki.follow-overrides.v1"
@@ -911,6 +960,8 @@ final class AppModel {
         static let selectedSource = "doki.sources.selected.v1"
         static let hubURL = "doki.hub.url.v1"
         static let appearance = "doki.appearance.v1"
+        static let bangumiRouteMode = "doki.bangumi.route.v1"
+        static let bangumiCustomRoot = "doki.bangumi.mirror.v1"
     }
 }
 

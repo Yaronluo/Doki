@@ -1,12 +1,13 @@
 # 当前状态
 
-> 更新：2026-10-30，REWORK-007 / 真实高斯、双向位移动画与明显卡片焦点（REWORK-006/007 本批 GitHub 归档已获用户授权）。当前仅 tvOS + 必要 Hub。真实账号、模拟器、真机、完整播放分别记录；历史批次见 [WORK_LOG](WORK_LOG.md)。
+> 更新：2026-10-30，NET-001 / 电视端 Bangumi 线路回落与图片抢跑；REWORK-007 的真实高斯、双向位移动画与明显卡片焦点仍为上一批（REWORK-006/007 本批 GitHub 归档已获用户授权）。当前仅 tvOS + 必要 Hub。真实账号、模拟器、真机、完整播放分别记录；历史批次见 [WORK_LOG](WORK_LOG.md)。
 
 ## 1. 当前结论
 
 - 按用户最新截图与圈图纠正：**移除顶部标签，左上角头像展开通透大圆角磨砂侧栏、白色胶囊选中条；移除全部自定义 Liquid Glass，改为平面操作控件**。保留系统焦点、NavigationStack、搜索和 AVKit，发现/详情分开高斯背景与右上清晰封面。
 - 发现页保留独立 Bangumi 收藏热度轮播（最多六部、8 秒自动/右键手动切换），首页仅“立即播放”按钮、居中页点与本季推荐；未登录隐藏继续观看。热门经 `/v1/popular` 或无 Hub 官方直读，与评分推荐分开；轮播/菜单/详情的暂停与焦点恢复见本轮证据。全宽横幅、真实标题 Logo、竖版海报货架；详情展示真实收藏人数、评分分布、简介、章节和角色/制作人员。货架 Hero 触发/换卡/返回与无压黑分轨时序先对齐 izuko，SwiftUI 实现独立编写。
 - Bangumi 公开资料正常读取，无需密钥。公开 bangumi-tmdb-map 已接入，匹配到的 TMDB 横幅和 Logo **无需 token**，实际 TV 浅深色画面均已显示。缺记录时可选配置 TMDB token 搜索修正；不拿竖图冒充横幅。
+- 无 Hub 的公开 Bangumi 读取新增线路层：官方优先，连接失败/5xx/API 返回网页时切到镜像 `bangumi.lat`；匿名请求才允许走镜像，带 `Authorization` 的请求仍只走官方/自建。6 秒探测、30 分钟粘性、4xx 不换线；封面按当前线路映射并在官方/镜像间抢跑。设置页可切自动/官方/镜像/自建，Hub 模式未改。
 - 已实现 Hub 浏览器邮箱/密码/验证码登录、自动创建个人令牌、AES-GCM 加密保存；不需要 OAuth 应用密钥，不保存密码或 Cookie。验证码已从官网实际取回；完整登录/账号追番读取尚无真实账号验收。
 - 已实现 owner 浏览器登记、TV 六位码批准、一次性领取设备 token、Keychain 保存和账号追番只读导入。DB 并发测试通过；TV 已验证真实 Hub 配对码展示。尚未实现 Bangumi 写回、完整同步、远端令牌撤销或设备管理界面。
 - 弹弹play按用户要求**暂缓接入**，没有申请或提交审核；自造弹幕仅开发 fixture，不冒充真实数据。
@@ -24,6 +25,7 @@
 | AUTH-001 | implemented_unverified | owner/配对/加密网页登录/账号只读实现；fixture 和 PG 并发通过，真实验证码成功，缺真实账号登录、撤销和恢复验收 |
 | SYNC-001 | not_started | 收藏/已看修改仍在本机，不是远端写回/outbox/epoch 同步 |
 | META-001 | implemented_unverified | Bangumi 和无 token 横幅实际读取；可选 token 搜索没有真实凭据验收，真实账号追番尚未验证 |
+| NET-001 | implemented_unverified | 电视端公开 Bangumi 线路回落、图床映射和图片抢跑已实现；DokiCore 25 项测试与模拟器强制镜像/自动诊断画面通过。未在真机/大陆网络验收，未接远端镜像清单，Hub 端线路层未做。 |
 | SRC-001 / PLAY-001 | implemented_unverified | 仅历史单源模拟器技术证据，内容安全阻断产品启用 |
 | SRC-002 | not_started | 没有启用第二源 |
 | DAN-001 | not_started | 用户要求暂缓，未配置自有凭据 |
@@ -42,10 +44,31 @@
 - 账号网页同源/CSRF/一次性登记 nonce，登录响应不跟随跨域重定向；个人令牌只发固定官方 API。设备和浏览器会话只存哈希，数据库令牌密文带独立随机 nonce；旧登录完成不能覆盖显式解除绑定。
 - 网页“解除本机绑定”只删 Hub 凭据，不声称已撤销 Bangumi 上游令牌。个人令牌申请 365 天，不把申请值当作官网实际到期证明；失效后需重新登录。OAuth 回调、refresh token 流程仍未实现。
 - 账号读取不等于完整同步；离线账号列表恢复、切换账号的本地缓存边界仍待专项完善。当前不可宣称多账号完整支持。
+- 无 Hub 的 Bangumi 公开读取只走匿名线路：镜像不接收 `Authorization`，官方/自建才可带凭证；图片同时向官方与镜像发起、先成功者赢，失败保留旧图。`bangumi.lat` 是第三方反代，速度和可用性会波动；不能把它当成官方 SLA 或账号通道。
 
 ## 4. 本机环境与证据
 
-### REWORK-007（当前批次）
+### NET-001（当前批次）
+
+2026-10-30 19:06–19:24，同一 Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0，沿用主机网络（公网域名解析到 198.18/15 透明代理）。本批只改 tvOS/DokiCore/DokiUI 与本机验证；无 Hub、数据库迁移、依赖版本或播放源变化；未 commit/push。
+
+- 新增 `BangumiRoute`/`BangumiRoutePolicy`：官方、镜像、自建通配反代；按顺序尝试，连接失败/3xx/5xx/API 返回 HTML 才换线，4xx 原样返回；官方不是最后一站时 6 秒探测、最后一站 18 秒；非官方成功后粘 30 分钟，官方连接失败后 60 秒内不再先试官方。
+- 带 `Authorization` 的请求过滤掉第三方镜像；当前没有账号请求，但边界先写死。设置默认“自动”（官方优先，失败切 `bangumi.lat`），可手动选官方/镜像/自建；`--bangumi-route` 与 `DOKI_BANGUMI_ROUTE` 可覆盖本机启动，`--bangumi-mirror`/`DOKI_BANGUMI_MIRROR` 填自建根。
+- 图片按当前线路映射 `lain.*` host；切换线路时重写模型和快照里的图床地址。`ArtworkLoader` 改为一次性读取响应体（原逐字节循环会让 1 MB 海报像卡死），并让官方/镜像两个图床抢跑，先解码成功者赢；超时从 15 秒放宽到 30 秒。
+- 设置页“我的 → 数据服务与配置 → Bangumi 线路”有自动/官方/镜像/自建与“重新加载”；诊断页显示当前线路和最近耗时。Hub 模式仍走 Hub，未在本批加入 Hub 端线路层。
+
+验证与证据（`.local/artifacts/NET-001/`）：
+
+- `swift test --package-path Packages/DokiCore`：25 tests / 4 suites 全部通过，新增 9 项线路/图床/凭证/粘性测试。
+- `xcodebuild ... DokiTV ... build`：BUILD SUCCEEDED。
+- 强制镜像：启动参数 `--bangumi-route mirror`，首页真实目录 128 条；快照 127 张 `lain.bangumi.lat` 海报 + 30 张 TMDB 图；诊断显示“镜像 bangumi.lat”，一次请求 2,680 ms；首页 8 张海报实际显示，截图 `mirror-home.png`、`mirror-diagnostics.png`、`route-card.png`。
+- 自动：`--bangumi-route auto`，诊断显示“官方”，一次请求 3,267 ms；快照重新映射回 127 张 `lain.bgm.tv`，截图 `auto-diagnostics.png`。本机透明代理能到官方，所以自动模式没有触发回落；回落分支由单元测试覆盖。
+- 镜像可达性：`api.bangumi.lat/calendar`、`/v0/subjects/554779`、搜索 POST 和 `lain.bangumi.lat` 图片均返回 200；`bangumi.lat` 主站是反爬挑战页，不能用于登录。观测到镜像 API 1.2–10.7 s、图片 0.4–15.6 s 的波动，不能把本机数值当作大陆速度。
+- 未覆盖：Apple TV 真机、大陆裸网、真实账号、远端镜像清单、镜像失效切换、角色/声优头像（仍只认官方 `lain.bgm.tv`/`lain.bangumi.tv`）、Hub 已配置时的同线路层。`bangumi.vip` 会 301 到 `bangumi.lat`，未加入内置清单。
+
+下一步：真机/大陆网络复测首屏回落耗时；提供自建反代示例；把同一策略加到 Hub `CatalogService`（登录/令牌仍只走官方/自建）；再决定是否接公开镜像清单。
+
+### REWORK-007（上一批）
 
 2026-10-30，同一 Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0，沿用主机网络。仅 tvOS/DokiUI 与对应 UI 测试/文档；无 Hub、依赖、协议或迁移变化；实现交接时未 commit/push，随后用户授权归档见本文末尾。
 

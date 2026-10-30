@@ -50,7 +50,16 @@ struct RootTabView: View {
             } catch { }
         }
         .environment(\.dokiTransitionNamespace, transitionNamespace)
-        .task(id: model.hubURLString) { async let catalog: () = model.refreshCatalog(); async let popular: () = model.refreshPopular(); async let account: () = model.refreshAccount(); _ = await (catalog, popular, account) }
+        .task(id: model.hubURLString) {
+            let routePolicy = model.bangumiRoutePolicy
+            DokiArtworkView.alternateImageURLProvider = { url in
+                routePolicy.alternateImageURL(url)
+            }
+            async let catalog: () = model.refreshCatalog()
+            async let popular: () = model.refreshPopular()
+            async let account: () = model.refreshAccount()
+            _ = await (catalog, popular, account)
+        }
         .fullScreenCover(item: $model.playerRoute) { route in
             PlayerScreen(model: model, route: route)
         }

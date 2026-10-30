@@ -9,7 +9,9 @@ struct CatalogSnapshot: Codable {
 }
 
 extension AppModel {
-    var catalogClient: CatalogClient { CatalogClient(hubURL: configuredHubURL) }
+    var catalogClient: CatalogClient {
+        CatalogClient(hubURL: configuredHubURL, routePolicy: configuredHubURL == nil ? bangumiRoutePolicy : nil)
+    }
     var configuredHubURL: URL? {
         let text = hubURLString.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty, let url = URL(string: text), ["http", "https"].contains(url.scheme), url.host != nil,
@@ -45,7 +47,11 @@ extension AppModel {
         guard entry.nsfw != true, entry.type == nil || entry.type == 2 else { return }
         let id = "bgm-\(entry.id)"
         let old = catalogSubjects[id]
-        var subject = entry.subject(weekday: weekday ?? old?.weekday ?? 0, fallback: old)
+        var subject = entry.subject(
+            weekday: weekday ?? old?.weekday ?? 0,
+            fallback: old,
+            imageURL: { [bangumiRoutePolicy] raw in bangumiRoutePolicy.imageURL(raw) }
+        )
         subject.followState = followOverrides[id] ?? old?.followState ?? .planned
         subject.backdropURL = old?.backdropURL
         subject.titleLogoURL = old?.titleLogoURL
@@ -83,6 +89,7 @@ extension AppModel {
             var picksSeen = Set<String>()
             catalogPicks = home.picks.data.filter { $0.nsfw != true }.map { "bgm-\($0.id)" }.filter { picksSeen.insert($0).inserted }
             lastRefresh = .now; catalogError = nil; persistCatalog()
+            noteBangumiRoute()
             // Warm only the visible first shelf; subsequent previews are requested by focus.
             await withTaskGroup(of: Void.self) { group in
                 for id in catalogPicks.prefix(8) { group.addTask { await self.loadArtwork(id) } }
@@ -109,6 +116,7 @@ extension AppModel {
             for entry in entries { mergeCatalog(entry) }
             catalogPopular = entries.map { "bgm-\($0.id)" }.filter { seen.insert($0).inserted }
             popularError = nil; persistCatalog()
+            noteBangumiRoute()
             await withTaskGroup(of: Void.self) { group in
                 for id in catalogPopular.prefix(6) { group.addTask { await self.loadArtwork(id) } }
             }
@@ -128,6 +136,7 @@ extension AppModel {
             mergeCatalog(item)
             catalogEpisodes[id] = episodes.map { $0.episode(subjectID: id) }
             detailErrors[id] = nil; persistCatalog()
+            noteBangumiRoute()
         } catch is CancellationError { return } catch {
             guard address == hubURLString else { return }
             detailErrors[id] = "简介或章节加载失败，请重试。"
@@ -218,9 +227,46 @@ extension AppModel {
             var seen = Set<String>()
             remoteSearchResults = ((loadMore ? remoteSearchResults : []) + subjects).filter { seen.insert($0.id).inserted }
             searchOffset = offset + page.data.count; searchTotal = page.total; searchError = nil; completedSearchQuery = query
+            noteBangumiRoute()
         } catch is CancellationError { } catch {
             guard address == hubURLString, searchGeneration == generation, searchQuery.trimmingCharacters(in: .whitespacesAndNewlines) == query else { return }
             searchError = "搜索暂时不可用，请重试。"
         }
+    }
+
+    func noteBangumiRoute() {
+        let status = bangumiRoutePolicy.currentStatus
+        bangumiRouteLabel = status.active?.label ?? bangumiRoutePolicy.preferredRoute.label
+        bangumiRouteLatencyMilliseconds = status.lastLatencyMilliseconds
+        applyBangumiImageRoute()
+        persistCatalog()
+    }
+
+    /// 模型和快照里统一保存官方或当前线路的图床地址；切换线路时只换 host，
+    /// 不碰 TMDB 图片和 Hub 的 `/v1/artwork` 路径。
+    func applyBangumiImageRoute() {
+        guard !catalogSubjects.isEmpty else { return }
+        let target = bangumiRoutePolicy.currentImageHost
+        let known = bangumiRoutePolicy.knownImageHosts
+        var updates: [String: Subject] = [:]
+        for (id, subject) in catalogSubjects {
+            let poster = remapBangumiImage(subject.posterURL, to: target, known: known)
+            let backdrop = remapBangumiImage(subject.backdropURL, to: target, known: known)
+            guard poster != subject.posterURL || backdrop != subject.backdropURL else { continue }
+            var updated = subject
+            updated.posterURL = poster
+            updated.backdropURL = backdrop
+            updates[id] = updated
+        }
+        for (id, subject) in updates { catalogSubjects[id] = subject }
+    }
+
+    private func remapBangumiImage(_ url: URL?, to host: String, known: Set<String>) -> URL? {
+        guard let url, let current = url.host?.lowercased(), known.contains(current), current != host,
+              var parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return url }
+        parts.scheme = "https"
+        parts.host = host
+        parts.port = nil
+        return parts.url ?? url
     }
 }

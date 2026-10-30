@@ -5,8 +5,15 @@ import Foundation
 public actor CatalogClient {
     private let session: URLSession
     private let hub: URL?
-    public init(hubURL: URL? = nil) {
+    private let routePolicy: BangumiRoutePolicy?
+
+    public init(hubURL: URL? = nil, routePolicy: BangumiRoutePolicy? = nil) {
         hub = hubURL
+        // Hub mode owns egress. Direct mode keeps an official-only fallback policy
+        // so tests and callers that do not pass one still behave like before.
+        self.routePolicy = hubURL == nil
+            ? (routePolicy ?? BangumiRoutePolicy(configuration: .init(mode: .official)))
+            : nil
         let config = URLSessionConfiguration.ephemeral
         config.timeoutIntervalForRequest = 18
         config.httpShouldSetCookies = false
@@ -14,18 +21,30 @@ public actor CatalogClient {
         session = URLSession(configuration: config, delegate: CatalogRedirectPolicy(), delegateQueue: nil)
     }
     private func request<T: Decodable & Sendable>(_ type: T.Type, direct: String, proxy: String, body: Data? = nil) async throws -> T {
-        let url = hub.map { $0.appendingPathComponent(proxy) } ?? URL(string: "https://api.bgm.tv\(direct)")!
         // Query strings must remain queries when constructing a Hub URL.
         let target: URL
-        if let hub { target = URL(string: hub.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/" + proxy)! } else { target = url }
+        if let hub {
+            target = URL(string: hub.absoluteString.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/" + proxy)!
+        } else {
+            target = URL(string: "https://api.bgm.tv\(direct)")!
+        }
         var req = URLRequest(url: target)
         req.setValue("Doki/0.2 (personal tvOS catalog; https://github.com/bangumi/api)", forHTTPHeaderField: "User-Agent")
         req.setValue("application/json", forHTTPHeaderField: "Accept")
         if let body { req.httpMethod = "POST"; req.httpBody = body; req.setValue("application/json", forHTTPHeaderField: "Content-Type") }
-        let (data, response) = try await session.data(for: req)
+
+        if hub != nil {
+            let (data, response) = try await session.data(for: req)
+            try Task.checkCancellation()
+            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode), data.count < 8 * 1024 * 1024 else { throw CatalogError.unavailable }
+            return try JSONDecoder().decode(type, from: data)
+        }
+
+        guard let routePolicy else { throw CatalogError.unavailable }
+        let routed = try await routePolicy.send(req, retryable: true)
         try Task.checkCancellation()
-        guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode), data.count < 8 * 1024 * 1024 else { throw CatalogError.unavailable }
-        return try JSONDecoder().decode(type, from: data)
+        guard (200..<300).contains(routed.statusCode), routed.data.count < 8 * 1024 * 1024 else { throw CatalogError.unavailable }
+        return try JSONDecoder().decode(type, from: routed.data)
     }
     public func home() async throws -> CatalogHome {
         if hub != nil { return try await request(CatalogHome.self, direct: "", proxy: "v1/home") }
@@ -115,7 +134,12 @@ public struct CatalogSubject: Decodable, Sendable {
     public let tags: [Tag]?
     public let nsfw: Bool?
 
-    public func subject(weekday: Int = 0, fallback: Subject? = nil) -> Subject {
+    public func subject(
+        weekday: Int = 0,
+        fallback: Subject? = nil,
+        imageURL: ((String?) -> URL?)? = nil
+    ) -> Subject {
+        let resolveImage = imageURL ?? { Self.approvedImage($0) }
         let airDate = date ?? air_date ?? ""
         var result = Subject(id: "bgm-\(id)", bgmSubjectId: id, title: name_cn?.isEmpty == false ? name_cn! : name,
             originalTitle: name, tagline: [airDate, platform].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: " · "),
@@ -123,7 +147,7 @@ public struct CatalogSubject: Decodable, Sendable {
             season: platform ?? "动画", genres: tags.map { Array($0.prefix(3).map(\.name)) } ?? fallback?.genres ?? [], posterAsset: nil, backdropAsset: nil,
             accentHex: "8BB8C8", rating: rating?.score.flatMap { $0 > 0 ? $0 : nil }, totalEpisodes: max(0, eps.flatMap { $0 > 0 ? $0 : nil } ?? total_episodes ?? 0),
             weekday: weekday, broadcastTime: "时间未公布", followState: .planned, updateState: .scheduled, isSeasonPick: true,
-            posterURL: Self.approvedImage(images?.large ?? images?.common ?? images?.medium), airDate: airDate)
+            posterURL: resolveImage(images?.large ?? images?.common ?? images?.medium), airDate: airDate)
         result.statistics = SubjectStatistics(rank: rating?.rank, ratingCount: rating?.total, distribution: rating?.count ?? [:], watching: collection?.doing, wish: collection?.wish, collected: collection?.collect)
         return result
     }

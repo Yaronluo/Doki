@@ -16,9 +16,14 @@ public struct DokiArtworkView: View {
         self.assetName = assetName; self.title = title; self.accentHex = accentHex
         self.contentMode = contentMode; self.remoteURL = remoteURL; self.retainWhileLoading = retainWhileLoading
     }
+    /// App 注入的图片备用地址：官方和镜像谁先回谁赢。
+    @MainActor public static var alternateImageURLProvider: (@MainActor @Sendable (URL) -> URL?)? {
+        get { ArtworkLoader.alternateProvider }
+        set { ArtworkLoader.alternateProvider = newValue }
+    }
     /// Warm the same bounded cache used by the view before committing a hero change.
     @MainActor public static func prefetch(_ url: URL) async throws {
-        _ = try await ArtworkLoader.shared.image(at: url)
+        _ = try await ArtworkLoader.shared.image(at: url, alternate: alternateImageURLProvider?(url))
         try Task.checkCancellation()
     }
     public var body: some View {
@@ -43,7 +48,10 @@ public struct DokiArtworkView: View {
         .task(id: remoteURL) {
             guard let remoteURL else { return }
             do {
-                let replacement = try await ArtworkLoader.shared.image(at: remoteURL)
+                let replacement = try await ArtworkLoader.shared.image(
+                    at: remoteURL,
+                    alternate: Self.alternateImageURLProvider?(remoteURL)
+                )
                 try Task.checkCancellation()
                 withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.24)) {
                     image = replacement; displayedURL = remoteURL

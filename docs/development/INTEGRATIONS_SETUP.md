@@ -46,6 +46,33 @@ OUTBOUND_ALLOW_BENCHMARK_NETWORK=1 node --env-file=../.env dist/api/server.js
 
 真实 Apple TV 不能使用 Mac loopback 地址。LAN/VPN 需可达 HTTPS、证书、反向代理/访问控制和 `HUB_SETUP_SECRET`；不依赖另一个 Doki App。目前仅本机开发运行，没有完成这部分部署。扫码 loopback 地址也只能在 Hub 主机使用；手机端需 LAN 配置后再使用。
 
+## Bangumi 线路（无 Hub 直读）
+
+无 Hub 时，电视默认“自动”：官方优先，连接失败、5xx 或 API 返回网页时切到公开镜像 `bangumi.lat`。这条通道只用于公开资料，请求不带 Bangumi 账号令牌；登录、追番读取和后续写回仍必须走 Hub。
+
+- 设置位置：“我的 → 数据服务与配置 → Bangumi 线路”。可选自动 / 官方 / 镜像 / 自建。
+- “自建”填整族通配反代根，例如 `bgm.example.com`；需要同时把 `api.bgm.example.com`、`lain.bgm.example.com` 指向 `*.bgm.tv`。自建被视为可信线路，可带账号请求；镜像默认不带。
+- 诊断页显示当前线路和最近一次请求耗时；设置页“重新加载”会重新请求首页和热门。
+- 镜像 `bangumi.lat` 的主站是反爬挑战页，不能用于登录；只用它的 API 和图床。第三方镜像能看到公开请求和 IP，也能改写返回内容，不要把它当作官方 SLA。
+
+本机验证可通过启动参数或环境变量覆盖，不需要改代码：
+
+```sh
+# 强制镜像
+xcrun simctl launch <UDID> com.doki.tv --bangumi-route mirror
+
+# 官方优先（默认）
+xcrun simctl launch <UDID> com.doki.tv --bangumi-route auto
+
+# 自建反代：直接用启动参数，避免 simctl 环境变量需要 SIMCTL_CHILD_ 前缀
+xcrun simctl launch <UDID> com.doki.tv \
+  --bangumi-route custom --bangumi-mirror bgm.example.com
+```
+
+用环境变量时，`simctl` 需要 `SIMCTL_CHILD_` 前缀；Xcode Run 的环境变量则直接生效。
+
+`--demo-route integration` 与 `--demo-route diagnostics` 是 DEBUG 启动参数，用于直接打开设置/诊断页。未配置 Hub 时公开资料直读；配置 Hub 后电视走 Hub，Hub 端尚未实现同一线路层。
+
 ## 验证
 
 ```sh
