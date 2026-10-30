@@ -274,7 +274,7 @@ REWORK-007 后续视觉与动效复查：`ui-final.log / xcresult` 的五项组�
 
 ## 2026-10-30 · NET-001：电视端 Bangumi 线路回落与图片抢跑
 
-状态：NET-001 `implemented_unverified`。用户确认当前没有配 Hub，公开 Bangumi 直连不稳定，要求先按 izuko 的线路思路改一版看效果。本批只改 tvOS/DokiCore/DokiUI、单元测试和本机证据；无 Hub、数据库迁移、依赖版本或播放源变化；未 commit/push。
+状态：NET-001 `implemented_unverified`。用户确认当前没有配 Hub，公开 Bangumi 直连不稳定，要求先按 izuko 的线路思路改一版看效果。本批只改 tvOS/DokiCore/DokiUI、单元测试和本机证据；无 Hub、数据库迁移、依赖版本或播放源变化。用户随后明确要求提交 GitHub，已提交并推送 `ac746e0` 至 origin/main。
 
 改动与理由：
 
@@ -313,3 +313,5 @@ xcrun simctl launch <UDID> com.doki.tv --bangumi-route auto --demo-route diagnos
 下一步及依赖：真机/大陆网络复测；补自建反代示例；把同一策略独立实现进 Hub `CatalogService`，登录/令牌仍只走官方/自建；再决定公开清单的来源与更新频率。
 
 更新文档：CURRENT_STATE、WORK_LOG、DECISIONS（ADR-018）、INTEGRATIONS_SETUP。
+
+归档复核：`ac746e0`（feat: add Bangumi route fallback for tvOS direct reads）已推送至 `origin/main`；本地 HEAD 与 `git ls-remote origin refs/heads/main` 一致，工作树清洁。未创建 PR、未部署；Apple TV 真机、大陆裸网、真实账号和 Hub 端线路层仍未验收。

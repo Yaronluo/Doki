@@ -50,7 +50,7 @@
 
 ### NET-001（当前批次）
 
-2026-10-30 19:06–19:24，同一 Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0，沿用主机网络（公网域名解析到 198.18/15 透明代理）。本批只改 tvOS/DokiCore/DokiUI 与本机验证；无 Hub、数据库迁移、依赖版本或播放源变化；未 commit/push。
+2026-10-30 19:06–19:24，同一 Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0，沿用主机网络（公网域名解析到 198.18/15 透明代理）。本批只改 tvOS/DokiCore/DokiUI 与本机验证；无 Hub、数据库迁移、依赖版本或播放源变化；用户随后明确授权本批提交并推送至既有 origin/main（`ac746e0`），本地与远端一致。
 
 - 新增 `BangumiRoute`/`BangumiRoutePolicy`：官方、镜像、自建通配反代；按顺序尝试，连接失败/3xx/5xx/API 返回 HTML 才换线，4xx 原样返回；官方不是最后一站时 6 秒探测、最后一站 18 秒；非官方成功后粘 30 分钟，官方连接失败后 60 秒内不再先试官方。
 - 带 `Authorization` 的请求过滤掉第三方镜像；当前没有账号请求，但边界先写死。设置默认“自动”（官方优先，失败切 `bangumi.lat`），可手动选官方/镜像/自建；`--bangumi-route` 与 `DOKI_BANGUMI_ROUTE` 可覆盖本机启动，`--bangumi-mirror`/`DOKI_BANGUMI_MIRROR` 填自建根。
