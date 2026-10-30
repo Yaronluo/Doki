@@ -63,6 +63,7 @@ struct LibraryView: View {
         .background(DokiBackground())
         .toolbar(.hidden, for: .navigationBar)
         .onAppear { restoreFocus() }
+        .onChange(of: model.contentFocusRevision) { _, _ in if model.selectedTab == .library { restoreFocus() } }
         .onChange(of: focusedID) { _, newValue in
             if let newValue { model.libraryFocusID = newValue }
         }

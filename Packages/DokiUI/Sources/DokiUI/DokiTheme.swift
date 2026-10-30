@@ -16,8 +16,8 @@ public enum DokiTheme {
 
     public static func pageBackground(for scheme: ColorScheme) -> Color {
         scheme == .light
-            ? Color(red: 0.81, green: 0.83, blue: 0.84)
-            : Color(red: 0.055, green: 0.058, blue: 0.067)
+            ? Color(red: 0.83, green: 0.85, blue: 0.89)
+            : Color(red: 0.245, green: 0.265, blue: 0.35)
     }
 
     public static func controlSurface(for scheme: ColorScheme) -> Color {
@@ -103,17 +103,20 @@ public enum DokiType {
 
 
 public struct DokiBackground: View {
+    @Environment(\.dokiSharedBackground) private var sharedBackground
     @Environment(\.colorScheme) private var colorScheme
 
     public init() {}
 
     public var body: some View {
-        DokiTheme.pageBackground(for: colorScheme)
-            .ignoresSafeArea()
+        if !sharedBackground {
+            DokiTheme.pageBackground(for: colorScheme).ignoresSafeArea()
+        }
     }
 }
 
 public extension EnvironmentValues {
+    @Entry var dokiSharedBackground: Bool = false
     var dokiReduceMotion: Bool {
         #if DEBUG
         accessibilityReduceMotion || ProcessInfo.processInfo.arguments.contains("--demo-reduce-motion")

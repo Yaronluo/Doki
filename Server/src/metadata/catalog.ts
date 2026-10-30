@@ -62,6 +62,13 @@ export class CatalogService {
     const now = new Date();
     return this.#remember("picks", 60 * 60_000, async () => upstream(catalogPageSchema, await this.#json(`${BGM}/v0/subjects?type=2&sort=rank&year=${now.getUTCFullYear()}&month=${Math.floor(now.getUTCMonth()/3)*3+1}&limit=24&offset=0`)));
   }
+  popular() {
+    return this.#remember("popular", 60 * 60_000, async () => {
+      const page = upstream(catalogPageSchema, await this.#json(`${BGM}/v0/search/subjects?limit=12&offset=0`, { keyword: "", sort: "heat", filter: { type: [2], nsfw: false } }));
+      const seen = new Set<number>();
+      return { ...page, data: page.data.filter(item => item.type === 2 && item.nsfw !== true && !seen.has(item.id) && !!seen.add(item.id)) };
+    });
+  }
   subject(id: number) { return this.#remember(`subject:${id}`, 300_000, async () => upstream(catalogSubjectSchema, await this.#json(`${BGM}/v0/subjects/${id}`))); }
   episodes(id: number, offset: number) { return this.#remember(`episodes:${id}:${offset}`, 300_000, async () => upstream(episodePageSchema, await this.#json(`${BGM}/v0/episodes?subject_id=${id}&type=0&limit=100&offset=${offset}`))); }
   credits(id: number, kind: "characters" | "persons") { return this.#remember(`credits:${id}:${kind}`, 3600_000, async () => upstream(creditsSchema, await this.#json(`${BGM}/v0/subjects/${id}/${kind}`))); }

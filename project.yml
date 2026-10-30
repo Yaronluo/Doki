@@ -1,5 +1,5 @@
 # XcodeGen source of truth. Generate with:
-#   xcodegen generate --spec project.yml --project Doki.xcodeproj
+#   xcodegen generate --spec project.yml --project .
 # Do not hand-edit Doki.xcodeproj/project.pbxproj.
 
 name: Doki

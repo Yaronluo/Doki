@@ -16,6 +16,11 @@ public struct DokiArtworkView: View {
         self.assetName = assetName; self.title = title; self.accentHex = accentHex
         self.contentMode = contentMode; self.remoteURL = remoteURL; self.retainWhileLoading = retainWhileLoading
     }
+    /// Warm the same bounded cache used by the view before committing a hero change.
+    @MainActor public static func prefetch(_ url: URL) async throws {
+        _ = try await ArtworkLoader.shared.image(at: url)
+        try Task.checkCancellation()
+    }
     public var body: some View {
         GeometryReader { geometry in
             ZStack {

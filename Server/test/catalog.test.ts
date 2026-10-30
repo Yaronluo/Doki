@@ -33,6 +33,27 @@ describe("public metadata and optional artwork", () => {
     }) });
     expect((await service.search("测试", 24)).data).toHaveLength(1);
   });
+  it("fetches collection heat separately, filters unsafe/wrong types and shares cached requests", async () => {
+    let calls = 0;
+    const service = new CatalogService({ artworkMap: null, transport: transport((url, options) => {
+      calls++;
+      expect(url.pathname).toBe("/v0/search/subjects");
+      expect(url.searchParams.get("limit")).toBe("12");
+      expect(JSON.parse(options.body!)).toEqual({ keyword: "", sort: "heat", filter: { type: [2], nsfw: false } });
+      expect(options.headers?.Authorization).toBeUndefined();
+      return { total: 5, data: [subject, subject, { ...subject, id: 43, nsfw: true }, { ...subject, id: 44, type: 1 }, { ...subject, id: 45 }] };
+    }) });
+    const [first, second] = await Promise.all([service.popular(), service.popular()]);
+    expect(first.data.map(item => item.id)).toEqual([42, 45]);
+    expect(second).toEqual(first);
+    const app = createApp({ config: testConfig(), catalog: service, readiness: { async check() { throw new Error("not used"); } } });
+    try {
+      const response = await app.inject({ method: "GET", url: "/v1/popular" });
+      expect(response.statusCode).toBe(200);
+      expect(response.json().data.map((item: { id: number }) => item.id)).toEqual([42, 45]);
+      expect(calls).toBe(1);
+    } finally { await app.close(); }
+  });
   it("keeps movie and TV identities distinct and only selects an exact unambiguous match", async () => {
     const movie = { ...subject, platform: "剧场版" };
     const service = new CatalogService({ artworkMap: null, tmdb: new TmdbConfig(token), transport: transport((url, options) => {

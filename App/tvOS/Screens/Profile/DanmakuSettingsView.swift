@@ -36,7 +36,7 @@ struct DanmakuSettingsView: View {
                                     .foregroundStyle(.secondary)
                             }
                             Spacer()
-                            DokiGlassButton("完成", systemImage: "checkmark") {
+                            DokiControlButton("完成", systemImage: "checkmark") {
                                 dismiss()
                             }
                         }
@@ -201,11 +201,11 @@ struct DanmakuSettingsView: View {
                     )
                 }
                 HStack(spacing: 14) {
-                    DokiGlassButton("重新匹配", systemImage: "arrow.triangle.2.circlepath") {
+                    DokiControlButton("重新匹配", systemImage: "arrow.triangle.2.circlepath") {
                         onRequestMapping?()
                     }
                     if mapping != nil {
-                        DokiGlassButton("取消匹配", systemImage: "xmark") {
+                        DokiControlButton("取消匹配", systemImage: "xmark") {
                             model.clearDanmakuMapping(for: episode)
                         }
                     }
@@ -353,7 +353,7 @@ struct DanmakuMappingSheet: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        DokiGlassButton("完成", systemImage: "checkmark") {
+                        DokiControlButton("完成", systemImage: "checkmark") {
                             dismiss()
                         }
                     }
@@ -459,7 +459,7 @@ struct DanmakuMappingSheet: View {
                     .strokeBorder(Color.primary.opacity(0.08), lineWidth: 1)
             }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(DokiContentButtonStyle()).focusEffectDisabled()
     }
 }
 
@@ -492,7 +492,7 @@ private struct ChoiceChip: View {
                 }
                 .contentShape(Capsule())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(DokiContentButtonStyle()).focusEffectDisabled()
         .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
     }
 }

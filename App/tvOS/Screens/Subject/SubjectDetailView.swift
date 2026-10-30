@@ -28,7 +28,7 @@ struct SubjectDetailView: View {
                             Image(systemName: "play.rectangle")
                             Text("番剧资料已连接 · 播放源尚未配置").font(DokiType.caption)
                             Spacer()
-                            DokiGlassButton("查看播放源", systemImage: "antenna.radiowaves.left.and.right") { showSourcePicker = true }
+                            DokiControlButton("查看播放源", systemImage: "antenna.radiowaves.left.and.right") { showSourcePicker = true }
                         }.foregroundStyle(.secondary).padding(.horizontal, DokiTheme.pagePadding)
                     }
                     episodeSection(subject).padding(.horizontal, DokiTheme.pagePadding)
@@ -37,7 +37,7 @@ struct SubjectDetailView: View {
                         Text(subject.synopsis).font(DokiType.body).foregroundStyle(.secondary).lineSpacing(7)
                             .lineLimit(showFullSynopsis ? nil : 5).frame(maxWidth: 1200, alignment: .leading)
                         if subject.synopsis.count > 150 {
-                            DokiGlassButton(showFullSynopsis ? "收起简介" : "展开简介", systemImage: "text.alignleft") {
+                            DokiControlButton(showFullSynopsis ? "收起简介" : "展开简介", systemImage: "text.alignleft") {
                                 withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { showFullSynopsis.toggle() }
                             }
                         }
@@ -53,7 +53,7 @@ struct SubjectDetailView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .overlay(alignment: .topTrailing) {
-            DokiGlassIconButton("chevron.backward", accessibilityLabel: "返回") { dismiss() }
+            DokiControlIconButton("chevron.backward", accessibilityLabel: "返回") { dismiss() }
                 .padding(.trailing, DokiTheme.pagePadding).padding(.top, 12)
         }
         .confirmationDialog(targetEpisode.map { "第 \($0.sort.formatted()) 话 · \($0.title)" } ?? "章节", isPresented: $showEpisodeActions, titleVisibility: .visible) {
@@ -78,17 +78,17 @@ struct SubjectDetailView: View {
             Spacer(minLength: 20)
             HStack(alignment: .bottom, spacing: 45) {
                 VStack(alignment: .leading, spacing: 20) {
-                    DokiGlassGroup {
+                    DokiControlGroup {
                         HStack(spacing: 22) {
-                            DokiGlassIconButton(subject.followState == .watching ? "star.fill" : "star", accessibilityLabel: subject.followState == .watching ? "已加入追番" : "加入追番") { model.toggleFollow(subject) }
-                            DokiGlassIconButton("square.grid.2x2", accessibilityLabel: "章节列表") { focusedEpisodeID = episodes.first?.id }
-                            DokiGlassIconButton("antenna.radiowaves.left.and.right", accessibilityLabel: "播放源") { showSourcePicker = true }
+                            DokiControlIconButton(subject.followState == .watching ? "star.fill" : "star", accessibilityLabel: subject.followState == .watching ? "已加入追番" : "加入追番") { model.toggleFollow(subject) }
+                            DokiControlIconButton("square.grid.2x2", accessibilityLabel: "章节列表") { focusedEpisodeID = episodes.first?.id }
+                            DokiControlIconButton("antenna.radiowaves.left.and.right", accessibilityLabel: "播放源") { showSourcePicker = true }
                         }
                     }
                     Button {
                         if let episode = episodes.first { focusedEpisodeID = episode.id; showEpisodeActions = true }
                     } label: { Label("选择章节", systemImage: "play.fill").font(.system(size: 25, weight: .medium)).frame(minWidth: 230).padding(.vertical, 10) }
-                        .buttonStyle(.borderedProminent).tint(DokiTheme.accent).disabled(episodes.isEmpty)
+                        .buttonStyle(DokiButtonStyle(prominent: true)).tint(DokiTheme.accent).disabled(episodes.isEmpty)
                 }.frame(width: 300, alignment: .leading)
                 VStack(alignment: .leading, spacing: 20) {
                     Text([subject.airDate, subject.season, subject.totalEpisodes > 0 ? "全 \(subject.totalEpisodes) 话" : nil].compactMap { $0 }.joined(separator: " · "))
@@ -160,7 +160,7 @@ struct SubjectDetailView: View {
                             if !episode.synopsis.isEmpty { Text(episode.synopsis).font(DokiType.caption).foregroundStyle(.secondary).lineLimit(2) }
                         }
                         Spacer()
-                        DokiGlassButton(model.isWatched(episode) ? "标为未看" : "标为已看", systemImage: "checkmark.circle") { model.markWatched(episode, watched: !model.isWatched(episode)) }
+                        DokiControlButton(model.isWatched(episode) ? "标为未看" : "标为已看", systemImage: "checkmark.circle") { model.markWatched(episode, watched: !model.isWatched(episode)) }
                     }.frame(minHeight: 72)
                 }
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 210, maximum: 250), spacing: 20)], alignment: .leading, spacing: 20) {
@@ -188,7 +188,7 @@ struct SubjectDetailView: View {
                     Text(title).font(DokiType.sectionTitle)
                     Spacer()
                     if items.count > 12 {
-                        DokiGlassButton(expandedCredits.contains(title) ? "收起" : "全部 \(items.count) 位", systemImage: "person.2") {
+                        DokiControlButton(expandedCredits.contains(title) ? "收起" : "全部 \(items.count) 位", systemImage: "person.2") {
                             if expandedCredits.contains(title) { expandedCredits.remove(title) } else { expandedCredits.insert(title) }
                         }
                     }
@@ -214,7 +214,7 @@ struct SubjectDetailView: View {
                 Text("横幅图片").font(DokiType.cardTitle)
                 Spacer()
                 if model.artworkResults[subjectID]?.candidates.isEmpty == false {
-                    DokiGlassButton("修正关联", systemImage: "photo") { showArtworkPicker = true }
+                    DokiControlButton("修正关联", systemImage: "photo") { showArtworkPicker = true }
                 }
             }
             Text(artworkDescription).font(DokiType.caption).foregroundStyle(.secondary)
@@ -234,7 +234,7 @@ struct SubjectDetailView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    HStack { Text("选择 TMDB 关联").font(DokiType.sectionTitle); Spacer(); DokiGlassButton("完成") { showArtworkPicker = false } }
+                    HStack { Text("选择 TMDB 关联").font(DokiType.sectionTitle); Spacer(); DokiControlButton("完成") { showArtworkPicker = false } }
                     ForEach(model.artworkResults[subjectID]?.candidates ?? [], id: \.identity) { candidate in
                         Button {
                             model.chooseArtwork(candidate, subjectID: subjectID); showArtworkPicker = false
@@ -275,7 +275,7 @@ struct SourcePickerSheet: View {
                                 .foregroundStyle(.secondary)
                         }
                         Spacer()
-                        DokiGlassButton("完成", systemImage: "checkmark") {
+                        DokiControlButton("完成", systemImage: "checkmark") {
                             dismiss()
                         }
                     }
@@ -324,7 +324,7 @@ struct SourcePickerSheet: View {
                                         )
                                 }
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(DokiContentButtonStyle()).focusEffectDisabled()
                             .disabled(source.status == .disabled)
                             .opacity(source.status == .disabled ? 0.55 : 1)
                         }

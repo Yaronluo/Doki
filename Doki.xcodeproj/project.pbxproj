@@ -28,6 +28,7 @@
 		7B55961F79EDBBACD749365A /* IntegrationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EA0711A83A47321493C1EA /* IntegrationSettingsView.swift */; };
 		7CA33FBCA455FA9B417D1EF3 /* PlayerFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */; };
 		89AD8F69DC780087B74BA486 /* RealSourcePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE94D7D3BDAB8392C74397B4 /* RealSourcePreviewView.swift */; };
+		8FEF9E5DD8031D59533B82B2 /* TVNavigationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D18DDA8DE17ABC5E0F1E110 /* TVNavigationOverlay.swift */; };
 		945E472B920CC1788F695ECF /* SmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F056D1695135C7C8D090EFBE /* SmokeUITests.swift */; };
 		99AA1E6681F4CD7C074D711F /* DokiPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = D1E90AD9D28B6C3EFC2FDD0E /* DokiPlayback */; };
 		A58000DD7D16C081308E091C /* RealSourceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F5983C572545121D65FC17 /* RealSourceClient.swift */; };
@@ -56,6 +57,7 @@
 		0494FB4E74ABE67A4BF3E378 /* PlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerScreen.swift; sourceTree = "<group>"; };
 		067F0822542F0DA65913A269 /* DokiTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DokiTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A309DA9B20FB8AECAF01244 /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
+		1D18DDA8DE17ABC5E0F1E110 /* TVNavigationOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVNavigationOverlay.swift; sourceTree = "<group>"; };
 		225AAE0A891778D564DF2909 /* DokiTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DokiTVApp.swift; sourceTree = "<group>"; };
 		2771CCD4835CA9B21C47BFA6 /* SourceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceSettingsView.swift; sourceTree = "<group>"; };
 		28D974B6DE2006A8A7A62701 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				BFEBFBF4287A9B21EC199EC1 /* AppComponents.swift */,
+				1D18DDA8DE17ABC5E0F1E110 /* TVNavigationOverlay.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -412,6 +415,7 @@
 				EC3C22E5DB4D5767149A0BAD /* SearchView.swift in Sources */,
 				134D07DEBDDBDEEE792D4365 /* SourceSettingsView.swift in Sources */,
 				68DB37C18D1846E4A4AEF38A /* SubjectDetailView.swift in Sources */,
+				8FEF9E5DD8031D59533B82B2 /* TVNavigationOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

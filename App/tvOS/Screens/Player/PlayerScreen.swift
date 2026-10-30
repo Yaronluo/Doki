@@ -114,7 +114,7 @@ struct PlayerScreen: View {
     private var chrome: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top, spacing: 16) {
-                DokiGlassIconButton("chevron.backward", accessibilityLabel: "返回") {
+                DokiControlIconButton("chevron.backward", accessibilityLabel: "返回") {
                     close()
                 }
 
@@ -148,11 +148,11 @@ struct PlayerScreen: View {
                         }
                     }
                     HStack(spacing: 12) {
-                        DokiGlassButton("弹幕", systemImage: "text.bubble") {
+                        DokiControlButton("弹幕", systemImage: "text.bubble") {
                             showDanmakuSettings = true
                         }
                         if !route.isRealSourcePreview {
-                            DokiGlassButton("换源", systemImage: "antenna.radiowaves.left.and.right") {
+                            DokiControlButton("换源", systemImage: "antenna.radiowaves.left.and.right") {
                                 showSourcePicker = true
                             }
                         }
@@ -223,10 +223,10 @@ struct PlayerScreen: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             HStack(spacing: 14) {
-                DokiGlassButton("重新播放", systemImage: "arrow.counterclockwise") {
+                DokiControlButton("重新播放", systemImage: "arrow.counterclockwise") {
                     playerModel.replay()
                 }
-                DokiGlassButton("返回详情", systemImage: "chevron.backward") {
+                DokiControlButton("返回详情", systemImage: "chevron.backward") {
                     close()
                 }
             }
@@ -253,10 +253,10 @@ struct PlayerScreen: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
             HStack(spacing: 14) {
-                DokiGlassButton("重试", systemImage: "arrow.clockwise") {
+                DokiControlButton("重试", systemImage: "arrow.clockwise") {
                     loadMedia()
                 }
-                DokiGlassButton("返回", systemImage: "chevron.backward") {
+                DokiControlButton("返回", systemImage: "chevron.backward") {
                     close()
                 }
             }
@@ -317,7 +317,7 @@ struct PlayerScreen: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 680)
-            DokiGlassButton("返回", systemImage: "chevron.backward") {
+            DokiControlButton("返回", systemImage: "chevron.backward") {
                 close()
             }
         }

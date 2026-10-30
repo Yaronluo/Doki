@@ -29,7 +29,7 @@ struct SearchView: View {
                     }
                 }.padding(.horizontal, DokiTheme.pagePadding).padding(.vertical, 18)
                 if hasQuery, model.searchOffset < model.searchTotal, !model.isSearching {
-                    DokiGlassButton("载入更多", systemImage: "plus") { Task { await model.searchCatalog(loadMore: true) } }.padding(.horizontal, DokiTheme.pagePadding)
+                    DokiControlButton("载入更多", systemImage: "plus") { Task { await model.searchCatalog(loadMore: true) } }.padding(.horizontal, DokiTheme.pagePadding)
                 }
             }.padding(.bottom, 64)
         }
@@ -37,6 +37,9 @@ struct SearchView: View {
         .navigationTitle("搜索")
         .searchable(text: $model.searchQuery, prompt: "搜索番剧")
         .task(id: [model.hubURLString, model.searchQuery]) { await model.searchCatalog() }
+        .onChange(of: model.contentFocusRevision) { _, _ in
+            if model.selectedTab == .search { focusedID = model.searchFocusID ?? subjects.first.map { "search-\($0.id)" } }
+        }
         .onChange(of: model.searchPath.count) { _, count in if count == 0 { focusedID = model.searchFocusID } }
     }
 }

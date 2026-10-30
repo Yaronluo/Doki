@@ -3685,6 +3685,35 @@
         ]
       }
     },
+    "/v1/popular": {
+      "get": {
+        "operationId": "getPopularAnime",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogPage"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
     "/v1/search": {
       "post": {
         "operationId": "searchCatalog",

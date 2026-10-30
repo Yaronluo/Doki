@@ -70,7 +70,7 @@ struct PageHeader: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 12) {
                     if let onBack {
-                        DokiGlassIconButton("chevron.backward", accessibilityLabel: "返回") {
+                        DokiControlIconButton("chevron.backward", accessibilityLabel: "返回") {
                             onBack()
                         }
                     }
@@ -151,57 +151,32 @@ struct HorizontalCardRow<Content: View>: View {
 struct FilterBar: View {
     @Binding var selection: LibraryFilter
     let counts: [LibraryFilter: Int]
-    @Environment(\.colorScheme) private var colorScheme
     @FocusState private var focusedFilter: LibraryFilter?
-
-    private var selectedTextColor: Color {
-        colorScheme == .light ? .white : .black
-    }
-
     var body: some View {
-        DokiGlassBar {
-            HStack(spacing: 6) {
-                ForEach(LibraryFilter.allCases) { filter in
-                    Button {
-                        selection = filter
-                    } label: {
-                        HStack(spacing: 7) {
-                            Text(filter.title)
-                                .font(DokiType.caption)
-                            if let count = counts[filter], count > 0 {
-                                Text("\(count)")
-                                    .font(DokiType.micro)
-                                    .foregroundStyle(
-                                        selection == filter
-                                            ? selectedTextColor.opacity(0.72)
-                                            : Color.secondary
-                                    )
-                            }
+        HStack(spacing: 8) {
+            ForEach(LibraryFilter.allCases) { filter in
+                let focused = focusedFilter == filter
+                Button { selection = filter } label: {
+                    HStack(spacing: 8) {
+                        Text(filter.title).font(DokiType.caption)
+                        if let count = counts[filter], count > 0 {
+                            Text("\(count)").font(DokiType.micro).opacity(0.7)
                         }
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .foregroundStyle(selection == filter ? selectedTextColor : Color.primary)
-                        .background(
-                            selection == filter ? DokiTheme.accent : Color.clear,
-                            in: Capsule()
-                        )
-                        .overlay {
-                            if focusedFilter == filter {
-                                Capsule()
-                                    .strokeBorder(Color.white.opacity(0.85), lineWidth: 2)
-                            }
-                        }
-                        .contentShape(Capsule())
                     }
-                    .buttonStyle(.plain)
-                    .focused($focusedFilter, equals: filter)
-                    .accessibilityAddTraits(selection == filter ? [.isSelected, .isButton] : .isButton)
+                    .padding(.horizontal, 20).frame(minWidth: 126, minHeight: 56)
+                    .foregroundStyle(focused ? Color.black : Color.primary)
+                    .background(focused ? Color.white : (selection == filter ? DokiTheme.accent.opacity(0.32) : .clear), in: Capsule())
+                    .contentShape(Capsule())
                 }
+                .buttonStyle(DokiContentButtonStyle(drawFocusRing: false)).focusEffectDisabled()
+                .focused($focusedFilter, equals: filter)
+                .accessibilityIdentifier("library-filter-\(filter.rawValue)")
+                .accessibilityAddTraits(selection == filter ? [.isSelected] : [])
             }
         }
-        .onAppear {
-            focusedFilter = selection
-        }
+        .padding(8)
+        .background(Color.primary.opacity(0.055), in: Capsule())
+        .onAppear { focusedFilter = selection }
     }
 }
 
@@ -249,8 +224,9 @@ struct CalendarDayPill: View {
             }
             .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(DokiContentButtonStyle(drawFocusRing: false)).focusEffectDisabled()
         .focused(focus, equals: date)
+        .accessibilityIdentifier("calendar-day-\(date.timeIntervalSince1970)")
         .accessibilityLabel(Text(DokiDate.dayLabel(date)))
         .accessibilityValue(Text("\(entryCount) 个放送条目"))
     }
@@ -303,7 +279,8 @@ struct NavigationRow: View {
             }
             .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(DokiContentButtonStyle()).focusEffectDisabled()
+        .accessibilityIdentifier("settings-row-\(title)")
     }
 }
 
@@ -334,7 +311,7 @@ struct ToastBanner: View {
     let message: String
 
     var body: some View {
-        DokiGlassBar {
+        DokiControlBar {
             HStack(spacing: 10) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(DokiTheme.accent)

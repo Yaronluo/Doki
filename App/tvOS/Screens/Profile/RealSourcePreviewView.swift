@@ -123,7 +123,7 @@ struct RealSourcePreviewView: View {
                         }
 
                         HStack(spacing: 14) {
-                            DokiGlassButton("解析并播放", systemImage: "play.circle.fill") {
+                            DokiControlButton("解析并播放", systemImage: "play.circle.fill") {
                                 startPreview()
                             }
                             .disabled(state == .loading)
@@ -136,12 +136,12 @@ struct RealSourcePreviewView: View {
                                     .foregroundStyle(.secondary)
                             }
                             if plan != nil {
-                                DokiGlassButton("重新解析", systemImage: "arrow.clockwise") {
+                                DokiControlButton("重新解析", systemImage: "arrow.clockwise") {
                                     startPreview()
                                 }
                             }
                             if hubURL == nil {
-                                DokiGlassButton("配置 Hub", systemImage: "network") {
+                                DokiControlButton("配置 Hub", systemImage: "network") {
                                     model.profilePath.append(.hubSettings)
                                 }
                             }
@@ -210,7 +210,7 @@ struct RealSourcePreviewView: View {
                     Text("失败阶段在 Hub 日志中区分搜索、详情、播放页与媒体校验；不会伪装成可播放。")
                         .font(DokiType.micro)
                         .foregroundStyle(.tertiary)
-                    DokiGlassButton("重试", systemImage: "arrow.clockwise") {
+                    DokiControlButton("重试", systemImage: "arrow.clockwise") {
                         startPreview()
                     }
                 }
@@ -245,13 +245,13 @@ struct RealSourcePreviewView: View {
                             }
                         }
                         HStack(spacing: 14) {
-                            DokiGlassButton(
+                            DokiControlButton(
                                 savedProgress == nil ? "开始播放" : "继续播放",
                                 systemImage: "play.fill"
                             ) {
                                 model.presentRealSource(plan)
                             }
-                            DokiGlassButton("返回", systemImage: "chevron.backward") {
+                            DokiControlButton("返回", systemImage: "chevron.backward") {
                                 dismiss()
                             }
                             DemoNotice(text: "真实源 · 未绑定 Bangumi")

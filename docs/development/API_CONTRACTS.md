@@ -176,6 +176,7 @@ HUB-001 先落地错误、鉴权上下文、幂等和配置 schema；PLAY-001 �
 
 | 方法 | 路径 | 返回 |
 |---|---|---|
+| GET | `/v1/popular` | `CatalogPage`；匿名 Bangumi 空关键词、`sort=heat`（收藏人数）、动画/非 NSFW；1 小时缓存，独立失败不阻塞首页 |
 | GET | `/v1/home` | `calendar, picks, updatedAt`；更新时间是 Hub 响应时间，不冒充上游更新时间 |
 | GET | `/v1/calendar` | Bangumi 周放送计划，星期 1～7 为周一～周日 |
 | GET | `/v1/subjects/{id}` | 公开条目资料 |

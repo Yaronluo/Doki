@@ -7,44 +7,87 @@ struct RootTabView: View {
 
     @Namespace private var transitionNamespace
 
+    @Environment(\.dokiReduceMotion) private var reduceMotion
+    @Environment(\.resetFocus) private var resetFocus
+    @State private var needsContentFocus = false
+    @Namespace private var contentScope
+
     var body: some View {
         ZStack {
-            if let activeSubject { DokiHeroBackdrop(subject: activeSubject).ignoresSafeArea() }
-            else { DokiBackground() }
-            TabView(selection: $model.selectedTab) {
-                Tab("发现", systemImage: "sparkles", value: AppTab.discover) { tabNavigation(path: $model.discoverPath) { DiscoverView(model: model) } }
-                Tab("追番", systemImage: "books.vertical.fill", value: AppTab.library) { tabNavigation(path: $model.libraryPath) { LibraryView(model: model) } }
-                Tab("日历", systemImage: "calendar", value: AppTab.calendar) { tabNavigation(path: $model.calendarPath) { CalendarView(model: model) } }
-                Tab("搜索", systemImage: "magnifyingglass", value: AppTab.search) { tabNavigation(path: $model.searchPath) { SearchView(model: model) } }
-                Tab("我的", systemImage: "person.crop.circle", value: AppTab.profile) { tabNavigation(path: $model.profilePath) { ProfileView(model: model) } }
+            DokiHeroBackdrop(subject: activeSubject ?? model.popularSubjects.first ?? model.seasonPicks.first,
+                             frosted: !usesCinematicBackdrop, navigationExpanded: model.navigationExpanded)
+                .ignoresSafeArea()
+            ZStack {
+                tabPage(.discover, path: $model.discoverPath) { DiscoverView(model: model) }
+                tabPage(.library, path: $model.libraryPath) { LibraryView(model: model) }
+                tabPage(.calendar, path: $model.calendarPath) { CalendarView(model: model) }
+                tabPage(.search, path: $model.searchPath) { SearchView(model: model) }
+                tabPage(.profile, path: $model.profilePath) { ProfileView(model: model) }
+            }
+            .environment(\.dokiSharedBackground, true)
+            .padding(.top, model.selectedTab == .discover || !activePath.isEmpty ? 0 : 90)
+            .disabled(model.navigationExpanded)
+            .accessibilityHidden(model.navigationExpanded)
+            .focusScope(contentScope)
+            if activePath.isEmpty {
+                TVNavigationOverlay(model: model, close: closeNavigation)
             }
         }
+        .modifier(TVNavigationFocusBridge(enabled: activePath.isEmpty && model.playerRoute == nil,
+                                           expanded: model.navigationExpanded,
+                                           open: openNavigation, close: closeNavigation))
+        .task(id: model.navigationExpanded) {
+            guard !model.navigationExpanded, needsContentFocus else { return }
+            do {
+                if !reduceMotion { try await Task.sleep(for: .milliseconds(450)) }
+                try Task.checkCancellation()
+                needsContentFocus = false
+                resetFocus(in: contentScope)
+                model.contentFocusRevision += 1
+            } catch { }
+        }
         .environment(\.dokiTransitionNamespace, transitionNamespace)
-        .task(id: model.hubURLString) { async let catalog: () = model.refreshCatalog(); async let account: () = model.refreshAccount(); _ = await (catalog, account) }
+        .task(id: model.hubURLString) { async let catalog: () = model.refreshCatalog(); async let popular: () = model.refreshPopular(); async let account: () = model.refreshAccount(); _ = await (catalog, popular, account) }
         .fullScreenCover(item: $model.playerRoute) { route in
             PlayerScreen(model: model, route: route)
         }
     }
 
-    private var activeSubject: Subject? {
-        let path: [AppRoute]
+    private func openNavigation() {
+        guard !model.navigationExpanded else { return }
+        withAnimation(reduceMotion ? nil : .spring(response: 0.42, dampingFraction: 0.88)) { model.navigationExpanded = true }
+    }
+    private func closeNavigation() {
+        guard model.navigationExpanded else { return }
+        withAnimation(reduceMotion ? nil : .spring(response: 0.42, dampingFraction: 0.88)) { model.navigationExpanded = false }
+        needsContentFocus = true
+    }
+    private var activePath: [AppRoute] {
         switch model.selectedTab {
-        case .discover: path = model.discoverPath
-        case .library: path = model.libraryPath
-        case .calendar: path = model.calendarPath
-        case .search: path = model.searchPath
-        case .profile: path = model.profilePath
+        case .discover: model.discoverPath
+        case .library: model.libraryPath
+        case .calendar: model.calendarPath
+        case .search: model.searchPath
+        case .profile: model.profilePath
         }
+    }
+    private var usesCinematicBackdrop: Bool {
+        if case .subject = activePath.last { return true }
+        return model.selectedTab == .discover && activePath.isEmpty && model.discoverHeroVisible
+    }
+    private var activeSubject: Subject? {
+        let path = activePath
         if case .subject(let id) = path.last { return model.subject(id: id) }
         if model.selectedTab == .discover {
             return model.discoverHeroID.flatMap { model.subject(id: $0) }
-                ?? model.seasonPicks.first(where: { $0.backdropURL != nil }) ?? model.seasonPicks.first
+                ?? model.popularSubjects.first ?? model.seasonPicks.first(where: { $0.backdropURL != nil }) ?? model.seasonPicks.first
         }
         return nil
     }
 
     @ViewBuilder
-    private func tabNavigation<Content: View>(
+    private func tabPage<Content: View>(
+        _ tab: AppTab,
         path: Binding<[AppRoute]>,
         @ViewBuilder content: () -> Content
     ) -> some View {
@@ -54,6 +97,10 @@ struct RootTabView: View {
                     RouteDestination(model: model, route: route)
                 }
         }
+        .opacity(model.selectedTab == tab ? 1 : 0)
+        .allowsHitTesting(model.selectedTab == tab)
+        .disabled(model.selectedTab != tab)
+        .accessibilityHidden(model.selectedTab != tab)
     }
 }
 

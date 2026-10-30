@@ -1,11 +1,11 @@
 # 当前状态
 
-> 更新：2026-10-30，REWORK-002 / GitHub 初始归档。当前仅 tvOS + 必要 Hub。真实账号、模拟器、真机、完整播放分别记录；历史批次见 [WORK_LOG](WORK_LOG.md)。
+> 更新：2026-10-30，REWORK-004 / 彩色磨砂、通透导航与焦点按钮修复（GitHub 归档）。当前仅 tvOS + 必要 Hub。真实账号、模拟器、真机、完整播放分别记录；历史批次见 [WORK_LOG](WORK_LOG.md)。
 
 ## 1. 当前结论
 
-- 按用户最新要求：**顶部原生 TabView，移除侧栏，大横幅铺满屏幕顶部并延伸到标签栏背后**。保留系统焦点、Liquid Glass 按钮/标签、NavigationStack 和 AVKit。
-- 发现页改为全宽横幅、真实标题 Logo、六列竖版海报；详情展示真实收藏人数、评分分布、简介、章节和角色/制作人员。参考 izuko 的视觉层级，SwiftUI 实现独立编写。
+- 按用户最新截图与圈图纠正：**移除顶部标签，左上角头像展开通透大圆角磨砂侧栏、白色胶囊选中条；移除全部自定义 Liquid Glass，改为平面操作控件**。保留系统焦点、NavigationStack、搜索和 AVKit，发现/详情保留全宽真实横幅。
+- 发现页新增独立 Bangumi 收藏热度热门轮播（最多六部、8 秒自动/可手动切换），保留本季推荐与继续观看。热门经 `/v1/popular` 或无 Hub 官方直读，与评分推荐分开；轮播/菜单/详情的暂停与焦点恢复见本轮证据。全宽横幅、真实标题 Logo、六列竖版海报；详情展示真实收藏人数、评分分布、简介、章节和角色/制作人员。参考 izuko 的视觉层级，SwiftUI 实现独立编写。
 - Bangumi 公开资料正常读取，无需密钥。公开 bangumi-tmdb-map 已接入，匹配到的 TMDB 横幅和 Logo **无需 token**，实际 TV 浅深色画面均已显示。缺记录时可选配置 TMDB token 搜索修正；不拿竖图冒充横幅。
 - 已实现 Hub 浏览器邮箱/密码/验证码登录、自动创建个人令牌、AES-GCM 加密保存；不需要 OAuth 应用密钥，不保存密码或 Cookie。验证码已从官网实际取回；完整登录/账号追番读取尚无真实账号验收。
 - 已实现 owner 浏览器登记、TV 六位码批准、一次性领取设备 token、Keychain 保存和账号追番只读导入。DB 并发测试通过；TV 已验证真实 Hub 配对码展示。尚未实现 Bangumi 写回、完整同步、远端令牌撤销或设备管理界面。
@@ -19,7 +19,7 @@
 | DOC-001 | verified | 当前批次文档与配置说明通过结构检查 |
 | ENV-001 | implemented_unverified | 本机工具/模拟器；缺 TV 真机、签名与 LAN 部署 |
 | APP-001 | verified | 单 tvOS XcodeGen 工程构建、安装与模拟器启动 |
-| UI-001 | implemented_unverified | 顶部原生标签/全宽横幅、浅深色、返回和失败状态有模拟器证据；缺真机完整辅助功能/性能验收 |
+| UI-001 | implemented_unverified | 彩色蓝灰磨砂背景、通透大圆角导航、单层焦点控件与热门轮播已实现；模拟器专项证据见 REWORK-004；缺真机完整辅助功能/性能验收 |
 | HUB-001 | verified | 本地 API、迁移、Worker、PG 测试；不是部署验收 |
 | AUTH-001 | implemented_unverified | owner/配对/加密网页登录/账号只读实现；fixture 和 PG 并发通过，真实验证码成功，缺真实账号登录、撤销和恢复验收 |
 | SYNC-001 | not_started | 收藏/已看修改仍在本机，不是远端写回/outbox/epoch 同步 |
@@ -33,7 +33,9 @@
 
 ## 3. 已修复与边界
 
-- 消除侧栏和顶部导航并存；背景提升到 TabView 外层，避免安全区使横幅出现四周留白。普通卡片保留竖版比例。
+- 根层保留五个独立 NavigationStack，去掉 TabView 顶部栏。头像上/左边缘呼出，侧栏右侧离开/下方离开收起；菜单内上下用于选择，菜单打开时内容禁用焦点。普通卡片保留竖版比例。
+- 自定义控件无 `glassEffect`、glass 按钮或玻璃容器；导航用透色系统 Material 和克制烟色遮罩维持文字对比，减少透明度时蓝灰实色。系统 AVKit/输入/面板保持原生。
+- 热门请求独立失败/缓存，旧快照兼容，失败不清空旧目录；热门图片预热后再一起切换标题与背景，过期任务不得覆盖手动预览。导航/详情/播放/后台/横幅滚离时暂停；减少动态效果与 VoiceOver 时不自动轮播。
 - 首页海报首次选择预览，重复选择进入详情；详情转场固定入口身份，避免之后的导航覆盖旧页面转场源。返回焦点有实际测试。
 - 章节选择先打开操作确认，不再直接改变已看状态；手动标记才修改本机状态。切换手动横幅时清除旧标题 Logo，避免错误搭配。
 - 保留已显示图片和目录直到替换成功；Hub 断连不清空缓存。没有清理观看记录或扩大缓存操作范围。
@@ -43,9 +45,32 @@
 
 ## 4. 本机环境与证据
 
+### REWORK-004（本轮）
+
+2026-10-30，同一下述 tvOS 27.0 模拟器与 Mac 开发主机网络；只改 tvOS/DokiUI 视觉与 UI 专项测试，没有新 API、依赖或数据库迁移。正常浏览仍使用真实 Bangumi，焦点几何测试使用明确自造 fixture。
+
+- 修复根因：部分自绘控件仍用 tvOS `.plain`，聚焦时额外产生系统白色底板。筛选/日期/设置行/弹幕选项/源选择统一改为自有 ButtonStyle 与公开 focusEffectDisabled；筛选使用固定高度和单一填充，不再两层胶囊遮字。
+- 普通背景改为蓝灰基底与原始内容色扩散，移除磨砂前的近黑压暗渐变；发现页滚到货架后切为彩色磨砂。菜单 420pt 宽、44pt 圆角、白色胶囊焦点条，采用半透明轻磨砂，保留背景颜色与轮廓；磨砂只在侧栏内，右侧横幅/文字/海报保持清晰，无全屏 blur 或遮挡。减少透明度使用实体蓝灰底。
+- tvOS build-for-testing 通过（build.log）。ui-colored.log / ui-colored.xcresult 三项通过：筛选焦点与不重叠几何、导航、浅色减少动态透明度手动轮播。ui-controls-live.log / ui-controls-live.xcresult 两项通过：真实热门/菜单暂停/详情返回、日期与浅色设置行焦点。导航色调/发现货架最终回归通过（ui-shelf-navigation-2.log）；用户圈图纠正后右侧内容清晰回归通过（ui-clear-content.log）；轻磨砂采用公开 UIKit blur 强度插值，避免清晰文字与磨砂副本混叠；最终真实回归通过（ui-light-frost-native.log，TEST SUCCEEDED）。
+- 证据：`.local/artifacts/REWORK-004/screens/` 聚焦按钮、日期、浅色设置行、彩色背景与透色导航截图；测试命令见 WORK_LOG。截图仅证明对应模拟器状态，完整 VoiceOver、真机帧率/遥控器和实播仍未验收。
+
+
+
+### REWORK-003（上一批；旧背景/导航视觉已由 REWORK-004 修正）
+
+2026-10-30，同一下述 Mac/tvOS 27.0 模拟器、开发主机网络；本地 Hub 127.0.0.1:18080 为验证临时启动，非 LAN/公开部署。真实 Bangumi 热门响应 12 条，前六 ID：10380、328609、400602、9717、27364、265。未登录，没有真实账号头像或视频播放验收。
+
+- `xcodegen generate --spec project.yml --project .` 后 tvOS build-for-testing 通过；修正 project.yml 注释中会生成嵌套工程的旧命令，没有手改 pbxproj。
+- `DOKI_LIVE_METADATA=1 swift test --package-path Packages/DokiCore`：16 项通过（core-tests-2.log），含真实热门/公开资料/横幅；首次上游超时失败保留在 core-tests.log。
+- `cd Server && pnpm typecheck && pnpm openapi && pnpm test -- test/catalog.test.ts test/openapi.test.ts && pnpm build`：通过，12 项测试；无依赖、数据库迁移或源变更。
+- tvOS 三项界面测试全部通过（ui-matte-2.log，TEST SUCCEEDED）：导航、真实热门自动轮播/菜单暂停/详情返回，以及浅色减少动态透明度/手动轮播。之前的焦点时序失败已保留；导航容器覆盖子控件 accessibilityIdentifier 的问题已修复。
+- 证据在 `.local/artifacts/REWORK-003/`：原始构建/测试日志、截图与 navigation-matte.mp4。截图证明对应模拟器画面，录屏只证明对应交互，不证明真机帧率或实播。
+
+### REWORK-002（上一批，以下证据不证明本轮样式）
+
 2026-10-30；Mac 开发主机原有网络，Xcode 27.1 / Swift 6.4 / tvOS 27.0；Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97`。Node 24.22.1、pnpm 9.14.4、PostgreSQL 18.6。
 
-本轮命令与结果：
+REWORK-002 命令与结果：
 
 - `DOKI_LIVE_METADATA=1 swift test --package-path Packages/DokiCore`：16 项通过，含真实 Bangumi 首页/详情/章节/角色/人员/搜索和无密钥横幅/Logo。
 - `cd Server && pnpm typecheck && pnpm openapi && pnpm build`：通过；无依赖版本变更，新增迁移 0002。
@@ -65,4 +90,4 @@
 3. 弹弹play暂缓。将来恢复时需在 [开发者中心](https://dev.dandanplay.com/) 为 Doki 申请自己的 AppId/AppSecret，之后仍要集成和验收。
 4. 视频源、完整同步、真实账号/真机、LAN HTTPS、备份恢复分别推进。当前没有用密钥就能解除的通用播放限制。
 
-代码版本管理已初始化，远端为 GitHub 私有仓库 [Yaronluo/Doki](https://github.com/Yaronluo/Doki)，主分支 `main`。用户已明确授权本批次初始 commit/push；未发布 PR 或公开部署，未创建 iPhone/Mac 客户端。`.env`、`.local/`、依赖、构建产物和 Xcode 用户状态不纳入版本控制；`.env.example` 保留空凭据模板。生产出站 IP 固定和强制代理仍待 OPS-001；本批次归档不扩大现有功能验收结论。
+用户已在本轮明确授权将 REWORK-003/004 提交并推送至 GitHub origin/main；归档以远端 main 与本地 HEAD 一致为交付核验。未发布 PR 或部署。代码版本管理已初始化，远端为 GitHub 私有仓库 [Yaronluo/Doki](https://github.com/Yaronluo/Doki)，主分支 `main`。用户已明确授权本批次初始 commit/push；未发布 PR 或公开部署，未创建 iPhone/Mac 客户端。`.env`、`.local/`、依赖、构建产物和 Xcode 用户状态不纳入版本控制；`.env.example` 保留空凭据模板。生产出站 IP 固定和强制代理仍待 OPS-001；本批次归档不扩大现有功能验收结论。

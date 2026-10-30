@@ -298,6 +298,7 @@ function catalogPaths(): Record<string, unknown> {
   const paths: Record<string, unknown> = {};
   for (const [path, schema, operationId] of [
     ["/v1/home", "CatalogHome", "getCatalogHome"],
+    ["/v1/popular", "CatalogPage", "getPopularAnime"],
     ["/v1/calendar", "Calendar", "getCatalogCalendar"],
     ["/v1/subjects/{id}", "CatalogSubject", "getCatalogSubject"],
     ["/v1/subjects/{id}/episodes", "EpisodePage", "getCatalogEpisodes"],

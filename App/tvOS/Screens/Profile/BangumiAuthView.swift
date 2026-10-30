@@ -20,7 +20,7 @@ struct BangumiAuthView: View {
                             Text(account.nickname.isEmpty ? account.username : account.nickname).font(.system(size: 38, weight: .semibold))
                             Label("Bangumi 已连接", systemImage: "checkmark.seal.fill").foregroundStyle(DokiTheme.accent)
                             Text("真实追番列表已可读取。网页登录与个人令牌保存在 Hub，密码不会保存在电视。").font(DokiType.body).foregroundStyle(.secondary)
-                            DokiGlassButton("刷新追番", systemImage: "arrow.clockwise") { Task { await model.refreshAccount() } }
+                            DokiControlButton("刷新追番", systemImage: "arrow.clockwise") { Task { await model.refreshAccount() } }
                         } else {
                             Text(model.accountStatus?.paired == true ? "电视已配对，在 Hub 完成登录" : "用浏览器连接这台电视").font(DokiType.sectionTitle)
                             Text("1. 在运行 Hub 的电脑浏览器打开右侧地址。\n2. 登记 Hub，并批准电视上的配对码。\n3. 在网页输入 Bangumi 邮箱、密码和验证码。").font(DokiType.body).lineSpacing(12)
@@ -28,8 +28,8 @@ struct BangumiAuthView: View {
                             if let pairing { Text(pairing.code).font(.system(size: 68, weight: .semibold, design: .monospaced)).tracking(12).accessibilityIdentifier("pairing-code") }
                             if busy { ProgressView(pairing == nil ? "正在连接 Hub…" : "等待浏览器批准…") }
                             if let error { Text(error).font(DokiType.caption).foregroundStyle(.orange) }
-                            if model.configuredHubURL != nil { DokiGlassButton("重新连接", systemImage: "arrow.clockwise") { attempt += 1 } }
-                            else { DokiGlassButton("设置 Hub 地址", systemImage: "network") { model.profilePath.append(.hubSettings) } }
+                            if model.configuredHubURL != nil { DokiControlButton("重新连接", systemImage: "arrow.clockwise") { attempt += 1 } }
+                            else { DokiControlButton("设置 Hub 地址", systemImage: "network") { model.profilePath.append(.hubSettings) } }
                         }
                     }.frame(maxWidth: 850, alignment: .leading)
                     if let url = model.configuredHubURL {

@@ -34,7 +34,7 @@ struct HubSettingsView: View {
                             .foregroundStyle(.secondary)
                             .fixedSize(horizontal: false, vertical: true)
                         HStack(spacing: 14) {
-                            DokiGlassButton("保存并检查", systemImage: "arrow.clockwise") {
+                            DokiControlButton("保存并检查", systemImage: "arrow.clockwise") {
                                 model.hubURLString = draftURL.trimmingCharacters(in: .whitespacesAndNewlines)
                                 Task { await model.checkHubConnection() }
                             }

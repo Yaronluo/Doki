@@ -35,6 +35,11 @@ public actor CatalogClient {
         async let picks = request(CatalogPage.self, direct: "/v0/subjects?type=2&sort=rank&year=\(date.year ?? 2026)&month=\(month)&limit=24&offset=0", proxy: "")
         return try await CatalogHome(calendar: days, picks: picks)
     }
+    /// Bangumi defines heat as collection count, independent of score/rank.
+    public func popular() async throws -> CatalogPage {
+        let body = try JSONSerialization.data(withJSONObject: ["keyword": "", "sort": "heat", "filter": ["type": [2], "nsfw": false]])
+        return try await request(CatalogPage.self, direct: "/v0/search/subjects?limit=12&offset=0", proxy: "v1/popular", body: hub == nil ? body : nil)
+    }
     public func subject(_ id: Int) async throws -> CatalogSubject {
         try await request(CatalogSubject.self, direct: "/v0/subjects/\(id)", proxy: "v1/subjects/\(id)")
     }

@@ -80,19 +80,20 @@ final class CatalogUITests: XCTestCase {
         app.launch(); app.activate()
         app.terminate()
     }
-    func testNativeTopTabsAndHubPairing() throws {
+    func testCollapsedNavigationAndHubPairing() throws {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["DOKI_LIVE_UI"] == "1", "Opt-in live network test")
         continueAfterFailure = false
         let app = XCUIApplication()
         app.launchArguments = ["--demo-light", "--demo-hub-url", ""]
         app.launch(); app.activate()
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "season-bgm-")).firstMatch.waitForExistence(timeout: 35))
-        let tabs = app.buttons["sparkles"]
-        XCTAssertTrue(tabs.exists)
-        XCTAssertLessThan(tabs.frame.minY, 120)
-        XCTAssertGreaterThan(tabs.frame.minX, 450)
+        let avatar = app.buttons["navigation-avatar"]
+        XCTAssertTrue(avatar.exists)
+        XCTAssertLessThan(avatar.frame.minY, 120)
+        XCTAssertLessThan(avatar.frame.minX, 160)
+        XCTAssertFalse(app.buttons["sparkles"].exists)
         Thread.sleep(forTimeInterval: 10)
-        capture("native-top-tabs-full-width-light")
+        capture("collapsed-navigation-full-width-light")
         app.terminate()
         app.launchArguments = ["--demo-dark", "--demo-hub-url", "http://127.0.0.1:18080", "--demo-route", "auth"]
         app.launch(); app.activate()
@@ -103,8 +104,77 @@ final class CatalogUITests: XCTestCase {
         app.launch(); app.activate()
         XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "season-bgm-")).firstMatch.waitForExistence(timeout: 35))
     }
+    func testPopularCarouselAndMenuPause() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["DOKI_LIVE_UI"] == "1", "Opt-in live network test")
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-dark", "--demo-hub-url", "http://127.0.0.1:18080"]
+        app.launch(); app.activate()
+        let page = app.otherElements["hero-page"]
+        XCTAssertTrue(page.waitForExistence(timeout: 35))
+        XCTAssertTrue(app.staticTexts["Bangumi 热门"].exists)
+        XCTAssertFalse(app.buttons["sparkles"].exists)
+        let first = try XCTUnwrap(page.value as? String)
+        capture("popular-carousel-dark")
+        let advanced = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != %@", first), object: page)
+        XCTAssertEqual(XCTWaiter.wait(for: [advanced], timeout: 45), .completed)
+        capture("popular-carousel-next")
+        let beforeMenu = page.value as? String
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(app.buttons["navigation-discover"].waitForExistence(timeout: 5))
+        capture("popular-matte-navigation-dark")
+        Thread.sleep(forTimeInterval: 9)
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(app.buttons["navigation-avatar"].waitForExistence(timeout: 5))
+        XCTAssertEqual(page.value as? String, beforeMenu, "Opening the menu must pause automatic rotation")
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hasFocus == true"), object: app.buttons["hero-primary"])
+        XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 4), .completed, "Closing the menu restores content focus")
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(app.buttons["加入追番"].waitForExistence(timeout: 15))
+        Thread.sleep(forTimeInterval: 3)
+        capture("popular-detail-flat-controls")
+        XCTAssertFalse(app.buttons["navigation-avatar"].exists)
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(app.buttons["hero-primary"].waitForExistence(timeout: 8))
+        capture("popular-detail-return")
+        for _ in 0..<4 { XCUIRemote.shared.press(.down) }
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-bgm-")).firstMatch.exists)
+        capture("discover-shelf-colored-background")
+        print("POPULAR_CAROUSEL_ASSERTIONS_PASSED")
+        app.terminate()
+    }
+
+    func testReducedMatteNavigationAndManualCarousel() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-fixtures", "--demo-light", "--demo-reduce-motion", "--demo-reduce-transparency"]
+        app.launch(); app.activate()
+        let page = app.otherElements["hero-page"]
+        XCTAssertTrue(page.waitForExistence(timeout: 15))
+        let first = page.value as? String
+        Thread.sleep(forTimeInterval: 9)
+        XCTAssertEqual(page.value as? String, first)
+        capture("carousel-reduced-light")
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(app.buttons["navigation-discover"].waitForExistence(timeout: 5))
+        capture("navigation-solid-reduced-light")
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(app.buttons["navigation-avatar"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["hero-primary"].hasFocus)
+        XCUIRemote.shared.press(.down)
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(app.buttons["hero-next"].hasFocus)
+        XCUIRemote.shared.press(.select)
+        XCTAssertNotEqual(page.value as? String, first)
+        capture("carousel-manual-reduced-light")
+        print("REDUCED_MATTE_ASSERTIONS_PASSED")
+        app.terminate()
+    }
+
     private func capture(_ name: String) {
-        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        let screenshot = XCUIScreen.main.screenshot()
+        try? screenshot.pngRepresentation.write(to: FileManager.default.temporaryDirectory.appendingPathComponent(name + ".png"))
+        let attachment = XCTAttachment(screenshot: screenshot)
         attachment.name = name; attachment.lifetime = .keepAlways
         add(attachment)
     }

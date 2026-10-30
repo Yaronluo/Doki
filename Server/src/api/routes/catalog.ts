@@ -9,7 +9,7 @@ export function registerCatalogRoutes(app: FastifyInstance, catalog: CatalogServ
   // Public metadata only. This grants no account, source execution or write access.
   const counts = new Map<string, { start: number; count: number }>();
   app.addHook("onRequest", async request => {
-    if (!/^\/v1\/(home|calendar|search|subjects|artwork)(\/|\?|$)/.test(request.url)) return;
+    if (!/^\/v1\/(home|popular|calendar|search|subjects|artwork)(\/|\?|$)/.test(request.url)) return;
     const now = Date.now();
     let count = counts.get(request.ip);
     if (!count || now - count.start > 60_000) {
@@ -22,6 +22,7 @@ export function registerCatalogRoutes(app: FastifyInstance, catalog: CatalogServ
     const [calendar, picks] = await Promise.all([catalog.calendar(), catalog.picks()]);
     return { calendar, picks, updatedAt: new Date().toISOString() };
   });
+  app.get("/v1/popular", async () => catalog.popular());
   app.get("/v1/calendar", async () => catalog.calendar());
   app.get("/v1/subjects/:id", async request => catalog.subject(idSchema.parse(request.params).id));
   app.get("/v1/subjects/:id/episodes", async request => {

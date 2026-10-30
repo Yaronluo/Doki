@@ -44,6 +44,12 @@ struct CalendarView: View {
             }.padding(.bottom, 64)
         }
         .background(DokiBackground()).toolbar(.hidden, for: .navigationBar)
+        .onChange(of: model.contentFocusRevision) { _, _ in
+            if model.selectedTab == .calendar {
+                if let stored = model.calendarFocusID { focusedID = stored }
+                else { focusedDay = model.selectedCalendarDate }
+            }
+        }
         .onChange(of: focusedDay) { _, day in if let day { model.selectCalendarDay(day) } }
         .onChange(of: model.calendarPath.count) { _, count in if count == 0 { focusedID = model.calendarFocusID } }
     }

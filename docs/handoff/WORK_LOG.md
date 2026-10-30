@@ -130,3 +130,55 @@
 - 检查候选文件：排除本机 `.env`、`.local/`、`node_modules/`、Swift `.build/`、Hub `dist/`、Xcode 用户状态；保留 `.env.example`。本机秘密值交叉匹配与常见凭据格式扫描未发现命中，扫描未打印秘密值。
 - 初始 commit/push 按本批次授权执行；交付以 GitHub 私有属性及远端 `main` 与本地 HEAD 一致为核验依据。本批次不改业务实现，不重复宣称构建、真实接口、实播或真机验收通过；无 PR 或公开部署。
 - 归档检查：`python3 scripts/check-docs.py` 通过 19 份 Markdown；修整历史 v0.3 文档末尾多余空行后，`git diff --cached --check` 通过。该检查不验证编译、接口或播放。
+
+## 2026-10-30 · REWORK-003 · 磨砂侧栏、平面控件与热门轮播
+
+任务：UI-001 / META-001，状态 `implemented_unverified`（模拟器专项通过，真机综合验收未完成）。用户先要求头像式收起导航和热门循环横幅，随后明确纠正为截图中的深色磨砂侧栏，去掉不适合的自定义 Liquid Glass；后一要求覆盖 AGENTS/v0.4 的旧强制玻璃与顶部标签要求。
+
+改动：五个独立 NavigationStack 保留页面状态，左上角账号头像/默认头像入口、昵称和时间，白色圆角焦点条。边缘上/左呼出、右侧和下方离开收起，菜单内上下仍选择目的地；菜单屏蔽内容焦点，动画结束后恢复焦点，取消旧任务。所有自定义玻璃按钮/容器换为 DokiControl* 平面控件，移除 glass API，侧栏采用深色系统 Material，减少透明度使用实色。无 iPhone/Mac target，无 private API。
+
+热门独立使用 Bangumi 收藏热度，新增匿名 GET /v1/popular 和 OpenAPI；与本季评分推荐各自缓存与失败。tvOS 最多六部/8 秒，前后手动选择，菜单/详情/播放/后台/滚离横幅暂停，减少动态效果/VoiceOver 不自动切换。图片先预热再提交标题/背景，generation 防旧请求覆盖预览。快照向后兼容，失败保留旧列表和重试入口。无凭据、依赖、数据库迁移或播放源变更。
+
+环境：2026-10-30，Mac 开发主机原有网络，Xcode 27.1 / Swift 6.4 / tvOS 27.0，Apple TV 4K (3rd generation, 1080p) 模拟器 A3FD875C-F0DC-4BCE-880D-C4F6680D3C97。本地 Hub 127.0.0.1:18080；OUTBOUND_ALLOW_BENCHMARK_NETWORK=1 只供本机透明代理，非 LAN/公开部署。
+
+验证与证据：
+
+- `xcodegen generate --spec project.yml --project .`；`xcodebuild build-for-testing -project Doki.xcodeproj -scheme DokiTV -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' -derivedDataPath .local/DerivedData/REWORK-003 CODE_SIGNING_ALLOWED=NO` 通过。project.yml 注释的旧生成命令会生成嵌套工程，已修正并删除该次新生成的嵌套目录；未手改 pbxproj。
+- `DOKI_LIVE_METADATA=1 swift test --package-path Packages/DokiCore`：16 项通过（core-tests-2.log），含真实热门、主页/搜索/条目/章节/人员与无 token 横幅。首次上游超时记录保留在 core-tests.log。
+- `cd Server && pnpm typecheck && pnpm openapi && pnpm test -- test/catalog.test.ts test/openapi.test.ts && pnpm build`：通过，12 项。热门过滤非动画/NSFW/重复身份并共用并发请求，官方排序请求体与公开路径已测。真实本地 Hub 热门 200/12 条，不代表真实账号或播放集成。
+- `xcodebuild test` 使用上述同一 destination/DerivedData、`DOKI_LIVE_UI=1`，限定 `SmokeUITests/testCollapsedNavigation`、`CatalogUITests/testPopularCarouselAndMenuPause`、`CatalogUITests/testReducedMatteNavigationAndManualCarousel`：3 项通过，结果 `.local/artifacts/REWORK-003/ui-matte-2.xcresult` 与 ui-matte-2.log，明确 TEST SUCCEEDED。真实自动轮播、打开菜单暂停、收起恢复焦点、详情/返回、浅色减少动态透明度与手动切换均有证据。
+- `.local/artifacts/REWORK-003/screens/` 有匿名真实热门/深色导航/详情平面按钮/返回、浅色减少动态透明度与自造手动轮播截图；`navigation-matte.mp4` 为本轮部分模拟器遥控交互录屏。截图不证明动效，录屏不证明真机帧率。
+- `python3 scripts/check-docs.py`、`git diff --check` 通过。当前自定义 App/DokiUI 源无 glassEffect/GlassEffectContainer/glass 按钮。
+
+故障修复过程保留：系统 TabView 隐藏未生效后移除该层；侧栏容器 accessibilityIdentifier 传播覆盖子按钮导致测试查找失败，已删除外层 ID；动画期内容禁用导致立即恢复焦点被拒，改为取消安全的动画后恢复。旧失败日志未删除。旧 xcodebuild 测试附件收尾挂起的进程在套件结束后终止；最终 ui-matte-2 正常退出成功。
+
+边界：未用真实账号登录/头像验收，未操作真机、未做完整系统 VoiceOver 遥控验收或性能统计，没有视频实播、没有提交/push/PR/公开部署。原有含广告源继续禁用。下一步：真机验证焦点/长按/距离可读性与系统辅助功能，真实账号头像另验；其余 AUTH/SYNC/DAN/OPS 任务不由本批次关闭。
+
+## 2026-10-30 · REWORK-004 · 彩色磨砂、轻透导航与焦点底板修复
+
+任务 UI-001，状态 `implemented_unverified`：tvOS 模拟器专项通过，真机完整辅助功能/性能尚未验收。用户三图明确纠正：普通背景不能近黑；导航是大圆角、通透带轻磨砂、胶囊选中条；图三筛选按钮出现额外白色胶囊。随后圈图明确右侧横幅/文字/海报应清晰，磨砂只在侧栏内。最终按后一纠正移除根层两个导航状态 blur，不对右侧加蒙层；不会把以前模糊内容的截图当作当前样式。
+
+改动：DokiTheme 蓝灰基底，DokiAmbientBackground 从原始内容图扩散颜色，移除先压黑再磨砂的管线；发现页滚离横幅后使用相同彩色磨砂背景。侧栏 420pt/44pt 圆角、白色胶囊焦点条，公开 UIVisualEffectView/UIBlurEffect 的轻模糊强度（UIViewPropertyAnimator 固定在 0.32）与轻烟色（0.10）保留背景轮廓；不通过降低整片磨砂的 opacity 混入清晰文字，避免背景文字双显；减少透明度使用蓝灰实体底。未恢复普通按钮的 glassEffect。
+
+按钮根因是自绘填充外仍使用 tvOS PlainButtonStyle，会再添加系统焦点底板。筛选、日期、设置行、弹幕选项、源选择、重试统一改为自有 DokiContentButtonStyle 与公开 focusEffectDisabled；筛选固定高度/单一填充，焦点不重叠相邻项。系统输入/Picker/确认面板和 AVKit 保持原生行为；不关闭焦点移动或按钮动作。
+
+实际环境：2026-10-30，Xcode 27.1 / Swift 6.4 / tvOS 27.0，Apple TV 4K (3rd generation, 1080p) 模拟器 A3FD875C-F0DC-4BCE-880D-C4F6680D3C97，Mac 开发主机原有网络与本地 Hub 127.0.0.1:18080。无凭据、API/依赖、数据库迁移、播放源或其他平台变更。
+
+命令：`xcodebuild build-for-testing` 与 `xcodebuild test -project Doki.xcodeproj -scheme DokiTV -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' -derivedDataPath .local/DerivedData/REWORK-003 CODE_SIGNING_ALLOWED=NO`；真实测试加 `DOKI_LIVE_UI=1`，按下面 identifier 限定。结果在 `.local/artifacts/REWORK-004/`。
+
+- build.log：tvOS build-for-testing 通过。
+- ui-colored.log / xcresult：3 项通过，SmokeUITests/testColoredBackgroundAndFocusedSegments、SmokeUITests/testCollapsedNavigation、CatalogUITests/testReducedMatteNavigationAndManualCarousel。实际断言聚焦筛选高度 <80pt、与相邻按钮无交叠，遥控器焦点、浅色减少动态/透明度和手动轮播可用。
+- ui-controls-live.log / xcresult：2 项通过，SmokeUITests/testCalendarAndSettingsFocusedControls、CatalogUITests/testPopularCarouselAndMenuPause；日期焦点高度 <115pt、浅色设置行焦点、真实热门自动切换/暂停/返回通过。
+- ui-shelf-navigation.log 保留一次真实图片准备延迟导致的自动轮播等待超时；自动切换改为跳过不可用图片候选，仍保留成功显示的内容与取消/generation 边界，手动失败保留重试提示。ui-shelf-navigation-2.log / xcresult 之后通过，含发现页滚到海报货架。
+- ui-clear-content.log / xcresult：用户圈图后移除全屏 blur，真实热门/菜单暂停/详情返回/发现货架回归通过，明确 TEST SUCCEEDED。
+- ui-light-frost.log / xcresult：半透明材质试验的真实回归通过；视觉检查出现背景文字双显，改为公开原生 blur 强度插值。当前最终证据为 ui-light-frost-native.log / xcresult，同一真实回归通过，TEST SUCCEEDED。
+- screens/：真实热门/菜单/详情/海报货架，以及 fixture 彩色背景/聚焦筛选/日期/浅色设置行/减少动态透明度截图。navigation-clear-content.mp4 只记录对应模拟器回归的一段交互，不证明当前最终材质参数或真机性能。
+- `python3 scripts/check-docs.py` 与 `git diff --check` 通过。没有清理观看记录、变更账号或扩大缓存管理范围。
+
+边界：5 个独立 UI 场景有本机证据，不宣称真机/完整系统辅助功能/帧率/真实账号头像/实播已验收；没有 commit/push/PR/部署。下一步仍为 TV 真机焦点、长按、观看距离与系统辅助功能专项。
+
+## 2026-10-30 · REWORK-003/004 GitHub 归档
+
+用户明确要求“提交到 github”，本轮授权提交并推送当前 tvOS 导航/材质/焦点修复、Bangumi 热门轮播、Hub 公开热门接口与对应测试/文档至既有私有仓库 Yaronluo/Doki 的 main。此前批次“未提交”是当时状态，本条记录随后取得的归档授权。
+
+归档前核对改动文件、构建/测试记录、本地与 origin/main 分歧；变更文件与本地秘密值交叉检查未发现凭据命中，不打印秘密值。`.env`、`.local`、依赖、构建/测试日志和截图/录屏仍排除，不纳入提交。`python3 scripts/check-docs.py` 和 `git diff --cached --check` 作为归档检查；不重复将文档检查宣称为构建或实播测试。实际功能证据与限制沿用上文，最终交付核验为远端 main 与本地 HEAD 一致、工作树清洁；无 PR、部署或其他平台变更。

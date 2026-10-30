@@ -2,19 +2,50 @@ import SwiftUI
 import UIKit
 import DokiCore
 
-public struct DokiHeroBackdrop: View {
+/// A colored, diffuse content backdrop. This is independent of button chrome.
+public struct DokiAmbientBackground: View {
     public let subject: Subject?
     @Environment(\.colorScheme) private var scheme
+    @Environment(\.dokiReduceTransparency) private var reduceTransparency
     public init(subject: Subject?) { self.subject = subject }
     public var body: some View {
         GeometryReader { geometry in
-            ZStack(alignment: .trailing) {
+            ZStack {
                 DokiTheme.pageBackground(for: scheme)
-                if let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
+                if !reduceTransparency {
+                    if let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
+                        DokiArtworkView(assetName: subject.backdropAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL, retainWhileLoading: true)
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .scaleEffect(1.2).blur(radius: 100, opaque: true)
+                            .saturation(0.65).opacity(scheme == .dark ? 0.48 : 0.25)
+                    }
+                    Rectangle().fill(.ultraThinMaterial).opacity(0.22)
+                    DokiTheme.pageBackground(for: scheme).opacity(0.2)
+                }
+            }.clipped()
+        }.accessibilityHidden(true)
+    }
+}
+
+public struct DokiHeroBackdrop: View {
+    public let subject: Subject?
+    public var frosted: Bool
+    public var navigationExpanded: Bool
+    @Environment(\.colorScheme) private var scheme
+    public init(subject: Subject?, frosted: Bool = false, navigationExpanded: Bool = false) {
+        self.subject = subject; self.frosted = frosted; self.navigationExpanded = navigationExpanded
+    }
+    public var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                DokiAmbientBackground(subject: subject)
+                if !frosted, let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
                     DokiArtworkView(assetName: subject.backdropAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL, retainWhileLoading: true)
                         .frame(width: geometry.size.width, height: geometry.size.height)
-                    LinearGradient(stops: [.init(color: DokiTheme.pageBackground(for: scheme).opacity(0.97), location: 0), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.80), location: 0.23), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.18), location: 0.52), .init(color: .clear, location: 0.76)], startPoint: .leading, endPoint: .trailing)
-                    LinearGradient(stops: [.init(color: .clear, location: 0.30), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.2), location: 0.49), .init(color: DokiTheme.pageBackground(for: scheme), location: 0.76)], startPoint: .top, endPoint: .bottom)
+                    if !navigationExpanded {
+                        LinearGradient(stops: [.init(color: DokiTheme.pageBackground(for: scheme).opacity(0.94), location: 0), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.76), location: 0.23), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.12), location: 0.54), .init(color: .clear, location: 0.8)], startPoint: .leading, endPoint: .trailing)
+                        LinearGradient(stops: [.init(color: .clear, location: 0.32), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.3), location: 0.55), .init(color: DokiTheme.pageBackground(for: scheme), location: 0.83)], startPoint: .top, endPoint: .bottom)
+                    }
                 }
             }
         }.accessibilityHidden(true)

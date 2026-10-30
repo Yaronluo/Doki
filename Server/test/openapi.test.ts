@@ -33,6 +33,7 @@ describe("OpenAPI generation", () => {
       "/v1/devices/pairings/{id}/claim",
       "/v1/home",
       "/v1/openapi.json",
+      "/v1/popular",
       "/v1/search",
       "/v1/subjects/{id}",
       "/v1/subjects/{id}/artwork",

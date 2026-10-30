@@ -196,7 +196,7 @@ struct DiagnosticsView: View {
                 .padding(.horizontal, DokiTheme.pagePadding)
 
                 HStack(spacing: 14) {
-                    DokiGlassButton("重新检查 Hub", systemImage: "network") {
+                    DokiControlButton("重新检查 Hub", systemImage: "network") {
                         Task { await model.checkHubConnection() }
                     }
                     DemoTip()

@@ -46,6 +46,10 @@ struct CatalogTests {
     func live() async throws {
         let client = CatalogClient()
         let home = try await client.home()
+        let popular = try await client.popular()
+        #expect(!popular.data.isEmpty)
+        #expect(popular.data.allSatisfy { $0.type == 2 && $0.nsfw != true })
+        print("LIVE_POPULAR ids=\(popular.data.prefix(6).map(\.id))")
         #expect(!home.calendar.isEmpty)
         let item = try #require(home.picks.data.first)
         let detail = try await client.subject(item.id)

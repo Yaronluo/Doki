@@ -5,6 +5,7 @@ struct CatalogSnapshot: Codable {
     let subjects: [String: Subject]
     let picks: [String]
     let days: [Int: [String]]
+    var popular: [String]? = nil
 }
 
 extension AppModel {
@@ -19,6 +20,9 @@ extension AppModel {
         if usesFixtures { return library.subjects }
         return catalogSubjects.values.filter { followOverrides[$0.id] != nil || accountCollectionIDs.contains($0.id) }.sorted { $0.title < $1.title }
     }
+    var popularSubjects: [Subject] {
+        usesFixtures ? Array(library.seasonPicks.prefix(6)) : catalogPopular.compactMap { catalogSubjects[$0] }
+    }
     var todayCatalog: [Subject] { calendarSubjects(on: .now) }
     func calendarSubjects(on day: Date) -> [Subject] {
         (catalogDays[Calendar.current.component(.weekday, from: day)] ?? []).compactMap { catalogSubjects[$0] }
@@ -27,13 +31,13 @@ extension AppModel {
         if let choices = defaults.data(forKey: "doki.artwork.choices.v1"), let decoded = try? JSONDecoder().decode([String: ArtworkCandidate].self, from: choices) { artworkChoices = decoded }
         guard let data = defaults.data(forKey: "doki.catalog.snapshot.v1"),
               let snapshot = try? JSONDecoder().decode(CatalogSnapshot.self, from: data) else { return }
-        catalogSubjects = snapshot.subjects; catalogPicks = snapshot.picks; catalogDays = snapshot.days
+        catalogSubjects = snapshot.subjects; catalogPicks = snapshot.picks; catalogDays = snapshot.days; catalogPopular = snapshot.popular ?? []
         for (id, state) in followOverrides { catalogSubjects[id]?.followState = state }
     }
     func persistCatalog() {
-        let retained = Set(catalogPicks + catalogDays.values.flatMap { $0 } + Array(followOverrides.keys) + Array(accountCollectionIDs))
+        let retained = Set(catalogPicks + catalogPopular + catalogDays.values.flatMap { $0 } + Array(followOverrides.keys) + Array(accountCollectionIDs))
         let subjects = catalogSubjects.filter { retained.contains($0.key) }
-        if let data = try? JSONEncoder().encode(CatalogSnapshot(subjects: subjects, picks: catalogPicks, days: catalogDays)) {
+        if let data = try? JSONEncoder().encode(CatalogSnapshot(subjects: subjects, picks: catalogPicks, days: catalogDays, popular: catalogPopular)) {
             defaults.set(data, forKey: "doki.catalog.snapshot.v1")
         }
     }
@@ -86,6 +90,31 @@ extension AppModel {
         } catch is CancellationError { } catch {
             guard address == hubURLString, generation == catalogGeneration else { return }
             catalogError = "无法刷新 Bangumi，已显示的内容会保留。请检查网络后重试。"
+        }
+    }
+    func refreshPopular() async {
+        guard !usesFixtures else { return }
+        popularGeneration += 1
+        let generation = popularGeneration
+        let address = hubURLString
+        guard address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || configuredHubURL != nil else { return }
+        do {
+            let page = try await catalogClient.popular()
+            try Task.checkCancellation()
+            guard generation == popularGeneration, address == hubURLString else { return }
+            var seen = Set<String>()
+            let entries = page.data.filter { $0.type == 2 && $0.nsfw != true }
+            // An empty/invalid refresh must not erase a successfully displayed set.
+            guard !entries.isEmpty else { throw CatalogError.unavailable }
+            for entry in entries { mergeCatalog(entry) }
+            catalogPopular = entries.map { "bgm-\($0.id)" }.filter { seen.insert($0).inserted }
+            popularError = nil; persistCatalog()
+            await withTaskGroup(of: Void.self) { group in
+                for id in catalogPopular.prefix(6) { group.addTask { await self.loadArtwork(id) } }
+            }
+        } catch is CancellationError { } catch {
+            guard generation == popularGeneration, address == hubURLString else { return }
+            popularError = "热门番剧暂时无法刷新"
         }
     }
     func loadDetail(_ id: String) async {

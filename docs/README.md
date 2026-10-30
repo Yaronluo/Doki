@@ -1,6 +1,6 @@
 # Doki 文档入口
 
-当前基线：**v0.4 · TV 首发修订：仅 tvOS + 必要 Hub，Apple 原生设计 + Liquid Glass + 弹弹play弹幕**。iPhone/Mac 客户端不在首版任务或验收范围。项目已进入实现阶段：tvOS 原型、Hub 骨架和单源技术验证均已出现；真实源内容安全、真机与正式集成仍未完成，详见 [CURRENT_STATE](handoff/CURRENT_STATE.md)。
+当前基线：**v0.4 · TV 首发修订：仅 tvOS + 必要 Hub，Apple 原生设计 + 透色磨砂导航 + 弹弹play弹幕**。iPhone/Mac 客户端不在首版任务或验收范围。项目已进入实现阶段：tvOS 原型、Hub 骨架和单源技术验证均已出现；真实源内容安全、真机与正式集成仍未完成，详见 [CURRENT_STATE](handoff/CURRENT_STATE.md)。
 
 真实数据申请与本地启动：[配置指南](development/INTEGRATIONS_SETUP.md)。当前正常浏览已接入 Bangumi 公开资料；TMDB/账号/弹幕与视频的不同边界见当前状态。
 
@@ -13,7 +13,7 @@
 | 1 | [开发约束](../AGENTS.md) | 仓库内工作方式、不可丢失的产品要求与验证规则 |
 | 2 | [当前状态](handoff/CURRENT_STATE.md) | 已有内容、缺少的凭据/设备信息、下一步任务 |
 | 3 | [实施方案 v0.4](Doki-设计方案-v0.4.md) | 架构、范围、源、播放、映射、同步与部署 |
-| 4 | [Apple 原生设计规范](design/APPLE_NATIVE_UI.md) | Doki 自己的信息架构、tvOS 页面、Liquid Glass 和动效；其他平台仅作后续参考 |
+| 4 | [Apple 原生设计规范](design/APPLE_NATIVE_UI.md) | Doki 自己的信息架构、tvOS 页面、系统材质和动效；其他平台仅作后续参考 |
 | 5 | [弹弹play接入](integrations/DANDANPLAY.md) | 取数、ID 匹配、媒体时钟、客户端渲染、申请凭据和失效恢复 |
 | 6 | [架构决策](architecture/DECISIONS.md) | 已定取舍、依据、影响和改动记录 |
 | 7 | [开发任务](development/ROADMAP.md) | 可执行任务 ID、依赖、完成条件与交付物 |

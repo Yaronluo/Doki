@@ -4,7 +4,7 @@ Apple 原生追番项目，**首版只做 Apple TV / tvOS 与必要的家庭 Dok
 
 当前已有一个可构建/启动的 tvOS 原型、Hub 骨架、自造 fixture、真实在线源 adapter 与签名 HLS relay。完整状态、证据和限制以 [docs/handoff/CURRENT_STATE.md](docs/handoff/CURRENT_STATE.md) 为准；不要把模拟器画面、build 或单源技术验证当作真机验收或可部署版本。
 
-**Doki 独立设计 Apple 原生界面与真实 Liquid Glass。** izuko-tv/Animeko 只作机制参考；当前按 tvOS 的标签导航、焦点、遥控器和播放器独立设计。在线源优先适配 MajoSissi/animeko-source 的 online.json。
+**Doki 独立设计 Apple 原生界面与克制的系统材质。** izuko-tv/Animeko 只作机制参考；当前按 tvOS 的收起式侧栏、焦点、遥控器和播放器独立设计。在线源优先适配 MajoSissi/animeko-source 的 online.json。
 
 TV 首版包含弹幕观看、匹配修正与显示设置，使用[弹弹play开放弹幕网络](https://www.dandanplay.com/)。当前只有自造弹幕 fixture，真实凭据与电视渲染尚未联调；弹幕失败不阻塞视频。
 

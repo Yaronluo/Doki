@@ -232,6 +232,9 @@ final class AppModel {
     var usesFixtures = false
     var catalogSubjects: [String: Subject] = [:]
     var catalogPicks: [String] = []
+    var catalogPopular: [String] = []
+    var popularError: String?
+    @ObservationIgnored var popularGeneration = 0
     var catalogDays: [Int: [String]] = [:]
     var catalogEpisodes: [String: [Episode]] = [:]
     var catalogError: String?
@@ -276,6 +279,9 @@ final class AppModel {
     var profilePath: [AppRoute] = []
     var playerRoute: PlaybackRoute?
 
+    var navigationExpanded = false
+    var contentFocusRevision = 0
+    var discoverHeroVisible = true
     var discoverHeroID: String?
     var transitionSourceID: String?
     var discoverFocusID: String?
