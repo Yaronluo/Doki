@@ -13,14 +13,17 @@ public struct DokiAmbientBackground: View {
             ZStack {
                 DokiTheme.pageBackground(for: scheme)
                 if !reduceTransparency {
-                    if let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
-                        DokiArtworkView(assetName: subject.backdropAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL, retainWhileLoading: true)
+                    if let subject {
+                        // A poster may supply diffuse colors when no backdrop exists; it is never shown as a sharp banner.
+                        DokiArtworkView(assetName: subject.backdropAsset ?? subject.posterAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL ?? subject.posterURL, retainWhileLoading: true)
                             .frame(width: geometry.size.width, height: geometry.size.height)
-                            .scaleEffect(1.2).blur(radius: 100, opaque: true)
-                            .saturation(0.65).opacity(scheme == .dark ? 0.48 : 0.25)
+                            .scaleEffect(1.12).blur(radius: 48, opaque: true)
+                            .saturation(0.95)
+                            .blendMode(scheme == .dark ? .screen : .normal)
+                            .opacity(scheme == .dark ? 0.78 : 0.72)
                     }
-                    Rectangle().fill(.ultraThinMaterial).opacity(0.22)
-                    DokiTheme.pageBackground(for: scheme).opacity(0.2)
+                    // Preserve the image’s diffuse shapes and colors instead of washing them out in gray.
+                    DokiTheme.pageBackground(for: scheme).opacity(scheme == .dark ? 0.12 : 0.22)
                 }
             }.clipped()
         }.accessibilityHidden(true)
@@ -30,29 +33,34 @@ public struct DokiAmbientBackground: View {
 public struct DokiHeroBackdrop: View {
     public let subject: Subject?
     public var frosted: Bool
-    public var navigationExpanded: Bool
-    public var diffuseLeading: Bool
+    public var contentOpacity: Double
+    public var clearHeight: CGFloat
     @Environment(\.colorScheme) private var scheme
-    public init(subject: Subject?, frosted: Bool = false, navigationExpanded: Bool = false, diffuseLeading: Bool = false) {
-        self.subject = subject; self.frosted = frosted; self.navigationExpanded = navigationExpanded; self.diffuseLeading = diffuseLeading
+    public init(subject: Subject?, frosted: Bool = false, contentOpacity: Double = 1, clearHeight: CGFloat = 740) {
+        self.subject = subject; self.frosted = frosted; self.contentOpacity = contentOpacity; self.clearHeight = clearHeight
     }
     public var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // The material floor never depends on focus, menus or hero visibility.
                 DokiAmbientBackground(subject: subject)
                 if !frosted, let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
                     DokiArtworkView(assetName: subject.backdropAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL, retainWhileLoading: true)
                         .frame(width: geometry.size.width, height: geometry.size.height)
-                    if diffuseLeading {
-                        DokiAmbientBackground(subject: subject)
-                            .mask(LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.26), .init(color: .clear, location: 0.65)], startPoint: .leading, endPoint: .trailing))
-                    }
-                    if !navigationExpanded {
-                        LinearGradient(stops: [.init(color: DokiTheme.pageBackground(for: scheme).opacity(0.94), location: 0), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.76), location: 0.23), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.12), location: 0.54), .init(color: .clear, location: 0.8)], startPoint: .leading, endPoint: .trailing)
-                        LinearGradient(stops: [.init(color: .clear, location: 0.32), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.3), location: 0.55), .init(color: DokiTheme.pageBackground(for: scheme), location: 0.83)], startPoint: .top, endPoint: .bottom)
-                    }
+                        .mask {
+                            // Only the cover at the upper right is sharp. Text never sits over a dim sharp duplicate.
+                            LinearGradient(stops: [.init(color: .clear, location: 0.44), .init(color: .black, location: 0.72)], startPoint: .leading, endPoint: .trailing)
+                                .frame(width: geometry.size.width, height: geometry.size.height)
+                        }
+                        .mask(alignment: .top) {
+                            LinearGradient(stops: [.init(color: .black, location: 0.48), .init(color: .clear, location: 1)], startPoint: .top, endPoint: .bottom)
+                                .frame(height: min(clearHeight, geometry.size.height))
+                        }
+                        .scaleEffect(1 + (1 - contentOpacity) * 0.035, anchor: .topTrailing)
+                        .offset(x: (1 - contentOpacity) * 24)
+                        .opacity(contentOpacity)
                 }
-            }
+            }.clipped()
         }.accessibilityHidden(true)
     }
 }

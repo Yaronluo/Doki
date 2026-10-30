@@ -29,6 +29,7 @@
 		7CA33FBCA455FA9B417D1EF3 /* PlayerFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */; };
 		89AD8F69DC780087B74BA486 /* RealSourcePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE94D7D3BDAB8392C74397B4 /* RealSourcePreviewView.swift */; };
 		8FEF9E5DD8031D59533B82B2 /* TVNavigationOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D18DDA8DE17ABC5E0F1E110 /* TVNavigationOverlay.swift */; };
+		92D6BFF5A9A449CC9E22DA52 /* ShelfHeroTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62017C3F50B9E4FAA5B63F43 /* ShelfHeroTimeline.swift */; };
 		945E472B920CC1788F695ECF /* SmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F056D1695135C7C8D090EFBE /* SmokeUITests.swift */; };
 		99AA1E6681F4CD7C074D711F /* DokiPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = D1E90AD9D28B6C3EFC2FDD0E /* DokiPlayback */; };
 		A58000DD7D16C081308E091C /* RealSourceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F5983C572545121D65FC17 /* RealSourceClient.swift */; };
@@ -69,6 +70,7 @@
 		5166C2C82D806EF0BB496FC6 /* BangumiAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BangumiAuthView.swift; sourceTree = "<group>"; };
 		5D3232296BD61935BB284F6C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		5FDE86FC6AE88271677E19AA /* DeviceCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCredentialStore.swift; sourceTree = "<group>"; };
+		62017C3F50B9E4FAA5B63F43 /* ShelfHeroTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShelfHeroTimeline.swift; sourceTree = "<group>"; };
 		6ED2FEFE65360DA34D43DB2E /* CatalogUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogUITests.swift; sourceTree = "<group>"; };
 		6ED7681373A62AD46D8123B6 /* DokiPlayback */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DokiPlayback; path = Packages/DokiPlayback; sourceTree = SOURCE_ROOT; };
 		7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerFlowUITests.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				BFEBFBF4287A9B21EC199EC1 /* AppComponents.swift */,
+				62017C3F50B9E4FAA5B63F43 /* ShelfHeroTimeline.swift */,
 				1D18DDA8DE17ABC5E0F1E110 /* TVNavigationOverlay.swift */,
 			);
 			path = Components;
@@ -413,6 +416,7 @@
 				89AD8F69DC780087B74BA486 /* RealSourcePreviewView.swift in Sources */,
 				01376EA853EAB1D1211A9CFB /* RootTabView.swift in Sources */,
 				EC3C22E5DB4D5767149A0BAD /* SearchView.swift in Sources */,
+				92D6BFF5A9A449CC9E22DA52 /* ShelfHeroTimeline.swift in Sources */,
 				134D07DEBDDBDEEE792D4365 /* SourceSettingsView.swift in Sources */,
 				68DB37C18D1846E4A4AEF38A /* SubjectDetailView.swift in Sources */,
 				8FEF9E5DD8031D59533B82B2 /* TVNavigationOverlay.swift in Sources */,

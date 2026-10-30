@@ -207,3 +207,66 @@
 ## 2026-10-30 · REWORK-005 GitHub 归档
 
 用户明确要求“提交到 github”，授权提交并推送本批 tvOS 首页、货架内预览、账号胶囊与对应测试/文档至既有私有仓库 Yaronluo/Doki 的 main。归档前 fetch 确认本地 HEAD 与 origin/main 无分歧；16 个变更文件均属于本批，`.env`、`.local/`、截图/录屏和构建产物保持忽略。文档检查与暂存差异检查通过后提交；交付以远端 main 与本地 HEAD 一致、工作树清洁为核验。功能验证和未完成项沿用上文，不重复宣称实播、真机或部署通过。
+
+## 2026-10-30 · REWORK-006：持续磨砂、统一标题与 izuko Hero
+
+状态：UI-001 `implemented_unverified`。用户最新四图要求普通背景持续磨砂、封面清晰；货架横幅先对齐 izuko 的逻辑/动画；海报下方只要番名。本批仅 tvOS/DokiUI、本地开发，未 commit/push/PR/部署，无 Hub、依赖、协议或迁移变化。
+
+实现：DokiHeroBackdrop 始终以彩色蓝灰磨砂铺底，清晰横幅受右上羽化遮罩限制，菜单状态不再关闭背景的磨砂/羽化。货架 Hero 从滚动内容移到固定屏幕舞台，焦点行停在简介下方，上方行和卡片番名分轨淡出；Hero 内方向换卡直接更新条目，再确认进入详情，返回保留 Hero 和原海报，再返回收起。首页/货架均用 DokiTitleArtwork，真实 Logo 缺失时用同一文字回退；DokiPosterTile 移除评分/类型/年份，只留番名。
+
+重新通过 GitHub 文件工具读取 izuko 固定提交 `9d9cba2ad0ef7e443ffa3542cee91fba345edafa` 的 HeroTimeline、HeroStage、RowWallView、WallFocus 和 WallBackdropView；无压黑模式进入轨道为上方行 150ms、其后背景 400ms、文字延后 100ms / 300ms；退出文字 150ms、背景 250ms、随后上方行 250ms。独立 SwiftUI/Observation 实现逐帧线性采样，反向从当前值开始、取消旧 Task；减少动态效果直接到位。二次确认卡片/简介 200ms 淡出、400ms 交接系统详情；持续磨砂覆盖上游整屏去磨砂对焦，不进行 Android 代码移植。详情转场源改为全屏背景，tvOS 滚动/原生转场不是 Android 逐帧复刻；未运行 Android 对照录屏。决策 ADR-016，设计、v0.4、参考记录和验收同步更新。
+
+环境：Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0；开发主机既有网络；真实资料匿名直读 Bangumi 和公开 TMDB 图片，不涉及账号登录/播放。
+
+命令：`xcodegen generate --spec project.yml --project .`；`xcodebuild build-for-testing` / `build` / `test` / `test-without-building -project Doki.xcodeproj -scheme DokiTV -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' -derivedDataPath .local/DerivedData/UITests CODE_SIGNING_ALLOWED=NO`，UI 指定 `-only-testing:DokiTVUITests/CatalogUITests/<method>` 与独立 resultBundlePath；真实资料加 `DOKI_LIVE_UI=1`。证据在 `.local/artifacts/REWORK-006/`。
+
+- build.log、build-final.log、build-final2.log 与 build-background.log 构建通过；新增源由 XcodeGen 自动纳入，未手改 pbxproj。已有 App Icon、播放器 UIScreen.main 和旧 PlayerFlowUITests 并发 warning 不属于本次修改。
+- ui-initial.log / xcresult 两项通过：testShelfPreviewAndCapsule、testReducedMatteNavigationAndManualCarousel；覆盖深色货架、菜单/焦点、浅色减少动态/透明度、手动轮播。
+- ui-final.log / xcresult 两项通过：testAnimatedShelfFocusAndCancellation、testLiveHomeAndShelfPreview；真实横幅/Logo 与海报有成功画面，但背景源修饰顺序导致安全区矩形边缘，已调整为源修饰后忽略安全区，旧截图只作过程记录。
+- ui-final2.log / xcresult：真实首页/货架/菜单与浅色减少动态/透明度两项通过；新增二次确认淡出后，动画详情返回的焦点断言失败。全宽截图在 fullwidth-screens/，这次部分海报仍为网络缺图回退，不能声称所有图片成功。
+- ui-focus-fixed.log：仅延后恢复仍失败；testShelfPreviewAndCapsule 通过，之后附件收尾停滞，定向终止该 xcodebuild，未将不完整 xcresult 记成成功。根因为焦点状态保持同一 ID 时重新赋值没有重新申请原生焦点。改为进入详情时显式清除 FocusState、独立保存入口 ID，返回等墙面淡入/转场结束再恢复，期间忽略过渡焦点事件。
+- ui-focus-reset.log / xcresult：最终 testAnimatedShelfFocusAndCancellation 通过，TEST SUCCEEDED；包含进入中返回取消、换焦点直接更新、进入详情、返回保留 Hero/第二张焦点、再返回恢复墙面。截图在 focus-reset-screens/。
+- 模拟器录屏按批次保存；早期 hero-interactions.mp4、final-hero-interactions.mp4 和 verified-hero-interactions.mp4 属于过程记录，不能代替最终成功流程。截图证明指定状态，录屏只证明对应模拟器交互，不证明真机帧率或实播。
+
+文档结构检查 `python3 scripts/check-docs.py`（19 份文档）与 `git diff --check` 通过。下一步仍为 TV 真机遥控器、观看距离、系统辅助功能/性能专项；没有扩张到 iPhone/Mac 客户端或启用广告视频源。
+
+最终交付复核：`ui-delivery.log / ui-delivery.xcresult` 两项通过且 TEST EXECUTE SUCCEEDED（testAnimatedShelfFocusAndCancellation、testLiveHomeAndShelfPreview）。`delivery-screens/` 的真实学生会横幅、Logo 与八张已加载海报已实际看图检查，无安全区矩形边缘；卡片墙截图仅番名。`delivery-hero-interactions.mp4` 为最终成功两项测试的模拟器录屏。最后文档检查与差异空白检查通过；正常真实资料浏览版本保留在模拟器供查看。
+
+
+## 2026-10-30 · REWORK-007：真正高斯、连续展开与明显焦点
+
+状态：UI-001 `implemented_unverified`（模拟器专项实现，真机综合验收未完成）。用户追加两图指出 REWORK-006 的背景像灰圈、横幅展开/收起不够连续、上键不能回上一行、卡片焦点不明显。本批基于上一批未提交工作继续实现，未覆盖或撤回其他改动；当前未 commit/push/PR/部署。
+
+实现：全屏图片做 48pt 高斯模糊并保留内容色/蓝灰亮度，移除洗灰材质叠层；清晰封面仅在右上（横向左约 44% 不叠清晰图，纵向首页上限 740pt、货架 Hero 530pt），缺横幅时海报仅作为模糊色源。持续节点 0↔450pt 弹性改变高度，货架同节奏滚动（response 0.62 / damping 0.88），文字加入 28pt 位移，横幅微缩放/位移，保持可中断的独立淡入轨道；减少动态效果/透明度各自回退。方向命令集中在发现页滚动容器，按行/列维护目标，原生焦点交接；首页顶部采用 ScrollPosition 绝对位置和原生 focusScope/resetFocus，旧货架交接时不抢焦点。卡片显式 FocusState 驱动 1.15 倍整卡放大、10pt 抬升、3.5pt 白色描边，匹配转场来源放到缩放层内，保留扩大后的完整海报/标题。追番/搜索/日历只同步共用卡片来源位置，未增加平台、Hub、依赖、协议或迁移。设计与 ADR-017、v0.4、AGENTS、验收同步。
+
+环境：Mac、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0，原有主机网络；真实资料匿名 Bangumi/公开 TMDB 图片，无真实账号、实播、真机或部署。
+
+命令：`xcodebuild build-for-testing` / `test -project Doki.xcodeproj -scheme DokiTV -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' -derivedDataPath .local/DerivedData/UITests CODE_SIGNING_ALLOWED=NO`，逐项 only-testing 与独立 resultBundlePath；真实测试加 `DOKI_LIVE_UI=1`。证据均在 `.local/artifacts/REWORK-007/`。新顶部滚动 API 核对 [Apple scrollTo(y:) 文档](https://developer.apple.com/documentation/swiftui/scrollposition/scrollto%28y%3A%29)；没有修改外部协议或依赖版本。
+
+- build.log：TEST BUILD SUCCEEDED。
+- ui-shelf / ui-direction-fixed：初次安全区动画方案导致焦点行过低，换卡和上键回首页失败；尝试后改为持久占位高度弹簧。图像检查发现匹配转场来源会裁剪放大效果，已把来源移到缩放层内部，完整图/白边实际截图确认。
+- ui-motion-fixed：动画展开中取消、再次展开、换卡、详情返回通过；跨行返回失败。ui-vertical-diagnostic 显示焦点仍停在今日行。方向命令移到容器层后，ui-parent-navigation 的前一行/列恢复通过；第一行回首页仍失败。
+- ui-focus-and-live：真实首页/货架/菜单、浅色减少动态/透明度两项通过；第一行回首页失败。ui-hero-return / ui-position-return 继续保留失败记录，不用普通 scrollTo 调用成功代替焦点结果；回首页时旧卡片原生焦点仍将滚动拉回货架。
+- ui-default-focus.log / xcresult：修复为原生 focusScope/resetFocus 和交接时旧货架暂禁用焦点后，完整 testShelfVerticalNavigationAndVisibleFocus 通过，TEST SUCCEEDED。该项实际断言聚焦卡比相邻卡宽至少 10%、Hero 下键下一行、上键上一行保留列、第一行上键收起并回播放按钮。
+- 过程日志与失败录屏保留。部分失败测试的 xcodebuild 附件收尾停滞，定向停止这些已结束测试的进程；未将不完整 xcresult 记成成功。临时公开条目 ID 焦点日志已移除，无账号/密钥输出。
+
+最终组合测试、截图与录屏结果在下面补充。真机帧率、完整 VoiceOver/观看距离、真实账号和播放不在本批验证范围；没有因模拟器可用而关闭 UI-001/QA-001。
+
+
+REWORK-007 后续视觉与动效复查：`ui-final.log / xcresult` 的五项组合曾通过；逐帧和截图复查仍发现动画父层未参与、滚动锚点在高度变化时让海报停得过低，不能以这次测试通过代替完整可见性和连续位移。补充 minY <650、maxY <1050 的整卡边界断言，以内容坐标进行点滚动；`ui-geometry-final` 三项（动画取消/返回、真实资料、上下行/完整卡片）通过。
+
+随后将布局动画移到货架父层并用全体货架共享的单一 0↔450pt 占位，避免换行时互换两块占位。父层动画修正的过程结果为 ui-parent-animation / ui-global-expansion（上一行已恢复，但回首页焦点失败），ui-completion-focus / ui-post-layout-focus（头部已可见但没有原生焦点）。最终在头部重现时更新播放按钮焦点身份，再交给原生 focusScope/resetFocus；`ui-header-focus-identity.log / xcresult` 完整纵向/尺寸专项通过，TEST SUCCEEDED。旧过程文件不能当作最终交付视频。
+
+
+最终交付：`ui-delivery-final.log / ui-delivery-final.xcresult` 五项全部通过，0 failures，TEST EXECUTE SUCCEEDED；包含 testAnimatedShelfFocusAndCancellation、testLiveHomeAndShelfPreview、testReducedMatteNavigationAndManualCarousel、testShelfVerticalNavigationAndVisibleFocus、SmokeUITests/testCollapsedNavigation。相同 tvOS 模拟器/网络/DerivedData，执行 `test-without-building` 并显式 `DOKI_LIVE_UI=1`。整卡几何同时验证宽度超过邻卡 10%、展开后 minY <650 且 maxY <1050，实际截图显示完整放大图和白边。
+
+最终画面在 `delivery-final-screens/`，已看图复查真实横幅/Logo、内容色高斯、完整海报与原生播放焦点；真实画面中八张海报成功显示，不据此承诺每个源图都成功。最终原始录屏 `delivery-motion.mp4`，16 秒摘录 `preview-motion.mp4`（只截取时间段、不改变速度/动画）；逐帧抽样用于检查连续位置和淡入淡出，不作为性能测量或真机帧率证明。此前的 final-motion、final-shelf-motion、continuous-shelf-motion、global-shelf-motion 均是过程证据，交付以 delivery-motion 为准。`python3 scripts/check-docs.py`（19 份文档）和 `git diff --check` 最终通过。普通真实资料浏览版本重新启动于模拟器；未 commit/push，未创建 iPhone/Mac 客户端、真实账号或实播验收。
+
+录屏复核还发现父容器与系统横向导航重复处理，导致一次右键可能跨过相邻卡。移除自定义横向移动，保留原生焦点横移与既有左边缘导航；上下行仍由容器统一协调。增加明确相邻条目断言（首张向右必须是第二张），最终相邻卡复核与录屏以 ui-final-adjacent / verified-motion 为准。
+
+最后归档核验：`ui-final-adjacent.log / ui-final-adjacent.xcresult` 五项全部通过、0 failures、TEST SUCCEEDED，含新增相邻卡断言。最新截图为 `verified-screens/`，已实际检查真实高斯/横幅、完整白边/放大卡片和第二张相邻卡；最终原始录屏 `verified-motion.mp4`，32 秒摘录 `preview-motion-verified.mp4`（原速，仅时间裁剪）。这些文件覆盖之前 delivery-motion 的交付地位。文档/差异检查通过，普通真实资料版本再次启动于模拟器。
+
+
+## 2026-10-30 · REWORK-006/007 GitHub 归档
+
+用户明确要求“提交到 github”，授权提交并推送本聊天累计的 tvOS 高斯背景、统一标题、货架动画/焦点与测试/文档至既有 origin/main。归档前 git fetch 确认本地 HEAD 与 origin/main 相同；21 个变更文件均属于本批。逐文件与本地秘密值及常见凭据格式检查无命中，未打印秘密值；.env、.local、截图/录屏、xcresult 和构建产物不进入提交。最终 ui-final-adjacent 五项成功记录已核对，不因归档重新扩大验证范围。文档与暂存差异检查通过后归档，交付以远端 main、本地 HEAD 一致和工作树清洁为核验；没有 PR、部署、真机或实播新增结论。

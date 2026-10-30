@@ -262,6 +262,104 @@ final class CatalogUITests: XCTestCase {
         app.terminate()
     }
 
+    func testAnimatedShelfFocusAndCancellation() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-fixtures", "--demo-dark"]
+        app.launch(); app.activate()
+        XCTAssertTrue(app.buttons["hero-primary"].waitForExistence(timeout: 15))
+        let focusedPoster = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-")).firstMatch
+        for _ in 0..<8 {
+            if focusedPoster.exists { break }
+            XCUIRemote.shared.press(.down)
+        }
+        XCTAssertTrue(focusedPoster.exists)
+        let firstID = focusedPoster.identifier
+        XCUIRemote.shared.press(.select)
+        XCUIRemote.shared.press(.menu)
+        let preview = app.descendants(matching: .any)["shelf-preview"].firstMatch
+        XCTAssertTrue(preview.waitForNonExistence(timeout: 5), "Return during entry cancels all pending tracks")
+        XCTAssertTrue(app.buttons[firstID].hasFocus)
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+        capture("animated-shelf-open")
+        let oldValue = preview.value as? String
+        XCUIRemote.shared.press(.right)
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != %@", oldValue ?? ""), object: preview)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed, "Hero follows focus without a second preview confirmation")
+        let secondID = focusedPoster.identifier
+        XCTAssertNotEqual(secondID, firstID)
+        capture("animated-shelf-next-focus")
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "加入追番", "已加入追番")).firstMatch.waitForExistence(timeout: 10))
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hasFocus == true"), object: app.buttons[secondID])
+        XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 4), .completed)
+        capture("animated-detail-return-hero")
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(preview.waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons[secondID].hasFocus)
+        capture("animated-shelf-restored")
+        app.terminate()
+    }
+
+    func testShelfVerticalNavigationAndVisibleFocus() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-fixtures", "--demo-dark"]
+        app.launch(); app.activate()
+        XCTAssertTrue(app.buttons["hero-primary"].waitForExistence(timeout: 15))
+        let season = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-")).firstMatch
+        for _ in 0..<8 {
+            if season.exists { break }
+            XCUIRemote.shared.press(.down)
+        }
+        XCTAssertTrue(season.exists)
+        let previousID = season.identifier
+        XCUIRemote.shared.press(.right)
+        Thread.sleep(forTimeInterval: 0.6)
+        let selectedID = season.identifier
+        XCTAssertNotEqual(previousID, selectedID)
+        XCTAssertEqual(selectedID, "season-demo-subject-02", "One Right command advances exactly one card")
+        XCTAssertGreaterThan(app.buttons[selectedID].frame.width, app.buttons[previousID].frame.width * 1.10,
+                             "The focused poster must be visibly larger than its neighbor")
+        capture("poster-focus-size-and-outline")
+        XCUIRemote.shared.press(.select)
+        let preview = app.descendants(matching: .any)["shelf-preview"].firstMatch
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 0.8)
+        XCTAssertLessThan(app.buttons[selectedID].frame.minY, 650, "The shelf belongs immediately below the summary")
+        XCTAssertLessThan(app.buttons[selectedID].frame.maxY, 1050, "The entire enlarged card must remain visible")
+        capture("spring-shelf-open")
+        XCUIRemote.shared.press(.down)
+        let today = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "today-")).firstMatch
+        XCTAssertTrue(today.waitForExistence(timeout: 5), "Down reaches the following shelf in hero mode")
+        capture("spring-shelf-next-row")
+        XCUIRemote.shared.press(.up)
+        let restored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hasFocus == true"), object: app.buttons[selectedID])
+        let restoration = XCTWaiter.wait(for: [restored], timeout: 5)
+        capture("spring-shelf-previous-row")
+        if restoration != .completed {
+            print("VERTICAL_FOCUS", app.buttons.matching(NSPredicate(format: "hasFocus == true")).allElementsBoundByIndex.map(\.identifier))
+            print("VERTICAL_PREVIEW", preview.value ?? "missing")
+        }
+        XCTAssertEqual(restoration, .completed, "Up restores the preceding row and column")
+        XCUIRemote.shared.press(.up)
+        let hero = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hasFocus == true"), object: app.buttons["hero-primary"])
+        let heroRestoration = XCTWaiter.wait(for: [hero], timeout: 5)
+        capture("spring-shelf-hero-focus")
+        if heroRestoration != .completed {
+            print("HERO_FOCUS", app.buttons.matching(NSPredicate(format: "hasFocus == true")).allElementsBoundByIndex.map(\.identifier))
+            print("HERO_FRAME", app.buttons["hero-primary"].frame)
+        }
+        XCTAssertEqual(heroRestoration, .completed, "Up from the first shelf returns to the carousel")
+        XCTAssertTrue(preview.waitForNonExistence(timeout: 5))
+        capture("spring-shelf-closed-up")
+        app.terminate()
+    }
+
     private func capture(_ name: String) {
         let screenshot = XCUIScreen.main.screenshot()
         try? screenshot.pngRepresentation.write(to: FileManager.default.temporaryDirectory.appendingPathComponent(name + ".png"))

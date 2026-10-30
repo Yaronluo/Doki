@@ -25,7 +25,6 @@ struct SearchView: View {
                             model.searchFocusID = "search-\(subject.id)"; model.transitionSourceID = "search-\(subject.id)"
                             model.searchPath.append(.subject(subject.id))
                         }) { DokiPosterTile(subject: subject, width: 210) }
-                        .dokiTransitionSource("search-\(subject.id)")
                     }
                 }.padding(.horizontal, DokiTheme.pagePadding).padding(.vertical, 18)
                 if hasQuery, model.searchOffset < model.searchTotal, !model.isSearching {

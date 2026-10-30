@@ -22,9 +22,12 @@ struct FocusableCard<Content: View>: View {
 
     var body: some View {
         Button(action: action) {
-            content
+            content.dokiTransitionSource(focusID)
         }
-        .buttonStyle(PosterButtonStyle())
+        .buttonStyle(PosterButtonStyle(focused: focus.wrappedValue == focusID))
+        .environment(\.dokiCardFocused, focus.wrappedValue == focusID)
+        .focusEffectDisabled()
+        .zIndex(focus.wrappedValue == focusID ? 1 : 0)
         .focused(focus, equals: focusID)
         .accessibilityIdentifier(focusID)
         .accessibilityAddTraits(.isButton)
@@ -142,7 +145,7 @@ struct HorizontalCardRow<Content: View>: View {
                 content
             }
             .padding(.horizontal, DokiTheme.pagePadding)
-            .padding(.vertical, 18)
+            .padding(.top, 38).padding(.bottom, 30)
         }
         .scrollClipDisabled()
     }
@@ -354,12 +357,13 @@ extension View {
     func dokiTransitionSource(_ id: String) -> some View { modifier(DokiTransitionSource(id: id)) }
 }
 struct PosterButtonStyle: ButtonStyle {
-    @Environment(\.isFocused) private var focused
+    let focused: Bool
     @Environment(\.dokiReduceMotion) private var reduceMotion
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : (focused ? 1.035 : 1))
-            .animation(reduceMotion ? nil : .spring(response: 0.25, dampingFraction: 0.85), value: focused)
+            .scaleEffect(configuration.isPressed ? 1.06 : (focused ? 1.15 : 1))
+            .offset(y: focused ? -10 : 0)
+            .animation(reduceMotion ? nil : .spring(response: 0.38, dampingFraction: 0.78), value: focused)
             .animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }

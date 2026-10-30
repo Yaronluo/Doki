@@ -15,8 +15,10 @@ struct RootTabView: View {
     var body: some View {
         ZStack {
             DokiHeroBackdrop(subject: activeSubject ?? model.popularSubjects.first ?? model.seasonPicks.first,
-                             frosted: !usesCinematicBackdrop, navigationExpanded: model.navigationExpanded,
-                             diffuseLeading: model.selectedTab == .discover && activePath.isEmpty)
+                             frosted: !usesCinematicBackdrop,
+                             contentOpacity: model.discoverShelfPreviewVisible && activePath.isEmpty ? model.discoverShelfPreviewProgress : 1,
+                             clearHeight: model.discoverShelfPreviewVisible && activePath.isEmpty ? 530 : 740)
+                .dokiTransitionSource("discover-hero")
                 .ignoresSafeArea()
             ZStack {
                 tabPage(.discover, path: $model.discoverPath) { DiscoverView(model: model) }

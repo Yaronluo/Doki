@@ -117,6 +117,7 @@ public struct DokiBackground: View {
 
 public extension EnvironmentValues {
     @Entry var dokiSharedBackground: Bool = false
+    @Entry var dokiCardFocused: Bool = false
     var dokiReduceMotion: Bool {
         #if DEBUG
         accessibilityReduceMotion || ProcessInfo.processInfo.arguments.contains("--demo-reduce-motion")

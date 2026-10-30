@@ -7,20 +7,25 @@ public struct DokiPosterTile: View {
     public let watched: Bool
     public let badge: DokiBadge?
     public var width: CGFloat?
-    @Environment(\.isFocused) private var isFocused
+    public var titleOpacity: Double
+    @Environment(\.isFocused) private var systemFocused
+    @Environment(\.dokiCardFocused) private var cardFocused
+    private var isFocused: Bool { systemFocused || cardFocused }
 
     public init(
         subject: Subject,
         fraction: Double? = nil,
         watched: Bool = false,
         badge: DokiBadge? = nil,
-        width: CGFloat? = nil
+        width: CGFloat? = nil,
+        titleOpacity: Double = 1
     ) {
         self.subject = subject
         self.fraction = fraction
         self.watched = watched
         self.badge = badge
         self.width = width
+        self.titleOpacity = titleOpacity
     }
 
     public var body: some View {
@@ -54,8 +59,8 @@ public struct DokiPosterTile: View {
             .overlay {
                 RoundedRectangle(cornerRadius: DokiTheme.cardRadius, style: .continuous)
                     .strokeBorder(
-                        isFocused ? Color.white.opacity(0.78) : Color.white.opacity(0.08),
-                        lineWidth: isFocused ? 2.5 : 1
+                        isFocused ? Color.white : Color.white.opacity(0.08),
+                        lineWidth: isFocused ? 3.5 : 1
                     )
             }
             .shadow(
@@ -64,29 +69,13 @@ public struct DokiPosterTile: View {
                 y: 8
             )
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(subject.title)
-                    .font(DokiType.cardTitle)
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                    .frame(height: 56, alignment: .topLeading)
-                HStack(spacing: 7) {
-                    if let rating = subject.rating {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 11))
-                            .foregroundStyle(Color.yellow.opacity(0.9))
-                        Text(String(format: "%.1f", rating))
-                    }
-                    if subject.rating != nil && !subject.genres.isEmpty { Text("·") }
-                    if !subject.genres.isEmpty { Text(subject.genres.prefix(2).joined(separator: " / ")) }
-                    else if subject.year > 0 { Text(String(subject.year)) }
-                }
-                .font(DokiType.micro)
-                .foregroundStyle(.secondary)
-                .lineLimit(1)
-            }
-            .frame(width: width.map { $0 - 2 }, alignment: .leading)
+            Text(subject.title)
+                .font(DokiType.cardTitle)
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+                .multilineTextAlignment(.leading)
+                .frame(width: width.map { $0 - 2 }, height: 56, alignment: .topLeading)
+                .opacity(titleOpacity)
         }
         .frame(width: width, alignment: .leading)
         .contentShape(Rectangle())
@@ -98,7 +87,9 @@ public struct DokiPosterTile: View {
 public struct DokiContinueCard: View {
     public let item: ContinueWatchingItem
     public var width: CGFloat = 560
-    @Environment(\.isFocused) private var isFocused
+    @Environment(\.isFocused) private var systemFocused
+    @Environment(\.dokiCardFocused) private var cardFocused
+    private var isFocused: Bool { systemFocused || cardFocused }
 
     public init(item: ContinueWatchingItem, width: CGFloat = 560) {
         self.item = item
@@ -190,7 +181,9 @@ public struct DokiEpisodeChip: View {
     public let watched: Bool
     public let fraction: Double?
     public var isCurrent: Bool
-    @Environment(\.isFocused) private var isFocused
+    @Environment(\.isFocused) private var systemFocused
+    @Environment(\.dokiCardFocused) private var cardFocused
+    private var isFocused: Bool { systemFocused || cardFocused }
 
     public init(
         episode: Episode,

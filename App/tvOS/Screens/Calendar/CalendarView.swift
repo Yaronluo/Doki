@@ -34,7 +34,6 @@ struct CalendarView: View {
                                 model.calendarFocusID = "calendar-\(subject.id)"; model.transitionSourceID = "calendar-\(subject.id)"
                                 model.calendarPath.append(.subject(subject.id))
                             }) { DokiPosterTile(subject: subject, width: 210) }
-                            .dokiTransitionSource("calendar-\(subject.id)")
                         }
                     }.padding(.horizontal, DokiTheme.pagePadding).padding(.vertical, 18)
                 }

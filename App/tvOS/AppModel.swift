@@ -285,6 +285,7 @@ final class AppModel {
     var discoverBrowsingShelf = false
     var discoverShelfPreviewID: String?
     var discoverShelfPreviewVisible = false
+    var discoverShelfPreviewProgress = 0.0
     var discoverHeroID: String?
     var transitionSourceID: String?
     var discoverFocusID: String?

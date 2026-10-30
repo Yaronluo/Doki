@@ -94,7 +94,6 @@ struct LibraryView: View {
                     width: 230
                 )
             }
-            .dokiTransitionSource("library-\(subject.id)")
             .contextMenu {
                 Button("查看详情") {
                     model.transitionSourceID = "library-\(subject.id)"
