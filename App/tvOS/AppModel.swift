@@ -282,6 +282,9 @@ final class AppModel {
     var navigationExpanded = false
     var contentFocusRevision = 0
     var discoverHeroVisible = true
+    var discoverBrowsingShelf = false
+    var discoverShelfPreviewID: String?
+    var discoverShelfPreviewVisible = false
     var discoverHeroID: String?
     var transitionSourceID: String?
     var discoverFocusID: String?

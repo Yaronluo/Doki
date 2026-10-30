@@ -14,38 +14,57 @@ struct TVNavigationOverlay: View {
     private let destinations: [AppTab] = [.search, .discover, .library, .calendar, .profile]
 
     var body: some View {
-        Group {
-            if model.navigationExpanded {
-                panel
-                    .modifier(NavigationMaterial(reduceTransparency: reduceTransparency))
-                    .transition(.move(edge: .leading).combined(with: .opacity))
-                    .onMoveCommand { direction in
-                        if direction == .right || (direction == .down && (focus == "account" || focus == AppTab.profile.rawValue)) { close() }
+        GeometryReader { geometry in
+            let expanded = model.navigationExpanded
+            let visible = expanded || model.selectedTab != .discover || (model.discoverHeroVisible && !model.discoverBrowsingShelf)
+            ZStack(alignment: .topLeading) {
+                if expanded {
+                    panel
+                        .transition(.opacity)
+                        .onMoveCommand { direction in
+                            if direction == .right || (direction == .down && (focus == "account" || focus == AppTab.profile.rawValue)) { close() }
+                        }
+                        .onExitCommand(perform: close)
+                } else if visible {
+                    Button { open() } label: {
+                        HStack(spacing: 12) {
+                            avatar(size: 44)
+                            Text(accountName).font(.system(size: 23, weight: .medium)).lineLimit(1)
+                        }
+                        .padding(.horizontal, 14).frame(width: 250, height: 72, alignment: .leading)
                     }
-                    .onExitCommand(perform: close)
-            } else {
-                Button { open() } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: "chevron.left").font(.system(size: 16, weight: .bold))
-                        avatar(size: 48)
-                    }.padding(8).background(.black.opacity(0.25), in: Capsule())
-                }
-                .buttonStyle(NavigationButtonStyle()).focusEffectDisabled()
-                .focused($focus, equals: "avatar")
-                .accessibilityLabel("打开导航")
-                .accessibilityIdentifier("navigation-avatar")
-                .onMoveCommand { direction in
-                    if direction == .up || direction == .left { open() }
+                    .buttonStyle(NavigationButtonStyle()).focusEffectDisabled()
+                    .focused($focus, equals: "avatar")
+                    .accessibilityLabel("\(accountName)，打开导航")
+                    .accessibilityIdentifier("navigation-avatar")
+                    .onMoveCommand { direction in
+                        if direction == .up || direction == .left { open() }
+                    }
+                    .transition(.opacity)
                 }
             }
+            // One material surface changes size around the capsule's top-left origin.
+            // Both directions follow the same interruptible animation; no side slide.
+            .frame(width: expanded ? 420 : 250,
+                   height: expanded ? max(720, geometry.size.height - 80) : 72, alignment: .topLeading)
+            .modifier(NavigationMaterial(reduceTransparency: reduceTransparency, radius: expanded ? 44 : 36))
+            .opacity(visible ? 1 : 0)
+            .allowsHitTesting(visible)
+            .disabled(!visible)
+            .accessibilityHidden(!visible)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: visible)
+            .padding(.leading, 48).padding(.top, 40)
         }
-        .padding(.leading, 48).padding(.top, 40).padding(.bottom, 40)
         .ignoresSafeArea()
         .environment(\.colorScheme, .dark)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .task(id: model.navigationExpanded) {
             if model.navigationExpanded { focus = model.selectedTab.rawValue }
         }
+    }
+
+    private var accountName: String {
+        guard let account = model.accountStatus?.bangumi else { return "未登录" }
+        return account.nickname.isEmpty ? account.username : account.nickname
     }
 
     private var panel: some View {
@@ -55,7 +74,7 @@ struct TVNavigationOverlay: View {
             } label: {
                 HStack(spacing: 14) {
                     avatar(size: 56)
-                    Text(model.accountStatus?.bangumi?.nickname ?? "我的 Doki")
+                    Text(accountName)
                         .font(.system(size: 25, weight: .medium)).lineLimit(1)
                     Spacer(minLength: 4)
                     TimelineView(.periodic(from: .now, by: 60)) { context in
@@ -87,8 +106,6 @@ struct TVNavigationOverlay: View {
                 }
             }
             Spacer(minLength: 24)
-            Label("向右返回内容", systemImage: "chevron.right")
-                .font(.system(size: 19)).foregroundStyle(.secondary).padding(20)
         }
         .padding(16).frame(width: 420)
         .frame(maxHeight: .infinity, alignment: .top)
@@ -113,17 +130,20 @@ struct TVNavigationOverlay: View {
 
 private struct NavigationMaterial: ViewModifier {
     let reduceTransparency: Bool
+    var radius: CGFloat = 44
     func body(content: Content) -> some View {
         content.background {
             if reduceTransparency {
-                RoundedRectangle(cornerRadius: 44).fill(Color(red: 0.27, green: 0.29, blue: 0.36))
+                RoundedRectangle(cornerRadius: radius).fill(Color(red: 0.27, green: 0.29, blue: 0.36))
+            } else if radius < 40 {
+                RoundedRectangle(cornerRadius: radius).fill(.ultraThinMaterial)
             } else {
                 NavigationLightFrost()
-                    .clipShape(RoundedRectangle(cornerRadius: 44))
-                    .overlay(RoundedRectangle(cornerRadius: 44).fill(.black.opacity(0.10)))
+                    .clipShape(RoundedRectangle(cornerRadius: radius))
+                    .overlay(RoundedRectangle(cornerRadius: radius).fill(.black.opacity(0.10)))
             }
         }
-        .overlay(RoundedRectangle(cornerRadius: 44).strokeBorder(.white.opacity(0.28), lineWidth: 1.2))
+        .overlay(RoundedRectangle(cornerRadius: radius).strokeBorder(.white.opacity(0.28), lineWidth: 1.2))
     }
 }
 

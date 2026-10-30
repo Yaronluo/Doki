@@ -15,7 +15,8 @@ struct RootTabView: View {
     var body: some View {
         ZStack {
             DokiHeroBackdrop(subject: activeSubject ?? model.popularSubjects.first ?? model.seasonPicks.first,
-                             frosted: !usesCinematicBackdrop, navigationExpanded: model.navigationExpanded)
+                             frosted: !usesCinematicBackdrop, navigationExpanded: model.navigationExpanded,
+                             diffuseLeading: model.selectedTab == .discover && activePath.isEmpty)
                 .ignoresSafeArea()
             ZStack {
                 tabPage(.discover, path: $model.discoverPath) { DiscoverView(model: model) }
@@ -73,12 +74,14 @@ struct RootTabView: View {
     }
     private var usesCinematicBackdrop: Bool {
         if case .subject = activePath.last { return true }
-        return model.selectedTab == .discover && activePath.isEmpty && model.discoverHeroVisible
+        return model.selectedTab == .discover && activePath.isEmpty
+            && ((model.discoverHeroVisible && !model.discoverBrowsingShelf) || model.discoverShelfPreviewVisible)
     }
     private var activeSubject: Subject? {
         let path = activePath
         if case .subject(let id) = path.last { return model.subject(id: id) }
         if model.selectedTab == .discover {
+            if model.discoverShelfPreviewVisible, let id = model.discoverShelfPreviewID { return model.subject(id: id) }
             return model.discoverHeroID.flatMap { model.subject(id: $0) }
                 ?? model.popularSubjects.first ?? model.seasonPicks.first(where: { $0.backdropURL != nil }) ?? model.seasonPicks.first
         }

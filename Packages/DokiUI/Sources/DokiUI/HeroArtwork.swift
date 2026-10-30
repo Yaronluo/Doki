@@ -31,9 +31,10 @@ public struct DokiHeroBackdrop: View {
     public let subject: Subject?
     public var frosted: Bool
     public var navigationExpanded: Bool
+    public var diffuseLeading: Bool
     @Environment(\.colorScheme) private var scheme
-    public init(subject: Subject?, frosted: Bool = false, navigationExpanded: Bool = false) {
-        self.subject = subject; self.frosted = frosted; self.navigationExpanded = navigationExpanded
+    public init(subject: Subject?, frosted: Bool = false, navigationExpanded: Bool = false, diffuseLeading: Bool = false) {
+        self.subject = subject; self.frosted = frosted; self.navigationExpanded = navigationExpanded; self.diffuseLeading = diffuseLeading
     }
     public var body: some View {
         GeometryReader { geometry in
@@ -42,6 +43,10 @@ public struct DokiHeroBackdrop: View {
                 if !frosted, let subject, subject.backdropURL != nil || subject.backdropAsset != nil {
                     DokiArtworkView(assetName: subject.backdropAsset, title: subject.title, accentHex: subject.accentHex, remoteURL: subject.backdropURL, retainWhileLoading: true)
                         .frame(width: geometry.size.width, height: geometry.size.height)
+                    if diffuseLeading {
+                        DokiAmbientBackground(subject: subject)
+                            .mask(LinearGradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.26), .init(color: .clear, location: 0.65)], startPoint: .leading, endPoint: .trailing))
+                    }
                     if !navigationExpanded {
                         LinearGradient(stops: [.init(color: DokiTheme.pageBackground(for: scheme).opacity(0.94), location: 0), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.76), location: 0.23), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.12), location: 0.54), .init(color: .clear, location: 0.8)], startPoint: .leading, endPoint: .trailing)
                         LinearGradient(stops: [.init(color: .clear, location: 0.32), .init(color: DokiTheme.pageBackground(for: scheme).opacity(0.3), location: 0.55), .init(color: DokiTheme.pageBackground(for: scheme), location: 0.83)], startPoint: .top, endPoint: .bottom)

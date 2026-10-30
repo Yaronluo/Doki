@@ -25,7 +25,6 @@ struct LibraryView: View {
             LazyVStack(alignment: .leading, spacing: 28) {
                 PageHeader(
                     title: "我的追番",
-                    subtitle: "追看中 \(model.watchingCount) 部 · 已完成 \(model.completedCount) 部 · 今日更新 \(counts[.today] ?? 0) 部",
                     badge: "本地状态"
                 )
 
@@ -35,7 +34,7 @@ struct LibraryView: View {
                 if subjects.isEmpty {
                     DokiEmptyState(
                         title: "这个筛选下还没有条目",
-                        message: "切换筛选或从发现页加入追番。收藏先保存在本机。",
+                        message: "",
                         symbol: "books.vertical"
                     )
                     .padding(.horizontal, DokiTheme.pagePadding)

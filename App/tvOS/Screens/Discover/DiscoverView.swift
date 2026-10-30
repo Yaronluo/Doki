@@ -6,7 +6,8 @@ struct DiscoverView: View {
     @Bindable var model: AppModel
     @FocusState private var focusedID: String?
     @State private var previewID: String?
-    @State private var previewing = false
+    @State private var expandedShelf: String?
+    @State private var expandedSubjectID: String?
     @State private var heroVisible = true
     @State private var manualRevision = 0
     @State private var heroGeneration = 0
@@ -15,10 +16,10 @@ struct DiscoverView: View {
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOver
     private var carousel: [Subject] { Array(model.popularSubjects.prefix(6)) }
     private var canRotate: Bool {
-        carousel.count > 1 && heroVisible && !previewing && !model.navigationExpanded
+        carousel.count > 1 && heroVisible && !model.discoverBrowsingShelf && expandedSubjectID == nil && !model.navigationExpanded
         && model.selectedTab == .discover && model.discoverPath.isEmpty && model.playerRoute == nil
         && scenePhase == .active && !reduceMotion && !voiceOver
-        && focusedID != "hero-previous" && focusedID != "hero-next"
+
     }
     private var rotationKey: String {
         "\(canRotate)-\(manualRevision)-" + carousel.map(\.id).joined(separator: ",")
@@ -38,7 +39,7 @@ struct DiscoverView: View {
                             hero.id("hero")
                             if let error = model.catalogError { CatalogFailure(message: error) { Task { await model.refreshCatalog() } } }
                             if model.isRefreshing && model.seasonPicks.isEmpty { ProgressView("正在读取番剧…").padding(48) }
-                            if !model.continueWatching.isEmpty {
+                            if model.accountStatus?.bangumi != nil, !model.continueWatching.isEmpty {
                                 DokiSectionHeader("继续观看")
                                 HorizontalCardRow {
                                     ForEach(model.continueWatching) { item in
@@ -46,32 +47,12 @@ struct DiscoverView: View {
                                     }
                                 }
                             }
-                            HStack {
-                                Text("本季推荐").font(.system(size: 28, weight: .medium))
-                                Spacer()
-                                Text("\(model.seasonPicks.count) 部").font(DokiType.caption).foregroundStyle(.secondary)
-                            }.padding(.horizontal, DokiTheme.pagePadding)
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 30, alignment: .top), count: 6), alignment: .leading, spacing: 34) {
-                                ForEach(model.seasonPicks) { subject in
-                                    FocusableCard(focusID: "season-\(subject.id)", focus: $focusedID, action: {
-                                        if previewing && previewID == subject.id { open(subject, source: "season-\(subject.id)") }
-                                        else {
-                                            heroGeneration += 1; previewID = subject.id; previewing = true
-                                            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.32)) { proxy.scrollTo("hero", anchor: .top) }
-                                        }
-                                    }) { DokiPosterTile(subject: subject) }
-                                        .dokiTransitionSource("season-\(subject.id)")
-                                        .contextMenu { Button("查看详情") { open(subject, source: "season-\(subject.id)") } }
-                                }
-                            }.padding(.horizontal, DokiTheme.pagePadding).padding(.top, 10)
+                            ForEach(Array(stride(from: 0, to: model.seasonPicks.count, by: 8)), id: \.self) { start in
+                                shelf(Array(model.seasonPicks.dropFirst(start).prefix(8)),
+                                      title: start == 0 ? "本季推荐" : nil, id: "season-\(start)", prefix: "season", proxy: proxy)
+                            }
                             if !model.todayCatalog.isEmpty {
-                                Text("今日放送").font(DokiType.sectionTitle).padding(.horizontal, DokiTheme.pagePadding)
-                                HorizontalCardRow {
-                                    ForEach(model.todayCatalog) { subject in
-                                        FocusableCard(focusID: "today-\(subject.id)", focus: $focusedID, action: { open(subject, source: "today-\(subject.id)") }) { DokiPosterTile(subject: subject, width: 230) }
-                                            .dokiTransitionSource("today-\(subject.id)")
-                                    }
-                                }
+                                shelf(model.todayCatalog, title: "今日放送", id: "today", prefix: "today", proxy: proxy)
                             }
                         }.padding(.bottom, 70)
                     }
@@ -106,57 +87,64 @@ struct DiscoverView: View {
             if model.selectedTab == .discover { focusedID = model.discoverFocusID ?? "hero-primary" }
         }
         .onChange(of: carousel.map(\.id)) { _, ids in
-            if !previewing, let id = previewID, !ids.contains(id) { previewID = ids.first }
+            if let id = previewID, !ids.contains(id) { previewID = ids.first }
         }
         .onAppear { model.discoverHeroID = preview?.id; if let stored = model.discoverFocusID { focusedID = stored } }
-        .onChange(of: focusedID) { _, id in if let id { model.discoverFocusID = id } }
+        .onChange(of: focusedID) { _, id in
+            if let id {
+                model.discoverFocusID = id
+                model.discoverBrowsingShelf = id.hasPrefix("season-") || id.hasPrefix("today-") || id.hasPrefix("continue-")
+            }
+        }
         .onChange(of: model.discoverPath.count) { _, count in if count == 0 { focusedID = model.discoverFocusID } }
         .onChange(of: preview?.id) { _, id in model.discoverHeroID = id }
-        .onExitCommand(perform: previewing ? { previewing = false; previewID = carousel.first?.id } : nil)
+        .onExitCommand(perform: expandedSubjectID != nil ? {
+            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.3)) {
+                expandedSubjectID = nil; expandedShelf = nil
+                model.discoverShelfPreviewID = nil; model.discoverShelfPreviewVisible = false
+            }
+        } : nil)
     }
     private var hero: some View {
         VStack(alignment: .leading, spacing: 19) {
             if let subject = preview {
-                HStack(spacing: 10) {
-                    Text(model.usesFixtures ? "自造演示轮播" : (previewing || carousel.isEmpty ? "本季推荐" : "Bangumi 热门"))
-                    if !previewing, !carousel.isEmpty { Text("· 收藏热度") }
-                }.font(.system(size: 19, weight: .medium)).foregroundStyle(.secondary)
-                DokiTitleArtwork(subject: subject, width: 550, height: 130)
+                if model.usesFixtures { DemoNotice() }
+                DokiTitleArtwork(subject: subject, width: 550, height: 115)
                 HStack(spacing: 20) {
                     if let rating = subject.rating { Label(String(format: "%.1f / 10", rating), systemImage: "star.fill").foregroundStyle(DokiTheme.accent) }
                     if subject.totalEpisodes > 0 { Text("全 \(subject.totalEpisodes) 话") }
                     Text(subject.airDate ?? (subject.year > 0 ? String(subject.year) : ""))
                 }.font(.system(size: 23)).foregroundStyle(.secondary)
                 Text(subject.synopsis == "暂无简介" ? subject.originalTitle : subject.synopsis)
-                    .font(.system(size: 25)).lineSpacing(6).lineLimit(3).foregroundStyle(.primary.opacity(0.88))
-                    .frame(width: 665, alignment: .leading)
-                HStack(spacing: 18) {
-                    Button { open(subject, source: "hero-\(subject.id)") } label: { Label("查看详情", systemImage: "play.fill").font(.system(size: 23, weight: .medium)).padding(.horizontal, 20).padding(.vertical, 8) }
-                        .buttonStyle(DokiButtonStyle(prominent: true)).tint(DokiTheme.accent)
-                        .focused($focusedID, equals: "hero-primary")
-                        .accessibilityIdentifier("hero-primary")
-                        .dokiTransitionSource("hero-\(subject.id)")
-                    DokiControlButton("放送日历", systemImage: "calendar") { model.selectedTab = .calendar }
-                }.padding(.top, 4)
-                if !previewing, carousel.count > 1 {
-                    HStack(spacing: 20) {
-                        Button { Task { await advance(by: -1, manual: true) } } label: { Image(systemName: "chevron.left").frame(width: 34, height: 34) }
-                            .buttonStyle(DokiButtonStyle()).buttonBorderShape(.circle)
-                            .focused($focusedID, equals: "hero-previous")
-                            .accessibilityLabel("上一部热门番剧").accessibilityIdentifier("hero-previous")
-                        HStack(spacing: 9) {
-                            ForEach(carousel) { item in
-                                Capsule().fill(item.id == preview?.id ? Color.primary : Color.primary.opacity(0.28))
-                                    .frame(width: item.id == preview?.id ? 26 : 7, height: 7)
-                            }
-                        }.accessibilityElement(children: .ignore)
-                            .accessibilityLabel("热门番剧轮播").accessibilityIdentifier("hero-page")
-                            .accessibilityValue("第 \((carousel.firstIndex { $0.id == preview?.id } ?? 0) + 1) 部，共 \(carousel.count) 部")
-                        Button { Task { await advance(by: 1, manual: true) } } label: { Image(systemName: "chevron.right").frame(width: 34, height: 34) }
-                            .buttonStyle(DokiButtonStyle()).buttonBorderShape(.circle)
-                            .focused($focusedID, equals: "hero-next")
-                            .accessibilityLabel("下一部热门番剧").accessibilityIdentifier("hero-next")
-                    }.padding(.top, 4)
+                    .font(.system(size: 25)).lineSpacing(6).lineLimit(4).foregroundStyle(.primary.opacity(0.88))
+                    .frame(width: 700, alignment: .leading)
+                Spacer(minLength: 12)
+                Button { play(subject) } label: {
+                    Label("立即播放", systemImage: "play.fill")
+                        .font(.system(size: 25, weight: .semibold))
+                        .padding(.horizontal, 32).frame(height: 64)
+                }
+                .buttonStyle(DiscoverPlayButtonStyle()).focusEffectDisabled()
+                .focused($focusedID, equals: "hero-primary")
+                .accessibilityIdentifier("hero-primary")
+                .onMoveCommand { direction in
+                    if direction == .right { Task { await advance(by: 1, manual: true) } }
+                }
+                if carousel.count > 1 {
+                    HStack(spacing: 9) {
+                        ForEach(carousel) { item in
+                            Capsule().fill(item.id == preview?.id ? Color.primary : Color.primary.opacity(0.28))
+                                .frame(width: item.id == preview?.id ? 28 : 8, height: 8)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel("番剧轮播").accessibilityIdentifier("hero-page")
+                    .accessibilityValue("第 \((carousel.firstIndex { $0.id == preview?.id } ?? 0) + 1) 部，共 \(carousel.count) 部")
+                    .accessibilityAdjustableAction { direction in
+                        Task { await advance(by: direction == .increment ? 1 : -1, manual: true) }
+                    }
+                    .padding(.top, 18)
                 }
                 if let error = heroImageError { Text(error).font(DokiType.micro).foregroundStyle(.secondary) }
                 if let error = model.popularError {
@@ -166,9 +154,64 @@ struct DiscoverView: View {
             } else { Text("Doki").font(.system(size: 58, weight: .bold)) }
             Spacer(minLength: 0)
         }
-        .padding(.leading, DokiTheme.pagePadding).padding(.top, 120)
+        .padding(.horizontal, DokiTheme.pagePadding).padding(.top, 110)
         .frame(maxWidth: .infinity, alignment: .leading).frame(height: 660)
     }
+    /// Expands at the selected row; the independent carousel above is never replaced.
+    private func shelf(_ subjects: [Subject], title: String?, id: String, prefix: String,
+                       proxy: ScrollViewProxy) -> some View {
+        VStack(alignment: .leading, spacing: 20) {
+            if expandedShelf == id, let selected = expandedSubjectID.flatMap({ model.subject(id: $0) }) {
+                ShelfPreview(subject: selected)
+                    .id("preview-\(id)")
+                    .onScrollVisibilityChange(threshold: 0.1) { visible in
+                        if expandedShelf == id { model.discoverShelfPreviewVisible = visible }
+                    }
+                    .transition(.opacity.combined(with: .scale(scale: 0.98, anchor: .bottom)))
+            }
+            if let title { Text(title).font(DokiType.sectionTitle).padding(.horizontal, DokiTheme.pagePadding) }
+            HorizontalCardRow {
+                ForEach(subjects) { subject in
+                    FocusableCard(focusID: "\(prefix)-\(subject.id)", focus: $focusedID, action: {
+                        if expandedShelf == id && expandedSubjectID == subject.id {
+                            open(subject, source: "\(prefix)-\(subject.id)")
+                        } else {
+                            heroGeneration += 1
+                            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.32)) {
+                                expandedSubjectID = subject.id; expandedShelf = id
+                                model.discoverShelfPreviewID = subject.id
+                            }
+
+                        }
+                    }) { DokiPosterTile(subject: subject, width: 204) }
+                    .dokiTransitionSource("\(prefix)-\(subject.id)")
+                    .contextMenu { Button("查看详情") { open(subject, source: "\(prefix)-\(subject.id)") } }
+                }
+            }
+        }
+        .id("shelf-\(id)")
+        .task(id: expandedShelf == id ? expandedSubjectID : nil) {
+            guard expandedShelf == id, let selected = expandedSubjectID else { return }
+            do {
+                // Let the focus engine finish keeping the poster visible before positioning its preview.
+                try await Task.sleep(for: .milliseconds(150))
+                try Task.checkCancellation()
+                guard expandedShelf == id, expandedSubjectID == selected, model.discoverPath.isEmpty else { return }
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.32)) {
+                    proxy.scrollTo("shelf-\(id)", anchor: .top)
+                }
+                await model.loadArtwork(selected)
+            } catch { }
+        }
+    }
+
+    private func play(_ subject: Subject) {
+        // Uses the existing guarded player path; real catalog entries cannot play fixtures.
+        if subject.isRealCatalog { model.showToast("暂无可用播放源"); return }
+        guard preview?.id == subject.id, model.selectedTab == .discover, !model.navigationExpanded else { return }
+        model.playPrimary(for: model.subject(id: subject.id) ?? subject)
+    }
+
     private func advance(by step: Int, manual: Bool) async {
         guard !carousel.isEmpty else { return }
         heroGeneration += 1
@@ -220,5 +263,44 @@ struct CatalogFailure: View {
     var body: some View {
         HStack(spacing: 24) { Image(systemName: "wifi.exclamationmark"); Text(message).font(DokiType.caption); Spacer(); DokiControlButton("重试", systemImage: "arrow.clockwise", action: retry) }
             .padding(20).background(Color.primary.opacity(0.08), in: RoundedRectangle(cornerRadius: 14)).padding(.horizontal, DokiTheme.pagePadding)
+    }
+}
+
+/// Flat, single-surface Apple-style playback control; no extra tvOS focus plate.
+private struct DiscoverPlayButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var focused
+    @Environment(\.dokiReduceMotion) private var reduceMotion
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(focused ? Color.black : Color.white)
+            .background(focused ? Color.white : DokiTheme.accent, in: Capsule())
+            .contentShape(Capsule())
+            .scaleEffect(configuration.isPressed ? 0.97 : (focused ? 1.03 : 1))
+            .shadow(color: .black.opacity(focused ? 0.16 : 0), radius: 14, y: 6)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.18), value: focused)
+    }
+}
+
+private struct ShelfPreview: View {
+    let subject: Subject
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            Color.clear
+            VStack(alignment: .leading, spacing: 18) {
+                Text(subject.title).font(.system(size: 48, weight: .semibold)).lineLimit(2)
+                HStack(spacing: 20) {
+                    if let rating = subject.rating { Label(String(format: "%.1f / 10", rating), systemImage: "star.fill") }
+                    if subject.totalEpisodes > 0 { Text("全 \(subject.totalEpisodes) 话") }
+                    if subject.year > 0 { Text(String(subject.year)) }
+                }.font(.system(size: 23, weight: .medium))
+                Text(subject.synopsis).font(DokiType.body).lineSpacing(6).lineLimit(5)
+                    .frame(width: 700, alignment: .leading)
+            }
+            .padding(.horizontal, DokiTheme.pagePadding).padding(.top, 32)
+        }
+        .frame(height: 440).clipped()
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier("shelf-preview")
+        .accessibilityValue(subject.id)
     }
 }

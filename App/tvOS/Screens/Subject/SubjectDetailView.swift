@@ -176,7 +176,6 @@ struct SubjectDetailView: View {
                         }
                     }
                 }
-                if subject.isRealCatalog { Text("选择章节后可查看操作，已看标记需手动确认。").font(DokiType.micro).foregroundStyle(.secondary) }
             }
         }
     }

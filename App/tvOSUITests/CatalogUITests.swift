@@ -112,7 +112,7 @@ final class CatalogUITests: XCTestCase {
         app.launch(); app.activate()
         let page = app.otherElements["hero-page"]
         XCTAssertTrue(page.waitForExistence(timeout: 35))
-        XCTAssertTrue(app.staticTexts["Bangumi 热门"].exists)
+        XCTAssertFalse(app.staticTexts["Bangumi 热门"].exists)
         XCTAssertFalse(app.buttons["sparkles"].exists)
         let first = try XCTUnwrap(page.value as? String)
         capture("popular-carousel-dark")
@@ -129,6 +129,9 @@ final class CatalogUITests: XCTestCase {
         XCTAssertEqual(page.value as? String, beforeMenu, "Opening the menu must pause automatic rotation")
         let restored = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hasFocus == true"), object: app.buttons["hero-primary"])
         XCTAssertEqual(XCTWaiter.wait(for: [restored], timeout: 4), .completed, "Closing the menu restores content focus")
+        XCUIRemote.shared.press(.down)
+        XCUIRemote.shared.press(.select)
+        Thread.sleep(forTimeInterval: 1)
         XCUIRemote.shared.press(.select)
         XCTAssertTrue(app.buttons["加入追番"].waitForExistence(timeout: 15))
         Thread.sleep(forTimeInterval: 3)
@@ -161,13 +164,101 @@ final class CatalogUITests: XCTestCase {
         XCUIRemote.shared.press(.right)
         XCTAssertTrue(app.buttons["navigation-avatar"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["hero-primary"].hasFocus)
-        XCUIRemote.shared.press(.down)
         XCUIRemote.shared.press(.right)
-        XCTAssertTrue(app.buttons["hero-next"].hasFocus)
-        XCUIRemote.shared.press(.select)
-        XCTAssertNotEqual(page.value as? String, first)
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value != %@", first ?? ""), object: page)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)
         capture("carousel-manual-reduced-light")
         print("REDUCED_MATTE_ASSERTIONS_PASSED")
+        app.terminate()
+    }
+
+    func testShelfPreviewAndCapsule() throws {
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-fixtures", "--demo-dark", "--demo-reduce-motion"]
+        app.launch(); app.activate()
+        XCTAssertTrue(app.buttons["hero-primary"].waitForExistence(timeout: 15))
+        XCTAssertEqual(app.buttons["hero-primary"].label, "立即播放")
+        XCTAssertFalse(app.staticTexts["继续观看"].exists, "Logged-out users must not see the resume shelf")
+        XCTAssertFalse(app.buttons["hero-previous"].exists)
+        XCTAssertFalse(app.buttons["hero-next"].exists)
+        XCTAssertFalse(app.staticTexts["向右返回内容"].exists)
+        capture("home-play-capsule-dark")
+        let page = app.otherElements["hero-page"]
+        let initialPage = page.value as? String
+        for _ in 0..<8 {
+            if app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-")).firstMatch.exists { break }
+            XCUIRemote.shared.press(.down)
+            Thread.sleep(forTimeInterval: 0.3)
+        }
+        let poster = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-")).firstMatch
+        XCTAssertTrue(poster.exists)
+        let posterID = poster.identifier
+        capture("shelf-before-selection-dark")
+        XCUIRemote.shared.press(.select)
+        let preview = app.descendants(matching: .any)["shelf-preview"].firstMatch
+        XCTAssertTrue(preview.waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+        XCTAssertTrue(app.buttons[posterID].hasFocus, "Preview keeps the selected poster focused")
+        XCTAssertEqual(page.value as? String, initialPage, "Shelf preview must not replace the top carousel")
+        capture("shelf-geometry-final")
+        XCTAssertLessThan(preview.frame.minY, 180)
+        XCTAssertGreaterThan(app.buttons[posterID].frame.minY, preview.frame.minY + 300)
+        capture("shelf-expanded-dark")
+        XCTAssertFalse(app.buttons["navigation-avatar"].exists, "Capsule hides while browsing lower content")
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "label == %@ OR label == %@", "加入追番", "已加入追番")).firstMatch.waitForExistence(timeout: 10))
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(app.buttons[posterID].waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 1)
+        XCTAssertTrue(app.buttons[posterID].hasFocus)
+        XCUIRemote.shared.press(.menu)
+        XCTAssertFalse(preview.exists)
+        for _ in 0..<10 {
+            if app.buttons["navigation-discover"].exists { break }
+            XCUIRemote.shared.press(.left)
+            Thread.sleep(forTimeInterval: 0.2)
+        }
+        XCTAssertTrue(app.buttons["navigation-discover"].waitForExistence(timeout: 5), "Left edge opens the menu with the capsule hidden")
+        capture("capsule-expanded-dark")
+        XCUIRemote.shared.press(.right)
+        XCTAssertFalse(app.buttons["navigation-discover"].exists)
+        app.terminate()
+    }
+
+    func testLiveHomeAndShelfPreview() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["DOKI_LIVE_UI"] == "1", "Opt-in live network test")
+        continueAfterFailure = false
+        let app = XCUIApplication()
+        app.launchArguments = ["--demo-dark", "--demo-hub-url", ""]
+        app.launch()
+        let posters = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "season-bgm-"))
+        XCTAssertTrue(posters.firstMatch.waitForExistence(timeout: 40))
+        Thread.sleep(forTimeInterval: 8)
+        capture("live-home-final-dark")
+        for _ in 0..<8 {
+            if app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-bgm-")).firstMatch.exists { break }
+            XCUIRemote.shared.press(.down)
+            Thread.sleep(forTimeInterval: 0.3)
+        }
+        let selected = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND hasFocus == true", "season-bgm-")).firstMatch
+        XCTAssertTrue(selected.exists)
+        let selectedID = selected.identifier
+        capture("live-shelf-before-final-dark")
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(app.descendants(matching: .any)["shelf-preview"].firstMatch.waitForExistence(timeout: 5))
+        Thread.sleep(forTimeInterval: 6)
+        XCTAssertTrue(app.buttons[selectedID].hasFocus)
+        capture("live-shelf-expanded-final-dark")
+        for _ in 0..<10 {
+            if app.buttons["navigation-discover"].exists { break }
+            XCUIRemote.shared.press(.left)
+        }
+        XCTAssertTrue(app.buttons["navigation-discover"].waitForExistence(timeout: 5))
+        capture("live-capsule-expanded-final-dark")
+        XCUIRemote.shared.press(.right)
+        Thread.sleep(forTimeInterval: 1)
+        XCTAssertTrue(app.buttons[selectedID].hasFocus)
         app.terminate()
     }
 

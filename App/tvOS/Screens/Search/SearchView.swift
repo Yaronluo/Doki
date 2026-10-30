@@ -10,7 +10,7 @@ struct SearchView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 28) {
-                PageHeader(title: hasQuery ? "搜索结果" : "寻找下一部故事", subtitle: hasQuery ? "\(subjects.count) 部\(model.searchTotal > subjects.count ? " · 更多结果可载入" : "")" : "输入中文名或原名，搜索 Bangumi 动画条目。")
+                PageHeader(title: hasQuery ? "搜索结果" : "搜索")
                 if model.isSearching { ProgressView("搜索中…").padding(.horizontal, DokiTheme.pagePadding) }
                 if let error = model.searchError { CatalogFailure(message: error) { Task { await model.searchCatalog() } } }
                 if hasQuery, model.completedSearchQuery != model.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines), !subjects.isEmpty {

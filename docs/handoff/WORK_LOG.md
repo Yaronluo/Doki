@@ -182,3 +182,28 @@
 用户明确要求“提交到 github”，本轮授权提交并推送当前 tvOS 导航/材质/焦点修复、Bangumi 热门轮播、Hub 公开热门接口与对应测试/文档至既有私有仓库 Yaronluo/Doki 的 main。此前批次“未提交”是当时状态，本条记录随后取得的归档授权。
 
 归档前核对改动文件、构建/测试记录、本地与 origin/main 分歧；变更文件与本地秘密值交叉检查未发现凭据命中，不打印秘密值。`.env`、`.local`、依赖、构建/测试日志和截图/录屏仍排除，不纳入提交。`python3 scripts/check-docs.py` 和 `git diff --cached --check` 作为归档检查；不重复将文档检查宣称为构建或实播测试。实际功能证据与限制沿用上文，最终交付核验为远端 main 与本地 HEAD 一致、工作树清洁；无 PR、部署或其他平台变更。
+
+
+## 2026-10-30 · REWORK-005：首页、货架预览与账号胶囊
+
+状态：UI-001 `implemented_unverified`（模拟器专项已实现，真机完整验收未完成）。用户暂停“按参考图重做首页交互”后明确授权当前对话接替；开始时工作树干净，未改 Hub、依赖、工程 target、协议或数据库。实现交接时未 commit/push，随后归档授权见下条。
+
+实现：发现页只有“立即播放”与居中轮播页点，未登录隐藏继续观看；普通海报按货架排列，首次选择在该行上方展开条目信息/独立横幅，再次选择进入详情，返回保留海报，菜单键收起预览。顶部热门条目保持独立。账号胶囊显示头像与昵称/未登录，从胶囊原位变为大圆角导航面板；下方隐藏后边缘仍可呼出。清理首页来源/数量/箭头、菜单方向教学及浏览页装饰副标题，保留必要失败重试、配置授权和来源署名。真实条目播放入口在源缺失时明确反馈，不启用旧广告源或播放自造样片。
+
+验证环境：Mac 开发主机、Xcode 27.1、Apple TV 4K (3rd generation, 1080p) 模拟器 `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97` / tvOS 27.0；原有开发主机网络，真实资料测试匿名直连 Bangumi/公开图片，无 Hub 登录/账号/实播。
+
+命令：`xcodebuild build-for-testing -project Doki.xcodeproj -scheme DokiTV -destination 'platform=tvOS Simulator,id=A3FD875C-F0DC-4BCE-880D-C4F6680D3C97' -derivedDataPath .local/DerivedData/REWORK-005 CODE_SIGNING_ALLOWED=NO`；UI 用同一 destination/DerivedData 的 `xcodebuild test`，逐项 `-only-testing:DokiTVUITests/<suite>/<method>`，真实资料加 `DOKI_LIVE_UI=1`，各次独立 `-resultBundlePath`。
+
+- build.log：TEST BUILD SUCCEEDED。
+- ui-final-fixture.log / ui-final-fixture.xcresult：三项通过且 TEST SUCCEEDED，覆盖 `CatalogUITests/testShelfPreviewAndCapsule`、`CatalogUITests/testReducedMatteNavigationAndManualCarousel`、`SmokeUITests/testCollapsedNavigation`。深色货架原位预览/保留热门/海报焦点/详情返回/菜单键收起/隐藏后左边缘呼出，浅色减少动态透明度/手动轮播，普通导航上下选择/右侧收起均通过。
+- 初次胶囊仅 opacity/辅助功能隐藏仍留在可访问树，修正为隐藏时不创建按钮；收起态改为系统 Material，避免一直暂停的 UIKit animator 让 XCUITest 等待 60 秒。演示条目已追番的详情断言改为同时接受“加入追番/已加入追番”。失败日志 ui-fixture、ui-shelf-2、ui-shelf-3 保留。前两次套件结束后 xcodebuild 附件收尾停滞，定向终止对应已完成的进程；最终 fixture 运行正常退出成功。
+- `ui-shelf-layout.log / ui-shelf-layout.xcresult`：最终全宽背景后货架完整流程通过且 TEST SUCCEEDED。插入预览后等待焦点引擎完成一次布局，再滚动到始终存在的货架锚点，避免焦点自动滚动覆盖新预览定位；旧失败 ui-final-live 保留。
+- `ui-live-layout-final.log / ui-live-layout-final.xcresult`：真实目录首页/货架/菜单、浅色减少动态透明度/手动轮播两项通过且 TEST SUCCEEDED。真实首页 TMDB 横幅已显示；该轮部分 Bangumi 海报、标题 Logo 和选中条目横幅仍为缺图回退，不能据此声称所有图片成功。网络专项独立探测返回 image/jpeg / HTTP 200，不把探测当作 App 画面成功。
+- 最后启动新版普通浏览后，`screens/final-home-running.png` 记录到真实“乱马1/2”货架预览及多张已加载海报，仍有部分缺图回退；未修改图片网络/缓存策略，也未用独立请求的成功替代所有图片验收。
+- 截图在 `.local/artifacts/REWORK-005/screens/`，最终 fixture 附件在 `fixture-attachments/`；录屏 `final-live-navigation.mp4`。`python3 scripts/check-docs.py`：19 份文档 PASS；`git diff --check` 通过。
+
+实现取舍见 ADR-015，设计与专项验收已同步。截图证明对应画面，录屏仅证明对应模拟器交互；未验证真机帧率/完整 VoiceOver/真实账号或视频播放，不因此关闭 UI-001/QA-001。
+
+## 2026-10-30 · REWORK-005 GitHub 归档
+
+用户明确要求“提交到 github”，授权提交并推送本批 tvOS 首页、货架内预览、账号胶囊与对应测试/文档至既有私有仓库 Yaronluo/Doki 的 main。归档前 fetch 确认本地 HEAD 与 origin/main 无分歧；16 个变更文件均属于本批，`.env`、`.local/`、截图/录屏和构建产物保持忽略。文档检查与暂存差异检查通过后提交；交付以远端 main 与本地 HEAD 一致、工作树清洁为核验。功能验证和未完成项沿用上文，不重复宣称实播、真机或部署通过。

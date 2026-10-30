@@ -6,7 +6,7 @@ struct ProfileView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
-                PageHeader(title: "我的 Doki", subtitle: "电视里的故事，按自己的节奏。")
+                PageHeader(title: "我的 Doki")
                 HStack(spacing: 24) {
                     summary("追看中", value: "\(model.watchingCount)")
                     summary("资料来源", value: model.usesFixtures ? "演示素材" : "Bangumi")
