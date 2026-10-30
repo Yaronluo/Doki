@@ -1,0 +1,121 @@
+# XcodeGen source of truth. Generate with:
+#   xcodegen generate --spec project.yml --project Doki.xcodeproj
+# Do not hand-edit Doki.xcodeproj/project.pbxproj.
+
+name: Doki
+options:
+  bundleIdPrefix: com.doki
+  deploymentTarget:
+    tvOS: "26.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  developmentLanguage: zh-Hans
+  xcodeVersion: "27.1"
+  minimumXcodeGenVersion: "2.43.0"
+
+settings:
+  base:
+    DOKI_LIVE_UI: "0"
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    CLANG_ENABLE_MODULES: YES
+    DEAD_CODE_STRIPPING: YES
+
+packages:
+  DokiCore:
+    path: Packages/DokiCore
+  DokiPlayback:
+    path: Packages/DokiPlayback
+  DokiDanmaku:
+    path: Packages/DokiDanmaku
+  DokiUI:
+    path: Packages/DokiUI
+
+targets:
+  DokiTV:
+    type: application
+    platform: tvOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: App/tvOS
+        excludes:
+          - "Resources"
+          - "Info.plist"
+      - path: App/tvOS/Resources
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.doki.tv
+        PRODUCT_NAME: Doki
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "3"
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: NO
+        ENABLE_PREVIEWS: YES
+        SWIFT_EMIT_LOC_STRINGS: YES
+        CODE_SIGN_STYLE: Automatic
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+    info:
+      path: App/tvOS/Info.plist
+      properties:
+        CFBundleDisplayName: Doki
+        CFBundleName: Doki
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSApplicationCategoryType: public.app-category.entertainment
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSLocalNetworkUsageDescription: Doki 在你的家庭网络中连接 Doki Hub，用于同步观看进度与获取已配置的内容。
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+    dependencies:
+      - package: DokiCore
+      - package: DokiPlayback
+      - package: DokiDanmaku
+      - package: DokiUI
+
+  DokiTVUITests:
+    type: bundle.ui-testing
+    platform: tvOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: App/tvOSUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.doki.tv.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: DokiTV
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+    dependencies:
+      - target: DokiTV
+
+schemes:
+  DokiTV:
+    build:
+      targets:
+        DokiTV: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-com.apple.CoreData.ConcurrencyDebug 1": false
+    test:
+      environmentVariables:
+        DOKI_LIVE_UI: "$(DOKI_LIVE_UI)"
+      config: Debug
+      targets:
+        - DokiTVUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

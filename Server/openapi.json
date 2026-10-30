@@ -1,0 +1,3940 @@
+{
+  "components": {
+    "schemas": {
+      "AccountCollections": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "subject": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "air_date": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "collection": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "collect": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "doing": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "wish": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "date": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "eps": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "id": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991,
+                      "type": "integer"
+                    },
+                    "images": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "common": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "large": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "medium": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "name_cn": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "nsfw": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "rating": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": {
+                                    "type": "number"
+                                  },
+                                  "propertyNames": {
+                                    "type": "string"
+                                  },
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "rank": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "score": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "total": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "summary": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "count": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "total_episodes": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "anyOf": [
+                        {
+                          "maximum": 9007199254740991,
+                          "minimum": -9007199254740991,
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "subject_id": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                },
+                "type": {
+                  "maximum": 5,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "subject_id",
+                "type",
+                "subject"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "data"
+        ],
+        "type": "object"
+      },
+      "AccountStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "bangumi": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "avatar": {
+                    "type": "string"
+                  },
+                  "id": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
+                  },
+                  "nickname": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "username",
+                  "nickname"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "paired": {
+            "const": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "paired",
+          "bangumi"
+        ],
+        "type": "object"
+      },
+      "ArtworkResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "backdropURL": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "exactMatch": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                },
+                "mediaType": {
+                  "enum": [
+                    "tv",
+                    "movie",
+                    "collection"
+                  ],
+                  "type": "string"
+                },
+                "originalTitle": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "year": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "mediaType",
+                "title",
+                "originalTitle",
+                "year",
+                "backdropURL",
+                "exactMatch"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "selected": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "backdropURL": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "exactMatch": {
+                    "type": "boolean"
+                  },
+                  "id": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
+                  },
+                  "mediaType": {
+                    "enum": [
+                      "tv",
+                      "movie",
+                      "collection"
+                    ],
+                    "type": "string"
+                  },
+                  "originalTitle": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "year": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "mediaType",
+                  "title",
+                  "originalTitle",
+                  "year",
+                  "backdropURL",
+                  "exactMatch"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "enum": [
+              "ready",
+              "notConfigured",
+              "unavailable",
+              "noMatch"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "state",
+          "candidates",
+          "selected"
+        ],
+        "type": "object"
+      },
+      "BootstrapResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "apiVersion": {
+            "const": "1",
+            "type": "string"
+          },
+          "capabilities": {
+            "additionalProperties": false,
+            "properties": {
+              "bangumi": {
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "ready",
+                      "notConfigured",
+                      "unavailable"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "state"
+                ],
+                "type": "object"
+              },
+              "danmaku": {
+                "additionalProperties": false,
+                "properties": {
+                  "provider": {
+                    "const": "dandanplay",
+                    "type": "string"
+                  },
+                  "state": {
+                    "enum": [
+                      "ready",
+                      "notConfigured",
+                      "unavailable"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "state",
+                  "provider"
+                ],
+                "type": "object"
+              },
+              "tmdb": {
+                "additionalProperties": false,
+                "properties": {
+                  "state": {
+                    "enum": [
+                      "ready",
+                      "notConfigured",
+                      "unavailable"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "state"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "bangumi",
+              "tmdb",
+              "danmaku"
+            ],
+            "type": "object"
+          },
+          "hubVersion": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "apiVersion",
+          "hubVersion",
+          "capabilities"
+        ],
+        "type": "object"
+      },
+      "Calendar": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "items": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "air_date": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "collection": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "collect": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "doing": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "wish": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        },
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "date": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "eps": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "id": {
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991,
+                    "type": "integer"
+                  },
+                  "images": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "common": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "large": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          },
+                          "medium": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "name_cn": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "nsfw": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "platform": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "rating": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": false,
+                        "properties": {
+                          "count": {
+                            "anyOf": [
+                              {
+                                "additionalProperties": {
+                                  "type": "number"
+                                },
+                                "propertyNames": {
+                                  "type": "string"
+                                },
+                                "type": "object"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "rank": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "score": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "total": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          }
+                        },
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "summary": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "tags": {
+                    "anyOf": [
+                      {
+                        "items": {
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ],
+                          "type": "object"
+                        },
+                        "type": "array"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "total_episodes": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "type": {
+                    "anyOf": [
+                      {
+                        "maximum": 9007199254740991,
+                        "minimum": -9007199254740991,
+                        "type": "integer"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "type": "object"
+              },
+              "type": "array"
+            },
+            "weekday": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "maximum": 7,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "weekday",
+            "items"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "CatalogHome": {
+        "additionalProperties": false,
+        "properties": {
+          "calendar": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "items": {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "air_date": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "collection": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "collect": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "doing": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "wish": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "type": "object"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "date": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "eps": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "id": {
+                        "exclusiveMinimum": 0,
+                        "maximum": 9007199254740991,
+                        "type": "integer"
+                      },
+                      "images": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "common": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "large": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "medium": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "type": "object"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "name_cn": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "nsfw": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "platform": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "rating": {
+                        "anyOf": [
+                          {
+                            "additionalProperties": false,
+                            "properties": {
+                              "count": {
+                                "anyOf": [
+                                  {
+                                    "additionalProperties": {
+                                      "type": "number"
+                                    },
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "type": "object"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "rank": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "score": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "total": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "type": "object"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "summary": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "tags": {
+                        "anyOf": [
+                          {
+                            "items": {
+                              "additionalProperties": false,
+                              "properties": {
+                                "count": {
+                                  "type": [
+                                    "number",
+                                    "null"
+                                  ]
+                                },
+                                "name": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "name"
+                              ],
+                              "type": "object"
+                            },
+                            "type": "array"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "total_episodes": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "type": {
+                        "anyOf": [
+                          {
+                            "maximum": 9007199254740991,
+                            "minimum": -9007199254740991,
+                            "type": "integer"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                "weekday": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "maximum": 7,
+                      "minimum": 1,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ],
+                  "type": "object"
+                }
+              },
+              "required": [
+                "weekday",
+                "items"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "picks": {
+            "additionalProperties": false,
+            "properties": {
+              "data": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "air_date": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "collection": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "collect": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "doing": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "wish": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "date": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "eps": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "id": {
+                      "exclusiveMinimum": 0,
+                      "maximum": 9007199254740991,
+                      "type": "integer"
+                    },
+                    "images": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "common": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "large": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "medium": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "name_cn": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "nsfw": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "platform": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "rating": {
+                      "anyOf": [
+                        {
+                          "additionalProperties": false,
+                          "properties": {
+                            "count": {
+                              "anyOf": [
+                                {
+                                  "additionalProperties": {
+                                    "type": "number"
+                                  },
+                                  "propertyNames": {
+                                    "type": "string"
+                                  },
+                                  "type": "object"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            },
+                            "rank": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "score": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            },
+                            "total": {
+                              "type": [
+                                "number",
+                                "null"
+                              ]
+                            }
+                          },
+                          "type": "object"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "summary": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "tags": {
+                      "anyOf": [
+                        {
+                          "items": {
+                            "additionalProperties": false,
+                            "properties": {
+                              "count": {
+                                "type": [
+                                  "number",
+                                  "null"
+                                ]
+                              },
+                              "name": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name"
+                            ],
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "total_episodes": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "type": {
+                      "anyOf": [
+                        {
+                          "maximum": 9007199254740991,
+                          "minimum": -9007199254740991,
+                          "type": "integer"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "limit": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "offset": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "total": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "total",
+              "data"
+            ],
+            "type": "object"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "calendar",
+          "picks",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "CatalogPage": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "air_date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "collection": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "collect": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "doing": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "wish": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "date": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "eps": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "id": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                },
+                "images": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "common": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "large": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "medium": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "name": {
+                  "type": "string"
+                },
+                "name_cn": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "nsfw": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "platform": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "rating": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "count": {
+                          "anyOf": [
+                            {
+                              "additionalProperties": {
+                                "type": "number"
+                              },
+                              "propertyNames": {
+                                "type": "string"
+                              },
+                              "type": "object"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "rank": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "score": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "total": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "summary": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "tags": {
+                  "anyOf": [
+                    {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "count": {
+                            "type": [
+                              "number",
+                              "null"
+                            ]
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "total_episodes": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "type": {
+                  "anyOf": [
+                    {
+                      "maximum": 9007199254740991,
+                      "minimum": -9007199254740991,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "name"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "limit": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "offset": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "data"
+        ],
+        "type": "object"
+      },
+      "CatalogSearch": {
+        "additionalProperties": false,
+        "properties": {
+          "keyword": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "offset": {
+            "default": 0,
+            "maximum": 10000,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "keyword",
+          "offset"
+        ],
+        "type": "object"
+      },
+      "CatalogSubject": {
+        "additionalProperties": false,
+        "properties": {
+          "air_date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "collection": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "collect": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "doing": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "wish": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "eps": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "id": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "common": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "large": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "medium": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "name_cn": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "nsfw": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "platform": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "count": {
+                    "anyOf": [
+                      {
+                        "additionalProperties": {
+                          "type": "number"
+                        },
+                        "propertyNames": {
+                          "type": "string"
+                        },
+                        "type": "object"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "rank": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "score": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "total": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "count": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "total_episodes": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "type": {
+            "anyOf": [
+              {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "Credits": {
+        "items": {
+          "additionalProperties": false,
+          "properties": {
+            "actors": {
+              "anyOf": [
+                {
+                  "items": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "id": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name"
+                    ],
+                    "type": "object"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "id": {
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991,
+              "type": "integer"
+            },
+            "images": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "properties": {
+                        "large": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "medium": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "small": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "relation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ],
+          "type": "object"
+        },
+        "type": "array"
+      },
+      "DanmakuItem": {
+        "additionalProperties": false,
+        "properties": {
+          "colorRgb": {
+            "maximum": 16777215,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "id": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "scroll",
+              "top",
+              "bottom"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "timeSeconds": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "timeSeconds",
+          "mode",
+          "colorRgb",
+          "text"
+        ],
+        "type": "object"
+      },
+      "DanmakuLoad": {
+        "additionalProperties": false,
+        "properties": {
+          "bgmEpisodeId": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "contentRevision": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "danmakuEpisodeId": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "failureCode": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "colorRgb": {
+                  "maximum": 16777215,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "id": {
+                  "pattern": "^[1-9][0-9]{0,18}$",
+                  "type": "string"
+                },
+                "mode": {
+                  "enum": [
+                    "scroll",
+                    "top",
+                    "bottom"
+                  ],
+                  "type": "string"
+                },
+                "text": {
+                  "maxLength": 500,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "timeSeconds": {
+                  "maximum": 1000000000,
+                  "minimum": 0,
+                  "type": "number"
+                }
+              },
+              "required": [
+                "id",
+                "timeSeconds",
+                "mode",
+                "colorRgb",
+                "text"
+              ],
+              "type": "object"
+            },
+            "maxItems": 20000,
+            "type": "array"
+          },
+          "loadId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "mappingRevision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mediaId": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "offsetSeconds": {
+            "maximum": 3600,
+            "minimum": -3600,
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "ready",
+              "failed"
+            ],
+            "type": "string"
+          },
+          "totalCount": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "loadId",
+          "status",
+          "bgmEpisodeId",
+          "danmakuEpisodeId",
+          "mappingRevision",
+          "contentRevision",
+          "mediaId",
+          "offsetSeconds",
+          "truncated",
+          "items"
+        ],
+        "type": "object"
+      },
+      "DanmakuMapping": {
+        "additionalProperties": false,
+        "properties": {
+          "bgmEpisodeId": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "danmakuEpisodeId": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "source": {
+            "enum": [
+              "bgmMap",
+              "search",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "state": {
+            "enum": [
+              "unbound",
+              "candidate",
+              "confirmed"
+            ],
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          },
+          "verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "bgmEpisodeId",
+          "state",
+          "revision",
+          "verified"
+        ],
+        "type": "object"
+      },
+      "DanmakuPreferences": {
+        "additionalProperties": false,
+        "properties": {
+          "area": {
+            "enum": [
+              "top",
+              "middle",
+              "bottom",
+              "full"
+            ],
+            "type": "string"
+          },
+          "density": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "fontScale": {
+            "maximum": 3,
+            "minimum": 0.5,
+            "type": "number"
+          },
+          "modes": {
+            "items": {
+              "enum": [
+                "scroll",
+                "top",
+                "bottom"
+              ],
+              "type": "string"
+            },
+            "maxItems": 3,
+            "type": "array"
+          },
+          "opacity": {
+            "maximum": 1,
+            "minimum": 0.1,
+            "type": "number"
+          },
+          "revision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "enabled",
+          "density",
+          "fontScale",
+          "opacity",
+          "area",
+          "modes",
+          "revision"
+        ],
+        "type": "object"
+      },
+      "DanmakuSearchCandidate": {
+        "additionalProperties": false,
+        "properties": {
+          "basis": {
+            "enum": [
+              "bgmMap",
+              "titleSearch",
+              "tmdb",
+              "manual"
+            ],
+            "type": "string"
+          },
+          "confidence": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "danmakuEpisodeId": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "episodeNumber": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "episodeTitle": {
+            "maxLength": 300,
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 300,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "danmakuEpisodeId",
+          "title",
+          "basis"
+        ],
+        "type": "object"
+      },
+      "DanmakuTiming": {
+        "additionalProperties": false,
+        "properties": {
+          "bgmEpisodeId": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "mediaId": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "offsetSeconds": {
+            "maximum": 3600,
+            "minimum": -3600,
+            "type": "number"
+          },
+          "revision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "bgmEpisodeId",
+          "mediaId",
+          "offsetSeconds",
+          "revision"
+        ],
+        "type": "object"
+      },
+      "EpisodePage": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "airdate": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "desc": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "duration": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "ep": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "id": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "name_cn": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "sort": {
+                  "type": "number"
+                },
+                "type": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "sort",
+                "name"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "limit": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "offset": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "total",
+          "data"
+        ],
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "message": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "requestId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable",
+          "requestId"
+        ],
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "checkedAt": {
+            "type": "string"
+          },
+          "hubVersion": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "type": "string"
+          },
+          "uptimeSeconds": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "status",
+          "hubVersion",
+          "uptimeSeconds",
+          "checkedAt"
+        ],
+        "type": "object"
+      },
+      "Int64Id": {
+        "description": "Canonical positive decimal string for a signed 64-bit ID. JavaScript numbers are not accepted.",
+        "pattern": "^[1-9][0-9]{0,18}$",
+        "type": "string"
+      },
+      "PairingClaim": {
+        "additionalProperties": false,
+        "properties": {
+          "deviceId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          },
+          "token": {
+            "minLength": 32,
+            "type": "string"
+          }
+        },
+        "required": [
+          "deviceId",
+          "token"
+        ],
+        "type": "object"
+      },
+      "PairingRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "default": "Apple TV",
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "type": "object"
+      },
+      "PairingResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "expiresIn": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string"
+          },
+          "secret": {
+            "minLength": 32,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "secret",
+          "expiresIn"
+        ],
+        "type": "object"
+      },
+      "PairingStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "state": {
+            "enum": [
+              "pending",
+              "approved",
+              "claimed",
+              "expired",
+              "cancelled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "type": "object"
+      },
+      "PlaybackCapabilities": {
+        "additionalProperties": false,
+        "properties": {
+          "canAutoFailover": {
+            "type": "boolean"
+          },
+          "canSeek": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "canSeek",
+          "canAutoFailover"
+        ],
+        "type": "object"
+      },
+      "PlaybackPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "additionalProperties": false,
+            "properties": {
+              "canAutoFailover": {
+                "type": "boolean"
+              },
+              "canSeek": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "canSeek",
+              "canAutoFailover"
+            ],
+            "type": "object"
+          },
+          "episodeId": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer"
+          },
+          "resumeAtSeconds": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "resumeRevision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "sessionId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "source": {
+            "additionalProperties": false,
+            "properties": {
+              "expiresAt": {
+                "type": "string"
+              },
+              "mode": {
+                "enum": [
+                  "direct",
+                  "relay",
+                  "remux"
+                ],
+                "type": "string"
+              },
+              "sourceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "format": "uri",
+                "type": "string"
+              }
+            },
+            "required": [
+              "sourceId",
+              "mode",
+              "url"
+            ],
+            "type": "object"
+          },
+          "status": {
+            "const": "ready",
+            "type": "string"
+          },
+          "tracks": {
+            "additionalProperties": false,
+            "properties": {
+              "hasAlternateAudio": {
+                "type": "boolean"
+              },
+              "subtitleLanguages": {
+                "items": {
+                  "maxLength": 35,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array"
+              }
+            },
+            "required": [
+              "subtitleLanguages",
+              "hasAlternateAudio"
+            ],
+            "type": "object"
+          },
+          "writeEpoch": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "sessionId",
+          "episodeId",
+          "status",
+          "resumeAtSeconds",
+          "resumeRevision",
+          "writeEpoch",
+          "source",
+          "tracks",
+          "capabilities"
+        ],
+        "type": "object"
+      },
+      "PlaybackSource": {
+        "additionalProperties": false,
+        "properties": {
+          "expiresAt": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": [
+              "direct",
+              "relay",
+              "remux"
+            ],
+            "type": "string"
+          },
+          "sourceId": {
+            "maxLength": 200,
+            "minLength": 1,
+            "type": "string"
+          },
+          "url": {
+            "format": "uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sourceId",
+          "mode",
+          "url"
+        ],
+        "type": "object"
+      },
+      "PlaybackTracks": {
+        "additionalProperties": false,
+        "properties": {
+          "hasAlternateAudio": {
+            "type": "boolean"
+          },
+          "subtitleLanguages": {
+            "items": {
+              "maxLength": 35,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 32,
+            "type": "array"
+          }
+        },
+        "required": [
+          "subtitleLanguages",
+          "hasAlternateAudio"
+        ],
+        "type": "object"
+      },
+      "ProgressEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "baseRevision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "clientOccurredAt": {
+            "type": "string"
+          },
+          "deviceSeq": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "durationSeconds": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "eventId": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "progress",
+              "pause",
+              "seekCompleted",
+              "ended"
+            ],
+            "type": "string"
+          },
+          "positionSeconds": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "sessionId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "writeEpoch": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "eventId",
+          "sessionId",
+          "deviceSeq",
+          "writeEpoch",
+          "baseRevision",
+          "kind",
+          "positionSeconds"
+        ],
+        "type": "object"
+      },
+      "ProgressEventResult": {
+        "additionalProperties": false,
+        "properties": {
+          "currentRevision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "eventId": {
+            "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+            "type": "string"
+          },
+          "revision": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "accepted",
+              "duplicate",
+              "conflict"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "eventId",
+          "status"
+        ],
+        "type": "object"
+      },
+      "ReadyResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "checkedAt": {
+            "type": "string"
+          },
+          "checks": {
+            "additionalProperties": false,
+            "properties": {
+              "config": {
+                "additionalProperties": false,
+                "properties": {
+                  "applied": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "code": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "pending": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "pendingVersions": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 1000,
+                    "type": "array"
+                  },
+                  "status": {
+                    "enum": [
+                      "ok",
+                      "error",
+                      "skipped"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              },
+              "database": {
+                "additionalProperties": false,
+                "properties": {
+                  "applied": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "code": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "pending": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "pendingVersions": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 1000,
+                    "type": "array"
+                  },
+                  "status": {
+                    "enum": [
+                      "ok",
+                      "error",
+                      "skipped"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              },
+              "migrations": {
+                "additionalProperties": false,
+                "properties": {
+                  "applied": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "code": {
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "pending": {
+                    "maximum": 9007199254740991,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "pendingVersions": {
+                    "items": {
+                      "minLength": 1,
+                      "type": "string"
+                    },
+                    "maxItems": 1000,
+                    "type": "array"
+                  },
+                  "status": {
+                    "enum": [
+                      "ok",
+                      "error",
+                      "skipped"
+                    ],
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "type": "object"
+              }
+            },
+            "required": [
+              "config",
+              "database",
+              "migrations"
+            ],
+            "type": "object"
+          },
+          "requestId": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "const": "ready",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "checkedAt",
+          "requestId",
+          "checks"
+        ],
+        "type": "object"
+      },
+      "SourcePreviewPlan": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "additionalProperties": false,
+            "properties": {
+              "canAutoFailover": {
+                "type": "boolean"
+              },
+              "canSeek": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "canSeek",
+              "canAutoFailover"
+            ],
+            "type": "object"
+          },
+          "durationHintSeconds": {
+            "maximum": 1000000000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "episode": {
+            "additionalProperties": false,
+            "properties": {
+              "channel": {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              },
+              "mediaId": {
+                "maxLength": 300,
+                "minLength": 1,
+                "type": "string"
+              },
+              "number": {
+                "maximum": 9999,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "title": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "number",
+              "title",
+              "channel",
+              "mediaId"
+            ],
+            "type": "object"
+          },
+          "provenance": {
+            "additionalProperties": false,
+            "properties": {
+              "ruleCommit": {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              "snapshotSha256": {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              "verifiedAt": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "ruleCommit",
+              "snapshotSha256",
+              "verifiedAt"
+            ],
+            "type": "object"
+          },
+          "provider": {
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "maxLength": 80,
+                "minLength": 1,
+                "type": "string"
+              },
+              "name": {
+                "maxLength": 120,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name"
+            ],
+            "type": "object"
+          },
+          "sessionId": {
+            "maxLength": 100,
+            "minLength": 1,
+            "type": "string"
+          },
+          "source": {
+            "additionalProperties": false,
+            "properties": {
+              "expiresAt": {
+                "type": "string"
+              },
+              "mode": {
+                "const": "relay",
+                "type": "string"
+              },
+              "url": {
+                "format": "uri",
+                "type": "string"
+              }
+            },
+            "required": [
+              "mode",
+              "url",
+              "expiresAt"
+            ],
+            "type": "object"
+          },
+          "status": {
+            "const": "ready",
+            "type": "string"
+          },
+          "subject": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 300,
+                "minLength": 1,
+                "type": "string"
+              },
+              "sourceSubjectKey": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "sourceSubjectKey"
+            ],
+            "type": "object"
+          },
+          "tracks": {
+            "additionalProperties": false,
+            "properties": {
+              "hasAlternateAudio": {
+                "type": "boolean"
+              },
+              "subtitleLanguages": {
+                "items": {
+                  "type": "string"
+                },
+                "maxItems": 32,
+                "type": "array"
+              }
+            },
+            "required": [
+              "subtitleLanguages",
+              "hasAlternateAudio"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "sessionId",
+          "status",
+          "provider",
+          "subject",
+          "episode",
+          "source",
+          "tracks",
+          "capabilities",
+          "durationHintSeconds",
+          "provenance"
+        ],
+        "type": "object"
+      },
+      "SourcePreviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "maxLength": 120,
+            "minLength": 1,
+            "type": "string"
+          },
+          "episodeNumber": {
+            "maximum": 9999,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "query": {
+            "maxLength": 120,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "type": "object"
+      },
+      "WebLogin": {
+        "additionalProperties": false,
+        "properties": {
+          "captcha": {
+            "maxLength": 32,
+            "minLength": 1,
+            "type": "string"
+          },
+          "email": {
+            "format": "email",
+            "maxLength": 200,
+            "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 512,
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "captcha"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "DeviceToken": {
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "PairingSecret": {
+        "description": "Pairing <secret>; code alone grants no access",
+        "in": "header",
+        "name": "Authorization",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "System and anonymous Bangumi catalog, optional TMDB artwork, development-only source preview and signed media relay. Bangumi-bound playback, progress and danmaku routes are not implemented; their schemas are published for client and adapter development only. The development preview route is not registered when NODE_ENV=production.",
+    "title": "Doki Hub API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "Returns 200 while the HTTP process is running. It does not check Postgres.",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Process is alive"
+          }
+        },
+        "summary": "Liveness probe",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Checks configuration, Postgres connectivity and applied migrations. Returns a structured 503 when a dependency is unavailable or migrations are pending.",
+        "operationId": "getReadiness",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadyResponse"
+                }
+              }
+            },
+            "description": "Hub is ready"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Hub is not ready; details.checks explains each dependency"
+          }
+        },
+        "summary": "Readiness probe",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/s/{sessionId}/{resourceId}": {
+      "get": {
+        "description": "Serves a rewritten HLS playlist or streams a media segment for an authorized relay session. URLs are HMAC-signed with exp and method scope; Range/HEAD are supported. The client never learns the upstream URL.",
+        "operationId": "getSignedMediaResource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "resourceId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exp",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sig",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.apple.mpegurl": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "video/mp2t": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Playlist or media bytes"
+          },
+          "206": {
+            "content": {
+              "video/mp2t": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Media byte range"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Invalid or expired signature"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unknown session/resource"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream media failure"
+          }
+        },
+        "summary": "Signed HLS playlist or media segment",
+        "tags": [
+          "development"
+        ]
+      }
+    },
+    "/v1/account": {
+      "get": {
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountStatus"
+                }
+              }
+            },
+            "description": "Result"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Expired or consumed pairing"
+          }
+        },
+        "security": [
+          {
+            "DeviceToken": []
+          }
+        ],
+        "summary": "TV pairing and credential-free Bangumi website login via Hub browser"
+      }
+    },
+    "/v1/account/collections": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCollections"
+                }
+              }
+            },
+            "description": "Result"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Expired or consumed pairing"
+          }
+        },
+        "security": [
+          {
+            "DeviceToken": []
+          }
+        ],
+        "summary": "TV pairing and credential-free Bangumi website login via Hub browser"
+      }
+    },
+    "/v1/artwork/tmdb/{filename}": {
+      "get": {
+        "operationId": "getTmdbBackdrop",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "filename",
+            "required": true,
+            "schema": {
+              "pattern": "^[A-Za-z0-9]+\\.(jpg|png|webp)$",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "image/jpeg": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Backdrop"
+          }
+        },
+        "summary": "Bounded TMDB backdrop proxy; fixed image origin, no credentials"
+      }
+    },
+    "/v1/bootstrap": {
+      "get": {
+        "description": "Capabilities are notConfigured when credentials are absent and unavailable when credentials exist but have not been verified. HUB-001 never reports ready.",
+        "operationId": "getBootstrap",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BootstrapResponse"
+                }
+              }
+            },
+            "description": "Bootstrap information"
+          }
+        },
+        "summary": "API version and provider capabilities",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/v1/calendar": {
+      "get": {
+        "operationId": "getCatalogCalendar",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Calendar"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/dev/source-preview": {
+      "post": {
+        "description": "Development-only. Searches the fixed yinghua provider, reads its episode page, validates the HLS master and returns a short-lived signed relay URL. This is not a Bangumi-bound PlaybackSession and must not be used for production delivery.",
+        "operationId": "createSourcePreview",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourcePreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourcePreviewPlan"
+                }
+              }
+            },
+            "description": "Relay plan is ready"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "No matching subject or episode"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unsupported rule or media URL"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream or media validation failed"
+          }
+        },
+        "summary": "Resolve one real source for local technical verification",
+        "tags": [
+          "development"
+        ]
+      }
+    },
+    "/v1/devices/pairings": {
+      "post": {
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairingResponse"
+                }
+              }
+            },
+            "description": "Result"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Expired or consumed pairing"
+          }
+        },
+        "summary": "TV pairing and credential-free Bangumi website login via Hub browser"
+      }
+    },
+    "/v1/devices/pairings/{id}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairingStatus"
+                }
+              }
+            },
+            "description": "Result"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Expired or consumed pairing"
+          }
+        },
+        "security": [
+          {
+            "PairingSecret": []
+          }
+        ],
+        "summary": "TV pairing and credential-free Bangumi website login via Hub browser"
+      }
+    },
+    "/v1/devices/pairings/{id}/claim": {
+      "post": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PairingClaim"
+                }
+              }
+            },
+            "description": "Result"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Authentication required"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Expired or consumed pairing"
+          }
+        },
+        "security": [
+          {
+            "PairingSecret": []
+          }
+        ],
+        "summary": "TV pairing and credential-free Bangumi website login via Hub browser"
+      }
+    },
+    "/v1/home": {
+      "get": {
+        "operationId": "getCatalogHome",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogHome"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/openapi.json": {
+      "get": {
+        "operationId": "getOpenApiDocument",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object"
+                }
+              }
+            },
+            "description": "OpenAPI 3.1 document"
+          }
+        },
+        "summary": "This OpenAPI document",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/v1/search": {
+      "post": {
+        "operationId": "searchCatalog",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CatalogSearch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogPage"
+                }
+              }
+            },
+            "description": "Search results"
+          }
+        },
+        "summary": "Anonymous Bangumi anime search"
+      }
+    },
+    "/v1/subjects/{id}": {
+      "get": {
+        "operationId": "getCatalogSubject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogSubject"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/subjects/{id}/artwork": {
+      "get": {
+        "operationId": "getCatalogArtwork",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtworkResponse"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/subjects/{id}/characters": {
+      "get": {
+        "operationId": "getCatalogCharacters",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Credits"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/subjects/{id}/episodes": {
+      "get": {
+        "operationId": "getCatalogEpisodes",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EpisodePage"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    },
+    "/v1/subjects/{id}/persons": {
+      "get": {
+        "operationId": "getCatalogStaff",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Credits"
+                }
+              }
+            },
+            "description": "Catalog data"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Upstream unavailable"
+          }
+        },
+        "summary": "Public catalog read; no account state or playback availability"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Liveness, readiness and discovery",
+      "name": "system"
+    },
+    {
+      "description": "Local real-source verification and signed relay. Preview is not registered in production.",
+      "name": "development"
+    },
+    {
+      "description": "Schemas only; no Bangumi-bound route is live in HUB-001",
+      "name": "contracts"
+    }
+  ]
+}

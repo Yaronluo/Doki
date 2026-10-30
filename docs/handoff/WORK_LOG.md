@@ -1,0 +1,132 @@
+# 工作记录
+
+记录真实工作与边界，后续按日期追加。秘密与原始账号日志不进入本文件。
+
+## 2026-10-29 · DOC-001 · Apple 原生设计、弹幕与交接包
+
+- 用户纠正参考方向：要独立设计、iOS 样式、Liquid Glass；弹幕指定弹弹play；需要完整交接和约束文件。
+- 核对 Apple HIG/SwiftUI Liquid Glass 文档与本机 SDK；核对弹弹play官方指南、Swagger、Bangumi 条目映射、应用签名/302/int64 与额度说明。
+- 建立 v0.4，v0.2/v0.3 标记历史；参考源码记录保留事实并纠正“主要复现”的定位。
+- 新增 AGENTS、文档入口、原生设计、弹幕接入、架构决策、任务、接口草案、配置、验收、当前状态和交接指南；配置模板与忽略规则不含秘密。
+- 新增文档检查脚本；运行 `python3 scripts/check-docs.py`，17 份 Markdown 检查通过；Python 语法检查通过。按官方 Swagger 核对读取/映射端点、int64 和 302 定义，未调用应用鉴权接口。
+- DOC-001 达到文档交付条件，标为 verified；所有功能实现任务仍为 not_started。详细边界记录在 CURRENT_STATE，尚未执行任何客户端/Hub 构建。
+- 未完成：工程实现、真实应用凭据、真实源/弹幕请求、部署、模拟器/真机播放和性能验收。
+
+## 2026-10-29 · DOC-001 范围修订 · TV 首发与 DeepSeek 提示词
+
+- 用户明确首版只做 TV，其他客户端先不做，并要求交给 DeepSeek 的提示词。
+- 保持 v0.4 为唯一基线，修订为 TV 首发；移除首版 iPhone/Mac target、UI、构建与验收依赖，更新相关交接文件与 ADR-009。
+- TV 配对/Bangumi OAuth 改为 Hub 轻量网页 + 普通浏览器辅助，避免手机 App 变成隐藏依赖。
+- 新增 DEEPSEEK_TV_PROMPT.md，包含实际阅读顺序、实现步骤、TV 验收、失败恢复和交接义务；没有替 DeepSeek 执行应用实现。
+- 运行 `python3 scripts/check-docs.py`，18 份 Markdown 检查通过；范围一致性复核通过。结果记录在 CURRENT_STATE；原有 Apple 原生设计、Liquid Glass、在线源和弹弹play弹幕仍保留。
+
+## 后续批次模板
+
+```text
+日期 / 任务 ID / 状态：
+改动与理由：
+文件/迁移/依赖/配置变动：
+实际执行的命令与操作：
+结果与证据：
+未覆盖项 / 阻塞 / 限制：
+下一步及依赖：
+更新过的设计/契约/决策文件：
+```
+
+## 2026-10-30 · ENV-001 / APP-001 / UI-001 / HUB-001 / SRC-001 / PLAY-001 · 首轮 TV + Hub 实现
+
+- 环境：Xcode 27.1（27A9275）、tvOS 27.0 SDK、XcodeGen 2.46.0、Swift 6.4、Node 24.22.1、pnpm 9.14.4、PostgreSQL 18.6。安装 tvOS 27.0 模拟器运行时（Apple TV 4K 3rd gen 1080p，UDID `A3FD875C-F0DC-4BCE-880D-C4F6680D3C97`）。无 GUI Simulator.app；无 Apple TV 真机/签名。
+- 工程：新增 `project.yml`、`DokiTV` tvOS target（最低 26.0）、`DokiTVUITests`、四个本地 Swift 包（DokiCore/DokiPlayback/DokiDanmaku/DokiUI）。`xcodegen generate --spec project.yml` 生成 `Doki.xcodeproj`；`xcodebuild ... -destination 'generic/platform=tvOS Simulator' CODE_SIGNING_ALLOWED=NO` 构建成功。
+- UI：自造 12 个条目/章节、海报/横幅、24 分钟 1440s 静音演示 MP4；实现发现/追番/日历/搜索/我的、详情/选集、AVPlayerViewController 播放器、源/弹幕/Hub/关于/诊断页面。tvOS 原生 TabView、焦点、系统 Toggle/Picker；自定义控制层使用公开 `glassEffect`/`GlassEffectContainer`，减少透明度时改用实色；内容层不使用玻璃。浅/深色通过启动参数验证并修正对比度（动态 accent、浅色深底 badge），播放器加顶部/底部 scrim 与实心媒体徽标。
+- 模拟器证据：`simctl install/launch` 成功；XCUITest 记录默认 Continue Watching 焦点、原生 TabView 标签、详情默认播放焦点、AVPlayer 起播/暂停/Menu 返回、续播 15:09→15:18（演示片）。截图位于 `.local/artifacts/UI-001/final-screens`，自造弹幕 fixture 位于 `tour-danmaku2`。UI 测试运行器有时在测试通过后不退出；未记为 CI 通过。
+- Hub：Server/ 新增 Fastify 5.12.7 + Zod 4.6.7 + pg 8.23.1 + pino 10.4.0；严格配置、49 tests（含真实 PG 迁移/约束/Worker）、health/ready/bootstrap/OpenAPI、统一错误/requestId、Postgres job 队列。`TEST_DATABASE_URL=postgres://postgres@127.0.0.1:55432/doki_hub_test pnpm test` 49/49 通过；OpenAPI 已重新生成（37561 bytes，sha256 `dc0575265cbecb2114c0f94f233d50b510b73beb4574e88584063f16e68a3944`）。
+- 真实源：采用固定快照 sha256 `7e54969e4d8de3535242927af3c27e09a8e8d47f65ab9649a84a2163c975535c`（提交 d2f58217...）中的樱花动漫规则；新增 `yinghua` adapter（search/detail/episode/player_aaaa/encrypt=0）、SafeFetcher（DNS/IP/redirect/端口/凭据校验，benchmark 网络需显式本地开关）、RequestThrottle、HLS relay（签名 session/resource、playlist URI 重写、Range/HEAD、坏签名 403）和仅非 production 的 `POST /v1/dev/source-preview`。真实请求 200（约 4.94s）；master/variant/segment 200/200/206，TS 首字节 0x47，Range 206 `bytes 0-1023/557232`；坏签名 403。
+- TV 真实播放：`--demo-hub-url http://127.0.0.1:18080 --demo-route real-source --demo-real-autoplay` 在模拟器通过 Hub relay 播放；首播 00:09，重开续播 01:30，原生控制条 seek 后 02:59，再次重开 03:03。Hub 日志记录连续 relay 200/206。
+- **内容安全阻断**：真实源视频在约 03:03 出现第三方赌博广告。已删除含该源画面的截图和原始媒体/HTML；真实源只保留 adapter/relay 技术验证，不得作为产品默认源或公开部署。该发现写入 CURRENT_STATE、接入文档与 ADR-010。
+- 未完成：Apple TV 真机/签名、完整集、PiP/AirPlay、真实 Bangumi/TMDB/弹弹play、AUTH/SYNC/正式 PlaybackSession、真实弹幕、第二源、部署/备份、动画录屏与正式辅助功能验收。Mac 仅作开发主机；没有创建 iPhone/Mac target。
+- 未执行：git init/commit/push、公开部署、借用任何其他项目凭据。真实凭据仍未配置。
+
+### 2026-10-30 · 收尾验证与清理
+
+- `swift test`（DokiCore/DokiDanmaku/DokiPlayback）：8 + 9 + 4 = 21 tests 通过（最终源码）。
+- `xcodebuild build-for-testing -project Doki.xcodeproj -scheme DokiTV -destination "platform=tvOS Simulator,id=A3FD875C..." CODE_SIGNING_ALLOWED=NO`：`** TEST BUILD SUCCEEDED **`；测试目标只保留 Smoke/PlayerFlow，避免默认测试依赖外部源。
+- `pnpm build`（Server）：tsc + migrations 复制成功；`TEST_DATABASE_URL=... pnpm test` 最终 7 文件、49 tests 通过。
+- `python3 scripts/check-docs.py`：PASS，18 份 Markdown；链接/表格/代码围栏/引用/JSON 示例通过。该检查不验证编译、真实 API 或播放。
+- 收尾：终止 tvOS App、Hub API（PID 文件）、本地 Postgres 测试集群，并关闭模拟器。真实源含广告/版权画面的截图和原始抓取媒体已删除；`PLAY-001` 仅保留脱敏 `uitest-seek.log`，`SRC-001` 仅保留 `source-preview-summary.json`。
+- 最终播放器画面：`--demo-route player --demo-subject demo-subject-01 --demo-episode 5 --demo-enable-danmaku` 生成 `.local/artifacts/UI-001/final-screens/17-player-demo-danmaku.png`；画面为自造样片（05:19/24:00）和自造弹幕 fixture，不含真实源画面。
+- 最终 app build `build-final-player.log` 通过；`xcodebuild build-for-testing`（generic tvOS Simulator destination）再次通过 `TEST BUILD SUCCEEDED`。
+- 未执行：git init/commit/push、公开部署、借用其他项目凭据。未配置真实 Bangumi/TMDB/弹弹play凭据。
+
+## 2026-10-30 · ENV-001 / UI-001 · 打开 TV 模拟器预览与环境纠正
+
+- 用户要求打开模拟器查看效果，并授权安装缺失的图形组件。检查发现 Xcode 27.1 已自带 `Contents/Applications/DeviceHub.app`；此前“无 GUI Simulator.app”被错误推断为没有模拟器图形界面，实际无需安装。
+- 执行 `open -a /Applications/Xcode.app/Contents/Applications/DeviceHub.app --args -CurrentDeviceUDID A3FD875C-F0DC-4BCE-880D-C4F6680D3C97`；CoreGraphics 窗口列表确认 Device Hub 的 Apple TV 4K (3rd generation) (at 1080p) 窗口已显示。
+- `xcrun simctl launch --terminate-running-process A3FD875C-F0DC-4BCE-880D-C4F6680D3C97 com.doki.tv --demo-tab discover --demo-dark` 成功；保持 Doki 和 TV 模拟器运行供用户查看。发现页为自造演示内容，未启动 Hub/Postgres，未调用真实源或配置凭据。
+- 同步纠正 CURRENT_STATE/SETUP 的 GUI 入口；本次仅运行既有 App 与修正文档，未重新构建，未扩展功能验收结论。
+- 用户随后反馈无法打开软件：截图确认停在 tvOS 系统桌面，Doki 进程仍运行；未发现 Doki 崩溃报告。再次终止并启动 App 后，PineBoard 日志确认前台切换成功（`isFailed=false`），并分别检查模拟器截图和 Device Hub 窗口截图，发现页已显示。证据为 `.local/artifacts/preview/doki-launch-check-2.png` 与 `device-hub-launch-check.png`；不再仅凭进程存在认定用户可见。文档检查 18 份 Markdown 通过。
+
+## 2026-10-30 · REWORK-001 / UI-001 / META-001 · TV 界面大改与真实公开资料
+
+- 用户指出竖封面被大量裁成横图、TMDB 未使用、参考机制/动效不足和玻璃/交互问题，要求大改并尽可能接真实数据；需凭据的部分明确列出获取位置与配置方式。
+- 保持一个 tvOS target + 必要 Hub，无 iPhone/Mac 客户端。研究 izuko-tv 提交 `9d9cba2ad0ef7e443ffa3542cee91fba345edafa` 的 hero handoff、媒体流水线、timeline 和详情；只参考机制，SwiftUI 独立实现，未引入其 AGPL 代码/素材。
+- 正常启动改为匿名 Bangumi 真实目录；fixture 显式 `--demo-fixtures`。新增 DokiCore CatalogClient（首页/季度、搜索分页、周表、详情/章节/角色/人员），TV 本机追番/显式已看/图片关联；有 Hub 走 Hub，未配置时直读官方。不添加账号/写回成功的假状态。
+- UI：发现/日历/搜索/追番使用竖版海报；首页和详情局部预览，TMDB 才用于横幅，缺横幅保留海报比例。重写详情与“我的”主要路径；角色/人员去重保留多个职务、12 位预览/可展开、惰性加载。原生 matched source / zoom 转场、焦点停留预览、Menu 返回原卡片；减少动态效果分支不使用自定义缩放。
+- 玻璃改成原生 `.glass` 按钮和关联容器，移除按钮外层手动 interactive 玻璃；减少透明度使用普通系统控件/实色。图片缓存上限 80 MiB、并发同 URL 去重、流读取/缩图离开主线程、同 origin 重定向、失败保留旧图；未做全局清理或修改进度缓存。
+- 修复空章节下标、章节焦点前缀不一致、手动未看被推断已看覆盖、地址/查询变化时旧刷新/搜索结果回写、长短标题导致同排海报错位、空类型下多余分隔符、Bangumi `images: null` 导致 Hub 拒绝整页、上游畸形响应错误码。真实条目在未接源时不会误播演示 MP4。
+- Hub：新增元数据服务和 Fastify 只读路由、Zod/OpenAPI 契约、缓存/并发去重/每 IP 限流；可选 TMDB TV/movie 搜索、唯一标题/年份匹配、歧义候选/手动修正与固定 origin 横幅代理。无 token 的 artwork 返回 `notConfigured`，上游故障不挡 Bangumi。修改 SafeFetcher 支持搜索 POST body 并对文本流执行前置体积限制；没有新增依赖或数据库迁移。
+- 真实 API：Swift 直读与 Hub provider probe、HTTP 均运行。2026-10-30（Mac 原有透明代理网络，Hub 显式本地 benchmark 开关）：24 个本季条目、7 天周表，`554779` 详情、12 话、31 条角色与 288 条职务记录；“葬送的芙莉莲”搜索 5 个结果。Hub probe 约 4.03 秒；`/health`、`/v1/home`、条目/章节/角色/人员/搜索 HTTP 200，artwork 200 且 `notConfigured`。没有账号写入或视频源执行。
+- 测试：最终 DokiCore **13 tests 通过**，含一次可选 live 读取（约 4.44s）；Server **47 passed / 10 skipped**，跳过的是数据库集成，本轮未重跑/修改 PG。`pnpm typecheck / openapi / build` 通过。tvOS XcodeGen 构建与真实 UI 测试记录在 `ui-release-check.log`；深色详情/Menu 返回、浅色日历/搜索/设置、减少动态效果/透明度分支以及失败保留目录分别有证据。
+- 媒体证据：`.local/artifacts/REWORK-001/`。原始导航录屏 `tvos-navigation.mp4`（187.84s，包含启动/空闲），剪辑 `preview-motion.mp4`（35s，同一模拟器原生画面，无概念动画替代）；AVFoundation 已读取视频轨道并抽帧检查。截图不替代动效；本轮录屏也不宣称真机帧率或完整中断矩阵通过。
+- 配置：新增 [INTEGRATIONS_SETUP](../development/INTEGRATIONS_SETUP.md) 和 TV 数据服务页，列明 TMDB/Bangumi/弹弹play申请来源、`.env` 字段、已实现/未实现区别。`init-local-config.py` 0600/独占创建、生成独立本地密钥且不打印。`.env.example` 的 BGM_REDIRECT_URI 改为空，避免只配 TMDB 时因半组 OAuth 字段无法启动。验证用配置位于 `.local/rework-hub.env`，没有写入账号/第三方 token。
+- 第三方署名：About 加入 TMDB 要求的声明和官方蓝色短 SVG（保持原色/比例），来源与义务见配置指南。真实动漫封面按 Bangumi URL 读取，未打包成素材。
+- 文档：同步 CURRENT_STATE、设计、ROADMAP、API_CONTRACTS、SETUP、Server README、文档入口并追加 ADR-011；`python3 scripts/check-docs.py` 通过 19 份 Markdown。
+- 未完成：TMDB 真实 token 取图、Bangumi owner/TV 配对/OAuth/同步、弹弹play真实签名/匹配/取数、可接受的真实播放源、正式 PlaybackSession/epoch、Apple TV 真机/签名/完整集、生产 egress IP 固定/鉴权与部署。`yinghua` 含赌博广告，维持 ADR-010，未扩源。META/UI 仍为 `implemented_unverified`，没有把匿名子集验证当作整个首版完成。
+- 未执行：Git init/commit/push、PR、外部发信或公开部署。修改前源码备份为 `.local/backups/before-tv-rework-20261030.tgz`。
+
+### REWORK-001 最终收尾
+
+- 最终 `ui-release-check.log`：3 tests、0 failures、`TEST SUCCEEDED`（68.23s）；Hub 故障保留目录、真实详情/Menu 返回、浅色日历/搜索/设置全部通过。截图导出并命名到 `.local/artifacts/REWORK-001/review-screens/`，已检查深色真实封面、浅色与实色按钮分支。
+- 最终 Server 47 passed / 10 skipped；DokiCore 13 tests，通过一次真实角色/人员读取。文档检查 19 份 Markdown 通过。
+- 已停止本轮仅 loopback 监听的 Hub 探测进程；没有启动数据库，没有部署。重新启动正常匿名浏览的 TV 预览并打开 Device Hub，仍需以截图确认前台画面，不能仅凭 PID 宣称用户可见。
+- 最终前台确认：`simctl launch --terminate-running-process ... --demo-dark --demo-hub-url ''` 后获取并检查 `preview-running.png`，真实番剧发现页实际显示；当前保留 TV 模拟器与 Doki 运行供预览。
+
+## 2026-10-30 · Bangumi 登录 / TMDB / 应用凭据源码复核
+
+- 用户问密钥放哪里、是否全部必要，并指出 izuko 能直接登录。只做只读源码调查和文档纠正，没有真实账号登录、token 生成、密钥提取/复用或功能实现。
+- 固定 izuko 提交 `9d9cba2ad0ef7e443ffa3542cee91fba345edafa`：BangumiWebLogin 用邮箱/密码/验证码走官网表单，生成个人令牌；这条路径无需 OAuth 应用密钥。另有 OAuth 和粘贴个人令牌分支。
+- TmdbImageService 在 token 检查前先查 GrahamZen/bangumi-tmdb-map；含 backdrop_path 的条目不要求 token，搜索/补查询才要求。原答“一律需要用户申请 TMDB/Bangumi 应用凭据”不准确，已在配置指南/CURRENT_STATE 澄清。Doki 这两条替代路径仍未实现，不能宣称已免密钥接通。
+- izuko app-platform 构建字段与 CI 负责注入应用级服务凭据；弹幕网络仍要求 AppId/AppSecret。没有读取或输出任何真实凭据，不能证明特定发行包具备有效配置。
+- 确认根目录 `.env` 尚未创建；模板为 `.env.example`，未来本地秘密填根目录 `.env`，内部签名/加密密钥由脚本生成。未创建或修改秘密配置。
+- 文档检查：`python3 scripts/check-docs.py`；没有代码改动，因此未重复编译/运行测试。
+
+## 2026-10-30 · REWORK-002 顶部原生标签 / 全宽横幅 / 无密钥账号路径
+
+- 用户要求暂停弹弹play、参考 izuko 重做 TV；随后明确顶部标签栏、保留系统元素、移除侧栏、横幅铺满整个顶端。以最新要求为准，最终没有侧栏；不把中途侧栏方案留作产品基线。架构取舍记为 ADR-012。
+- 发现页全宽真实背景延伸至原生 TabView 背后，六列竖版海报、标题 Logo、评分/简介；详情真实人数/评分分布、章节、角色/人员。公开对应表/图片 CDN 实际命中，无 TMDB token。SwiftUI 独立实现，没有复制参考代码或打包其截图/远程番剧素材。
+- 修复双导航/横幅安全区留白、详情转场源被后续导航覆盖、章节选择直接改已看、手动横幅保留错误 Logo；保留图片直到替换成功。首选预览/重复选择详情与返回焦点有实际遥控器自动化证据。
+- 新增 Hub owner 会话、六位码批准、一次性领取设备 token、Keychain、网页登录/验证码/自动个人令牌、AES-GCM 密文与账号追番只读导入。新迁移 0002。浏览器同源/CSRF/一次性 nonce、限流、固定官方出站、令牌不送图片端点。旧登录任务与解除绑定串行提交；旧账号读取使用 generation，不能覆盖新刷新。
+- 实际官网 GET 登录页/验证码成功：3470 字节 GIF，未提交真实邮箱/密码或创建令牌。完整网站登录和账号导入只有自造协议测试；不宣称真实账号已登录、写回/完整同步已实现。申请 365 天不写成确认的过期时间，数据库保存未知 expires_at=NULL；解除本机绑定不代表上游撤销。
+- 配对页实际截图发现 CIImage 显示空白，改为 CGImage 渲染；loopback 地址改显示电脑入口提示，避免手机扫到自己的 127.0.0.1。最后追加 UI 测试和截图确认修复；LAN QR/HTTPS 仍未实测。
+- 创建根目录 `.env`（0600），独立随机本机加密/签名密钥，不输出值；第三方项全部空。新建实际开发数据库 doki_hub 并迁移 0001/0002，测试仅用独立 doki_hub_test。当前 Hub/数据库保留运行在本机 18080/55432，未公开部署；owner/真实账号未登记。当前 Mac 透明代理环境只在进程启动显式启用 benchmark 开关。
+- 弹弹play按用户要求暂缓，没有提交审核/复用凭据。没有启用新视频源；yinghua 仍禁用，未扩大历史技术播放结论。
+
+验证（当前 Mac、Xcode 27.1、tvOS 27.0、Apple TV 4K 1080p 模拟器 A3FD875C-F0DC-4BCE-880D-C4F6680D3C97）：
+
+1. DokiCore：`DOKI_LIVE_METADATA=1 swift test --package-path Packages/DokiCore`，16 tests 通过，含真实公开资料与免 token 横幅/Logo。
+2. Hub：`pnpm typecheck`、`pnpm openapi`、`pnpm build` 通过；真实 PG `TEST_DATABASE_URL=postgres://postgres@127.0.0.1:55432/doki_hub_test pnpm test` 最终 65/65，无跳过。初次端口用错（5432/55432）与迁移测试预期错误已修正，重跑通过；失败日志保留。
+3. tvOS：CatalogUITests 原三项通过；新增顶部标签位置/浅色完整首页/真实 Hub 配对页面通过，四个不同测试均有通过记录。最后 QR/loopback 修正再跑该测试通过。纯账号 generation 防旧回写修改之后最终 build 通过，未重新声称真实账号测试。
+4. 本机 HTTP `/health`、`/ready`、`/`、条目横幅均 200，横幅 ready；未配对账号接口 401。官网只读验证码成功；无真实账号登录/播放验收。
+5. `.local/artifacts/REWORK-002/`：`ui-tests.log`（3 项）、`ui-top-tabs-tests.log`（2 项，包含重复详情）、`ui-pairing-final.log`（最后修复重测）、`build-final.log`、`core-live.log`、`server-postgres-final.log`，以及相应 xcresult 图片附件。浅深色/详情/配对截图已实际查看；`tvos-navigation-reviewed.mp4` 取原始录屏 20～62 秒，含加载/选择/进入/返回；不声称全程图片已载入、帧率或全部中断情况已验证。
+6. 最终 `simctl install/launch --terminate-running-process ... --demo-dark --demo-hub-url '' --demo-tab discover`；打开 Device Hub，截图 `preview-final-home.png` 确认真实发现页前台，PineBoard running-active-Visible 日志对应 Doki。启动命令本身不当作前台证明。
+7. `python3 scripts/check-docs.py` 通过 19 Markdown；无 Git 初始化/提交/push、其他端客户端或公开部署。
+
+后续：用户浏览器实际账号登录；账号只读分页/失效/离线缓存与切换边界；Bangumi 写回/同步/上游撤销；可用视频源、真机/LAN 与完整验收。当前 UI 状态仍 implemented_unverified，不能把模拟器和公开 API 成功等同整产品完成。
+
+
+## 2026-10-30 · GitHub 私有仓库初始归档
+
+- 用户明确要求创建 GitHub 私有仓库并提交当前代码。初始化本地 `main`，创建 [Yaronluo/Doki](https://github.com/Yaronluo/Doki)，GitHub 返回 `visibility=PRIVATE`，设置 `origin` 指向该仓库。
+- 初始提交范围为现有 tvOS App、共享 Packages、Hub、XcodeGen 配置与生成工程、测试、脚本和文档。提交作者使用 GitHub noreply 邮箱，仅配置当前仓库。
+- 检查候选文件：排除本机 `.env`、`.local/`、`node_modules/`、Swift `.build/`、Hub `dist/`、Xcode 用户状态；保留 `.env.example`。本机秘密值交叉匹配与常见凭据格式扫描未发现命中，扫描未打印秘密值。
+- 初始 commit/push 按本批次授权执行；交付以 GitHub 私有属性及远端 `main` 与本地 HEAD 一致为核验依据。本批次不改业务实现，不重复宣称构建、真实接口、实播或真机验收通过；无 PR 或公开部署。
+- 归档检查：`python3 scripts/check-docs.py` 通过 19 份 Markdown；修整历史 v0.3 文档末尾多余空行后，`git diff --cached --check` 通过。该检查不验证编译、接口或播放。

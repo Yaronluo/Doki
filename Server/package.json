@@ -1,0 +1,39 @@
+{
+  "name": "doki-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Doki Hub API and worker skeleton (HUB-001)",
+  "type": "module",
+  "packageManager": "pnpm@9.14.4",
+  "engines": {
+    "node": ">=24.22.1 <25",
+    "pnpm": "9.14.4"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/copy-assets.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "openapi": "tsx scripts/generate-openapi.ts",
+    "db:migrate": "tsx src/db/migrate-cli.ts",
+    "db:status": "tsx src/db/status-cli.ts",
+    "dev:api": "tsx watch src/api/server.ts",
+    "dev:worker": "tsx src/worker/main.ts",
+    "start:api": "node dist/api/server.js",
+    "start:worker": "node dist/worker/main.js"
+  },
+  "dependencies": {
+    "cheerio": "1.2.0",
+    "fastify": "5.12.7",
+    "pg": "8.23.1",
+    "pino": "10.4.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/pg": "8.23.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
+  }
+}

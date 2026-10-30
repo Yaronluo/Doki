@@ -1,0 +1,725 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		01376EA853EAB1D1211A9CFB /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E33B8DA3BE3CA244D3D4A6 /* RootTabView.swift */; };
+		06C189C8A2E61B2D9C62736B /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A309DA9B20FB8AECAF01244 /* AccountModel.swift */; };
+		0B2AF3F941A151809A11D55D /* doki-demo-24min.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 39AB2836D0CAE5C40F7489A7 /* doki-demo-24min.mp4 */; };
+		0E4FB3E480A18BF4AB6469FD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E4365161FB20BF2314AE0596 /* Assets.xcassets */; };
+		11DFFA99F205D64B94F2CA2E /* BangumiAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5166C2C82D806EF0BB496FC6 /* BangumiAuthView.swift */; };
+		121C456FB38465E5E0E63248 /* DokiDanmaku in Frameworks */ = {isa = PBXBuildFile; productRef = 3998ADA7048BDE67E85B9890 /* DokiDanmaku */; };
+		134D07DEBDDBDEEE792D4365 /* SourceSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2771CCD4835CA9B21C47BFA6 /* SourceSettingsView.swift */; };
+		171A105CF357AFF3FE304F56 /* AppComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFEBFBF4287A9B21EC199EC1 /* AppComponents.swift */; };
+		272705192CE64217C6E61481 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8B2824DA639BD841E9FAF5F /* CalendarView.swift */; };
+		347EC5536A580075425B5244 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4379F7D26B598A8038B23E /* ProfileView.swift */; };
+		35BDE871625CE744E7F69769 /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0494FB4E74ABE67A4BF3E378 /* PlayerScreen.swift */; };
+		387EF4DC5CF57D2501427E6F /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3848BB8863591261820D4F52 /* LibraryView.swift */; };
+		3C82DE7ED1B67DCCD793520A /* DokiTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225AAE0A891778D564DF2909 /* DokiTVApp.swift */; };
+		41A7EAFA31938B41997C567F /* DiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28D974B6DE2006A8A7A62701 /* DiscoverView.swift */; };
+		420E4E53C42660A0DA24C6FB /* DanmakuSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93EB78CA29E68375A71E0181 /* DanmakuSettingsView.swift */; };
+		5FAC67F454F6EC1830EAB7CD /* DanmakuOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A93F779963086F9FB32CE038 /* DanmakuOverlayView.swift */; };
+		68DB37C18D1846E4A4AEF38A /* SubjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 515ADDF5F59C02A2C5530418 /* SubjectDetailView.swift */; };
+		7A7B51166544EA96346862E1 /* DokiUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9A80529F91CB930BBCFCE573 /* DokiUI */; };
+		7B55961F79EDBBACD749365A /* IntegrationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8EA0711A83A47321493C1EA /* IntegrationSettingsView.swift */; };
+		7CA33FBCA455FA9B417D1EF3 /* PlayerFlowUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */; };
+		89AD8F69DC780087B74BA486 /* RealSourcePreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE94D7D3BDAB8392C74397B4 /* RealSourcePreviewView.swift */; };
+		945E472B920CC1788F695ECF /* SmokeUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F056D1695135C7C8D090EFBE /* SmokeUITests.swift */; };
+		99AA1E6681F4CD7C074D711F /* DokiPlayback in Frameworks */ = {isa = PBXBuildFile; productRef = D1E90AD9D28B6C3EFC2FDD0E /* DokiPlayback */; };
+		A58000DD7D16C081308E091C /* RealSourceClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90F5983C572545121D65FC17 /* RealSourceClient.swift */; };
+		A9E019D242622E1733B2FBCE /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3232296BD61935BB284F6C /* AppModel.swift */; };
+		B420D981B0D44BC6BFD46234 /* PlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 759B441A921F9EC3A37D9E04 /* PlayerViewModel.swift */; };
+		BBBF2C47037CC96C4AD222DF /* DeviceCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FDE86FC6AE88271677E19AA /* DeviceCredentialStore.swift */; };
+		BE8DC7BA2F7595958DB5D44A /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9756E81EE4DD844309A826E /* AboutView.swift */; };
+		C9E354460364D2A83F85C052 /* CatalogUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ED2FEFE65360DA34D43DB2E /* CatalogUITests.swift */; };
+		DFC838DF8A791C174B4EF401 /* DokiCore in Frameworks */ = {isa = PBXBuildFile; productRef = 591F379C9256CE70318DE7DF /* DokiCore */; };
+		E818CB6704C4F3C7ABB84AEC /* HubSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E30E6F74CC2A96D2BC12E4CB /* HubSettingsView.swift */; };
+		EC3C22E5DB4D5767149A0BAD /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF7BBB9CAFF3FAB93602BFAC /* SearchView.swift */; };
+		F2713FAB7E67FCFACDDC1D85 /* CatalogModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C65AECB1C1F6AB6C5366629F /* CatalogModel.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E15981A8C3D14BC56E83EC54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1AC66E00D71EF92F437D3611 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 62B59384751DD361699A1344;
+			remoteInfo = DokiTV;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0494FB4E74ABE67A4BF3E378 /* PlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerScreen.swift; sourceTree = "<group>"; };
+		067F0822542F0DA65913A269 /* DokiTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = DokiTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A309DA9B20FB8AECAF01244 /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
+		225AAE0A891778D564DF2909 /* DokiTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DokiTVApp.swift; sourceTree = "<group>"; };
+		2771CCD4835CA9B21C47BFA6 /* SourceSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceSettingsView.swift; sourceTree = "<group>"; };
+		28D974B6DE2006A8A7A62701 /* DiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoverView.swift; sourceTree = "<group>"; };
+		3848BB8863591261820D4F52 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		38E33B8DA3BE3CA244D3D4A6 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		39AB2836D0CAE5C40F7489A7 /* doki-demo-24min.mp4 */ = {isa = PBXFileReference; path = "doki-demo-24min.mp4"; sourceTree = "<group>"; };
+		4C4379F7D26B598A8038B23E /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		515ADDF5F59C02A2C5530418 /* SubjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectDetailView.swift; sourceTree = "<group>"; };
+		5166C2C82D806EF0BB496FC6 /* BangumiAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BangumiAuthView.swift; sourceTree = "<group>"; };
+		5D3232296BD61935BB284F6C /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		5FDE86FC6AE88271677E19AA /* DeviceCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceCredentialStore.swift; sourceTree = "<group>"; };
+		6ED2FEFE65360DA34D43DB2E /* CatalogUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogUITests.swift; sourceTree = "<group>"; };
+		6ED7681373A62AD46D8123B6 /* DokiPlayback */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DokiPlayback; path = Packages/DokiPlayback; sourceTree = SOURCE_ROOT; };
+		7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerFlowUITests.swift; sourceTree = "<group>"; };
+		759B441A921F9EC3A37D9E04 /* PlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModel.swift; sourceTree = "<group>"; };
+		90F5983C572545121D65FC17 /* RealSourceClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealSourceClient.swift; sourceTree = "<group>"; };
+		93EB78CA29E68375A71E0181 /* DanmakuSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuSettingsView.swift; sourceTree = "<group>"; };
+		9484E92573F5F297A1A85853 /* DokiDanmaku */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DokiDanmaku; path = Packages/DokiDanmaku; sourceTree = SOURCE_ROOT; };
+		A8B2824DA639BD841E9FAF5F /* CalendarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		A93F779963086F9FB32CE038 /* DanmakuOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DanmakuOverlayView.swift; sourceTree = "<group>"; };
+		B7BA4696F6A694015A7226B5 /* DokiTVUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = DokiTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF7BBB9CAFF3FAB93602BFAC /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		BFEBFBF4287A9B21EC199EC1 /* AppComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppComponents.swift; sourceTree = "<group>"; };
+		C65AECB1C1F6AB6C5366629F /* CatalogModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogModel.swift; sourceTree = "<group>"; };
+		C8EA0711A83A47321493C1EA /* IntegrationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationSettingsView.swift; sourceTree = "<group>"; };
+		DC270F0A3EBCFB256E6DAB73 /* DokiCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DokiCore; path = Packages/DokiCore; sourceTree = SOURCE_ROOT; };
+		E30E6F74CC2A96D2BC12E4CB /* HubSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubSettingsView.swift; sourceTree = "<group>"; };
+		E4365161FB20BF2314AE0596 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		E9756E81EE4DD844309A826E /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		F056D1695135C7C8D090EFBE /* SmokeUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeUITests.swift; sourceTree = "<group>"; };
+		F37107FF1CB97A30F8ECA84D /* DokiUI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DokiUI; path = Packages/DokiUI; sourceTree = SOURCE_ROOT; };
+		FE94D7D3BDAB8392C74397B4 /* RealSourcePreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealSourcePreviewView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		275BB785288D2F1ED248565C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFC838DF8A791C174B4EF401 /* DokiCore in Frameworks */,
+				99AA1E6681F4CD7C074D711F /* DokiPlayback in Frameworks */,
+				121C456FB38465E5E0E63248 /* DokiDanmaku in Frameworks */,
+				7A7B51166544EA96346862E1 /* DokiUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		01A1ED03B9789DE9C5F2555D = {
+			isa = PBXGroup;
+			children = (
+				D2ACDAD2B1040C4BAC23FF3F /* App */,
+				2F4B270FFB415AA405794537 /* Packages */,
+				F451DE322CEA57203299F871 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		22509C0A0EEE734985033C57 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D8B202EE78F2C6FF145F7252 /* DemoMedia */,
+				E4365161FB20BF2314AE0596 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		2F4B270FFB415AA405794537 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				DC270F0A3EBCFB256E6DAB73 /* DokiCore */,
+				9484E92573F5F297A1A85853 /* DokiDanmaku */,
+				6ED7681373A62AD46D8123B6 /* DokiPlayback */,
+				F37107FF1CB97A30F8ECA84D /* DokiUI */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		394A79D3BD879E8762B435C0 /* tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				934E682739DB31C6A3ADD09E /* Components */,
+				22509C0A0EEE734985033C57 /* Resources */,
+				9E90AE9CD31FDB9FB1139F91 /* Screens */,
+				0A309DA9B20FB8AECAF01244 /* AccountModel.swift */,
+				5D3232296BD61935BB284F6C /* AppModel.swift */,
+				C65AECB1C1F6AB6C5366629F /* CatalogModel.swift */,
+				5FDE86FC6AE88271677E19AA /* DeviceCredentialStore.swift */,
+				225AAE0A891778D564DF2909 /* DokiTVApp.swift */,
+				90F5983C572545121D65FC17 /* RealSourceClient.swift */,
+				38E33B8DA3BE3CA244D3D4A6 /* RootTabView.swift */,
+			);
+			path = tvOS;
+			sourceTree = "<group>";
+		};
+		464D39F800F777C89DD5CD26 /* Subject */ = {
+			isa = PBXGroup;
+			children = (
+				515ADDF5F59C02A2C5530418 /* SubjectDetailView.swift */,
+			);
+			path = Subject;
+			sourceTree = "<group>";
+		};
+		55816AF3B70BC6CE473A76F4 /* Discover */ = {
+			isa = PBXGroup;
+			children = (
+				28D974B6DE2006A8A7A62701 /* DiscoverView.swift */,
+			);
+			path = Discover;
+			sourceTree = "<group>";
+		};
+		5BBDBBF90A8AF8D68FCAF272 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				3848BB8863591261820D4F52 /* LibraryView.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		6EB94D5370276B1244A5A453 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				A93F779963086F9FB32CE038 /* DanmakuOverlayView.swift */,
+				0494FB4E74ABE67A4BF3E378 /* PlayerScreen.swift */,
+				759B441A921F9EC3A37D9E04 /* PlayerViewModel.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		8BA587993391AE3804533087 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				E9756E81EE4DD844309A826E /* AboutView.swift */,
+				5166C2C82D806EF0BB496FC6 /* BangumiAuthView.swift */,
+				93EB78CA29E68375A71E0181 /* DanmakuSettingsView.swift */,
+				E30E6F74CC2A96D2BC12E4CB /* HubSettingsView.swift */,
+				C8EA0711A83A47321493C1EA /* IntegrationSettingsView.swift */,
+				4C4379F7D26B598A8038B23E /* ProfileView.swift */,
+				FE94D7D3BDAB8392C74397B4 /* RealSourcePreviewView.swift */,
+				2771CCD4835CA9B21C47BFA6 /* SourceSettingsView.swift */,
+			);
+			path = Profile;
+			sourceTree = "<group>";
+		};
+		934E682739DB31C6A3ADD09E /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				BFEBFBF4287A9B21EC199EC1 /* AppComponents.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		9E90AE9CD31FDB9FB1139F91 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				D6CEE9D9D6E0C32505588425 /* Calendar */,
+				55816AF3B70BC6CE473A76F4 /* Discover */,
+				5BBDBBF90A8AF8D68FCAF272 /* Library */,
+				6EB94D5370276B1244A5A453 /* Player */,
+				8BA587993391AE3804533087 /* Profile */,
+				DF1B37A26422FE8C087976E6 /* Search */,
+				464D39F800F777C89DD5CD26 /* Subject */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		B8D73A97D1948B14704B1EAF /* tvOSUITests */ = {
+			isa = PBXGroup;
+			children = (
+				6ED2FEFE65360DA34D43DB2E /* CatalogUITests.swift */,
+				7412F81304A4A588E726B16E /* PlayerFlowUITests.swift */,
+				F056D1695135C7C8D090EFBE /* SmokeUITests.swift */,
+			);
+			path = tvOSUITests;
+			sourceTree = "<group>";
+		};
+		D2ACDAD2B1040C4BAC23FF3F /* App */ = {
+			isa = PBXGroup;
+			children = (
+				394A79D3BD879E8762B435C0 /* tvOS */,
+				B8D73A97D1948B14704B1EAF /* tvOSUITests */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		D6CEE9D9D6E0C32505588425 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				A8B2824DA639BD841E9FAF5F /* CalendarView.swift */,
+			);
+			path = Calendar;
+			sourceTree = "<group>";
+		};
+		D8B202EE78F2C6FF145F7252 /* DemoMedia */ = {
+			isa = PBXGroup;
+			children = (
+				39AB2836D0CAE5C40F7489A7 /* doki-demo-24min.mp4 */,
+			);
+			path = DemoMedia;
+			sourceTree = "<group>";
+		};
+		DF1B37A26422FE8C087976E6 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				BF7BBB9CAFF3FAB93602BFAC /* SearchView.swift */,
+			);
+			path = Search;
+			sourceTree = "<group>";
+		};
+		F451DE322CEA57203299F871 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				067F0822542F0DA65913A269 /* DokiTV.app */,
+				B7BA4696F6A694015A7226B5 /* DokiTVUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		496BC14A1DD0A86C3D9077A5 /* DokiTVUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7EC1234FD09790EC8357484D /* Build configuration list for PBXNativeTarget "DokiTVUITests" */;
+			buildPhases = (
+				106B044106ADDB63E9192F11 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE16319BD19F29AA1F037568 /* PBXTargetDependency */,
+			);
+			name = DokiTVUITests;
+			packageProductDependencies = (
+			);
+			productName = DokiTVUITests;
+			productReference = B7BA4696F6A694015A7226B5 /* DokiTVUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		62B59384751DD361699A1344 /* DokiTV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4470D9BC8241199103BE505C /* Build configuration list for PBXNativeTarget "DokiTV" */;
+			buildPhases = (
+				5C588EED8D16F992B86D2E4F /* Sources */,
+				D3C6D05CF41DB7FAA6D6CB3F /* Resources */,
+				275BB785288D2F1ED248565C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DokiTV;
+			packageProductDependencies = (
+				591F379C9256CE70318DE7DF /* DokiCore */,
+				D1E90AD9D28B6C3EFC2FDD0E /* DokiPlayback */,
+				3998ADA7048BDE67E85B9890 /* DokiDanmaku */,
+				9A80529F91CB930BBCFCE573 /* DokiUI */,
+			);
+			productName = DokiTV;
+			productReference = 067F0822542F0DA65913A269 /* DokiTV.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1AC66E00D71EF92F437D3611 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2710;
+				TargetAttributes = {
+					496BC14A1DD0A86C3D9077A5 = {
+						TestTargetID = 62B59384751DD361699A1344;
+					};
+					62B59384751DD361699A1344 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 5D970D0ABECD23151BA736AD /* Build configuration list for PBXProject "Doki" */;
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				"zh-Hans",
+			);
+			mainGroup = 01A1ED03B9789DE9C5F2555D;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				0121F6477277712B1DC7DB57 /* XCLocalSwiftPackageReference "Packages/DokiCore" */,
+				E1B6028DE5CB56D92D59C0C9 /* XCLocalSwiftPackageReference "Packages/DokiDanmaku" */,
+				E71302EDFD35D20F2A387872 /* XCLocalSwiftPackageReference "Packages/DokiPlayback" */,
+				1DB2C7E4899305C955BDD7DF /* XCLocalSwiftPackageReference "Packages/DokiUI" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F451DE322CEA57203299F871 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				62B59384751DD361699A1344 /* DokiTV */,
+				496BC14A1DD0A86C3D9077A5 /* DokiTVUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D3C6D05CF41DB7FAA6D6CB3F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E4FB3E480A18BF4AB6469FD /* Assets.xcassets in Resources */,
+				0B2AF3F941A151809A11D55D /* doki-demo-24min.mp4 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		106B044106ADDB63E9192F11 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C9E354460364D2A83F85C052 /* CatalogUITests.swift in Sources */,
+				7CA33FBCA455FA9B417D1EF3 /* PlayerFlowUITests.swift in Sources */,
+				945E472B920CC1788F695ECF /* SmokeUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5C588EED8D16F992B86D2E4F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BE8DC7BA2F7595958DB5D44A /* AboutView.swift in Sources */,
+				06C189C8A2E61B2D9C62736B /* AccountModel.swift in Sources */,
+				171A105CF357AFF3FE304F56 /* AppComponents.swift in Sources */,
+				A9E019D242622E1733B2FBCE /* AppModel.swift in Sources */,
+				11DFFA99F205D64B94F2CA2E /* BangumiAuthView.swift in Sources */,
+				272705192CE64217C6E61481 /* CalendarView.swift in Sources */,
+				F2713FAB7E67FCFACDDC1D85 /* CatalogModel.swift in Sources */,
+				5FAC67F454F6EC1830EAB7CD /* DanmakuOverlayView.swift in Sources */,
+				420E4E53C42660A0DA24C6FB /* DanmakuSettingsView.swift in Sources */,
+				BBBF2C47037CC96C4AD222DF /* DeviceCredentialStore.swift in Sources */,
+				41A7EAFA31938B41997C567F /* DiscoverView.swift in Sources */,
+				3C82DE7ED1B67DCCD793520A /* DokiTVApp.swift in Sources */,
+				E818CB6704C4F3C7ABB84AEC /* HubSettingsView.swift in Sources */,
+				7B55961F79EDBBACD749365A /* IntegrationSettingsView.swift in Sources */,
+				387EF4DC5CF57D2501427E6F /* LibraryView.swift in Sources */,
+				35BDE871625CE744E7F69769 /* PlayerScreen.swift in Sources */,
+				B420D981B0D44BC6BFD46234 /* PlayerViewModel.swift in Sources */,
+				347EC5536A580075425B5244 /* ProfileView.swift in Sources */,
+				A58000DD7D16C081308E091C /* RealSourceClient.swift in Sources */,
+				89AD8F69DC780087B74BA486 /* RealSourcePreviewView.swift in Sources */,
+				01376EA853EAB1D1211A9CFB /* RootTabView.swift in Sources */,
+				EC3C22E5DB4D5767149A0BAD /* SearchView.swift in Sources */,
+				134D07DEBDDBDEEE792D4365 /* SourceSettingsView.swift in Sources */,
+				68DB37C18D1846E4A4AEF38A /* SubjectDetailView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FE16319BD19F29AA1F037568 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 62B59384751DD361699A1344 /* DokiTV */;
+			targetProxy = E15981A8C3D14BC56E83EC54 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		5F2B0A4768481F57C513ADB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DOKI_LIVE_UI = 0;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.0;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		7C51952B74B179D61F952CE1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DOKI_LIVE_UI = 0;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_UPCOMING_FEATURE_EXISTENTIAL_ANY = YES;
+				SWIFT_VERSION = 6.0;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		B01067DDCA1A21DE8BB22612 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.doki.tv.uitests;
+				SDKROOT = appletvos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = DokiTV;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		C66338A47812BDE0F852F410 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/tvOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.doki.tv;
+				PRODUCT_NAME = Doki;
+				SDKROOT = appletvos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		E1E77D4EF64100DC5ABCCE3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.doki.tv.uitests;
+				SDKROOT = appletvos;
+				SWIFT_STRICT_CONCURRENCY = complete;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TEST_TARGET_NAME = DokiTV;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		FD60E643146B614D2AA306C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = App/tvOS/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.doki.tv;
+				PRODUCT_NAME = Doki;
+				SDKROOT = appletvos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4470D9BC8241199103BE505C /* Build configuration list for PBXNativeTarget "DokiTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD60E643146B614D2AA306C2 /* Debug */,
+				C66338A47812BDE0F852F410 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5D970D0ABECD23151BA736AD /* Build configuration list for PBXProject "Doki" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F2B0A4768481F57C513ADB1 /* Debug */,
+				7C51952B74B179D61F952CE1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7EC1234FD09790EC8357484D /* Build configuration list for PBXNativeTarget "DokiTVUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B01067DDCA1A21DE8BB22612 /* Debug */,
+				E1E77D4EF64100DC5ABCCE3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		0121F6477277712B1DC7DB57 /* XCLocalSwiftPackageReference "Packages/DokiCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DokiCore;
+		};
+		1DB2C7E4899305C955BDD7DF /* XCLocalSwiftPackageReference "Packages/DokiUI" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DokiUI;
+		};
+		E1B6028DE5CB56D92D59C0C9 /* XCLocalSwiftPackageReference "Packages/DokiDanmaku" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DokiDanmaku;
+		};
+		E71302EDFD35D20F2A387872 /* XCLocalSwiftPackageReference "Packages/DokiPlayback" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/DokiPlayback;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3998ADA7048BDE67E85B9890 /* DokiDanmaku */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DokiDanmaku;
+		};
+		591F379C9256CE70318DE7DF /* DokiCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DokiCore;
+		};
+		9A80529F91CB930BBCFCE573 /* DokiUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DokiUI;
+		};
+		D1E90AD9D28B6C3EFC2FDD0E /* DokiPlayback */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DokiPlayback;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 1AC66E00D71EF92F437D3611 /* Project object */;
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1920px;height:1080px;overflow:hidden}
+  body{font-family:"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;
+       background:#2C2C2E;-webkit-font-smoothing:antialiased}
+  .stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:#2C2C2E}
+
+  .backdrop{position:absolute;inset:0;overflow:hidden}
+  .scene{position:absolute;left:-60px;right:-60px;top:-60px;height:760px}
+  .sky{position:absolute;inset:0;background:
+      radial-gradient(130% 100% at 76% 8%, #47507E 0%, #2A3255 30%, #171C33 58%, #0C0F1B 82%, #080A12 100%)}
+  .halo{position:absolute;right:250px;top:20px;width:640px;height:640px;border-radius:50%;
+      background:radial-gradient(circle,rgba(250,231,193,.22) 0%,rgba(250,231,193,0) 62%)}
+  .moon{position:absolute;right:435px;top:118px;width:290px;height:290px;border-radius:50%;
+      background:radial-gradient(circle at 40% 36%,#FFFDF5 0%,#F8EBCB 42%,#EBD3A2 68%,#D9BA82 88%);
+      box-shadow:0 0 90px 30px rgba(240,220,180,.28);filter:blur(.6px);opacity:.96}
+  .moon .crater{position:absolute;border-radius:50%;background:rgba(198,170,124,.35);filter:blur(3px)}
+  .clouds{position:absolute;inset:0;opacity:.55;filter:blur(22px);background:
+      radial-gradient(52% 13% at 18% 66%,rgba(160,178,225,.30),transparent 72%),
+      radial-gradient(46% 10% at 58% 58%,rgba(140,160,215,.26),transparent 72%),
+      radial-gradient(60% 12% at 86% 72%,rgba(110,132,190,.32),transparent 74%)}
+  .haze{position:absolute;left:0;right:0;top:330px;height:300px;
+      background:linear-gradient(180deg,rgba(120,140,200,0) 0%,rgba(120,140,200,.10) 40%,rgba(60,70,110,.16) 70%,transparent 100%);
+      filter:blur(14px)}
+  .ridge{position:absolute;left:0;right:0;bottom:0;height:250px}
+  .ridge svg{position:absolute;bottom:0;width:100%;height:250px}
+  .fadeV{position:absolute;inset:0;background:linear-gradient(180deg,rgba(44,44,46,0) 34%,rgba(44,44,46,.30) 50%,rgba(44,44,46,.86) 62%,#2C2C2E 71%)}
+  .fadeH{position:absolute;inset:0;width:1240px;background:
+      linear-gradient(90deg,rgba(4,5,10,.86) 0%,rgba(4,5,10,.62) 38%,rgba(4,5,10,.18) 70%,rgba(4,5,10,0) 100%)}
+  .vignette{position:absolute;inset:0;background:radial-gradient(125% 105% at 52% 38%,transparent 50%,rgba(0,0,0,.42) 100%)}
+  .grain{position:absolute;inset:0;opacity:.055;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+  .rail{position:absolute;left:0;top:0;width:96px;height:1080px;display:flex;flex-direction:column;
+       align-items:center;padding-top:290px;gap:36px}
+  .rail .ic{width:25px;height:25px;opacity:.55}
+  .rail .ic.on{opacity:.92}
+
+  .hero{position:absolute;left:96px;top:124px;width:840px}
+  .logo{display:flex;flex-direction:column;gap:12px}
+  .logo .cn{font-size:96px;font-weight:800;letter-spacing:1px;line-height:1;
+    background:linear-gradient(180deg,#FFFFFF 0%,#F4F7FF 54%,#CBD6F2 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .logo .en{display:flex;align-items:center;gap:13px}
+  .logo .en .bar{width:52px;height:3px;border-radius:2px;background:#8A7BFF}
+  .logo .en .txt{font-size:14px;letter-spacing:6.5px;font-weight:600;color:rgba(255,255,255,.50)}
+
+  .meta{margin-top:26px;display:flex;align-items:center;gap:12px;height:34px;white-space:nowrap}
+  .meta .star{color:#F3C264;font-size:21px;line-height:1}
+  .meta .score{font-size:26px;font-weight:700;color:#fff}
+  .meta .lbl{font-size:21px;color:rgba(255,255,255,.55);font-weight:500}
+  .meta .dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.28);flex:0 0 auto}
+  .meta .item{font-size:21px;color:rgba(255,255,255,.72)}
+  .badges{display:flex;gap:7px;margin-left:8px}
+  .badge{font-size:13px;font-weight:700;letter-spacing:.8px;color:rgba(255,255,255,.70);
+    padding:5px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.16);
+    background:rgba(255,255,255,.06);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+
+  .summary{margin-top:20px;width:790px;font-size:23px;line-height:1.66;color:rgba(255,255,255,.56)}
+
+  .actions{margin-top:28px;display:flex;align-items:center;gap:14px}
+  .btn{height:64px;padding:0 32px;border-radius:16px;display:flex;align-items:center;gap:11px;
+    font-size:26px;font-weight:600;position:relative;overflow:hidden}
+  .btn.primary{color:#fff;background:linear-gradient(180deg,rgba(146,131,255,.97),rgba(108,90,232,.97));
+    border:1px solid rgba(255,255,255,.26);
+    box-shadow:0 16px 36px rgba(92,74,226,.40),inset 0 1px 0 rgba(255,255,255,.44),inset 0 -1px 0 rgba(0,0,0,.20);
+    backdrop-filter:blur(22px) saturate(170%);-webkit-backdrop-filter:blur(22px) saturate(170%)}
+  .btn.primary::after{content:"";position:absolute;inset:0;background:
+    linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,255,255,.05) 48%,rgba(255,255,255,0) 100%)}
+  .btn.secondary{color:rgba(255,255,255,.92);background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.15);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 12px 28px rgba(0,0,0,.26);
+    backdrop-filter:blur(26px) saturate(190%);-webkit-backdrop-filter:blur(26px) saturate(190%)}
+  .btn .gl{font-size:20px;opacity:.95}
+
+  .wall{position:absolute;left:64px;top:596px;display:flex;gap:40px}
+  .card{width:217px}
+  .poster{position:relative;width:217px;height:301px;border-radius:16px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 24px rgba(0,0,0,.32)}
+  .poster .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 50%,rgba(0,0,0,.42) 100%)}
+  .label{margin-top:13px;font-size:21px;line-height:1.3;color:rgba(255,255,255,.52)}
+  .card.focused{z-index:9}
+  .card.focused .poster{transform:scale(1.12);border-color:rgba(255,255,255,.22);
+    box-shadow:0 36px 64px rgba(0,0,0,.66),0 0 0 1px rgba(255,255,255,.09)}
+  .card.focused .poster .sheen{position:absolute;inset:0;background:
+    linear-gradient(112deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.03) 32%,rgba(255,255,255,0) 56%)}
+  .card.focused .label{color:rgba(255,255,255,.95);font-weight:500}
+  .row2{position:absolute;left:64px;top:996px;display:flex;gap:40px;opacity:.85}
+  .row2 .p2{width:217px;height:120px;border-radius:16px;border:1px solid rgba(255,255,255,.06)}
+</style></head>
+<body>
+<div class="stage">
+  <div class="backdrop">
+    <div class="scene">
+      <div class="sky"></div>
+      <div class="halo"></div>
+      <div class="moon"><div class="crater" style="width:34px;height:30px;left:60px;top:74px"></div>
+        <div class="crater" style="width:20px;height:18px;left:158px;top:150px"></div>
+        <div class="crater" style="width:26px;height:22px;left:104px;top:196px;opacity:.7"></div></div>
+      <div class="clouds"></div>
+      <div class="haze"></div>
+      <div style="position:absolute;left:0;right:0;top:470px;height:180px;filter:blur(26px);opacity:.55;
+        background:radial-gradient(60% 100% at 42% 100%,rgba(255,196,120,.28) 0%,rgba(255,196,120,0) 70%)"></div>
+      <div style="position:absolute;left:520px;right:0;top:512px;height:90px;filter:blur(1.2px);opacity:.45">
+        <div style="position:absolute;left:0;top:8px;width:640px;height:2px;border-radius:2px;
+          background:linear-gradient(90deg,rgba(255,214,150,0),rgba(255,226,178,.85),rgba(255,214,150,0))"></div>
+        <div style="position:absolute;left:120px;top:38px;width:820px;height:2px;border-radius:2px;
+          background:linear-gradient(90deg,rgba(255,214,150,0),rgba(255,240,205,.9),rgba(255,214,150,0))"></div>
+        <div style="position:absolute;left:330px;top:66px;width:560px;height:1.5px;border-radius:2px;
+          background:linear-gradient(90deg,rgba(255,214,150,0),rgba(255,226,178,.7),rgba(255,214,150,0))"></div>
+      </div>
+      <div class="ridge">
+        <svg viewBox="0 0 1920 250" preserveAspectRatio="none">
+          <path d="M0,250 L0,150 L170,132 L330,162 L470,120 L650,158 L830,112 L1010,150 L1180,104 L1370,146 L1550,116 L1730,152 L1920,124 L1920,250 Z" fill="#0A0D16" opacity="0.85"/>
+          <path d="M0,250 L0,192 L230,180 L420,202 L610,176 L830,206 L1040,182 L1270,210 L1490,184 L1710,206 L1920,186 L1920,250 Z" fill="#05060C" opacity="0.95"/>
+        </svg>
+      </div>
+    </div>
+    <div class="fadeV"></div>
+    <div class="fadeH"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+
+  <div class="rail">
+    <svg class="ic on" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c1.5-3.5 3.9-5.1 7-5.1s5.5 1.6 7 5.1"/></svg>
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"><circle cx="10.6" cy="10.6" r="6.1"/><path d="M15.1 15.1 20 20"/></svg>
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="5.2" width="17.2" height="15" rx="3.2"/><path d="M3.4 10.2h17.2"/><path d="M8 3.4v3.3M16 3.4v3.3"/></svg>
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.6l2.5 5.5 6 .8-4.4 4.2 1.1 6-5.2-2.9-5.2 2.9 1.1-6L3.5 9.9l6-.8z"/></svg>
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 3.6v2.1M12 18.3v2.1M3.6 12h2.1M18.3 12h2.1M6.1 6.1l1.5 1.5M16.4 16.4l1.5 1.5M17.9 6.1l-1.5 1.5M7.6 16.4l-1.5 1.5"/></svg>
+  </div>
+
+  <div class="hero">
+    <div class="logo">
+      <div class="cn">夜行列车</div>
+      <div class="en"><div class="bar"></div><div class="txt">NIGHT TRAIN</div></div>
+    </div>
+    <div class="meta">
+      <span class="star">★</span><span class="score">8.7</span><span class="lbl">Bangumi</span>
+      <span class="dot"></span><span class="lbl">IMDb 8.3</span>
+      <span class="dot"></span><span class="item">全 24 话</span>
+      <span class="dot"></span><span class="item">2026 年 10 月</span>
+      <span class="badges"><span class="badge">4K</span><span class="badge">HDR</span><span class="badge">全景声</span></span>
+    </div>
+    <div class="summary">末班车驶出站台之后，城市才露出它真正的样子。<br>少女在第七节车厢醒来，而窗外的月亮，比她记忆中的大得多。</div>
+    <div class="actions">
+      <div class="btn primary"><span class="gl">▶</span><span>继续观看 · 第 12 话</span></div>
+      <div class="btn secondary"><span class="gl">＋</span><span>加入追番</span></div>
+    </div>
+  </div>
+
+  <div class="wall">
+    <div class="card"><div class="poster" style="background:radial-gradient(circle at 78% 22%, rgba(150,175,230,.30) 0%, rgba(150,175,230,0) 34%),linear-gradient(180deg, transparent 58%, rgba(4,5,10,.94) 82%),linear-gradient(168deg, #3A3158 0%, #241E3C 46%, #100D1C 100%)"><div class="scrim"></div></div><div class="label">雾港</div></div>
+    <div class="card focused"><div class="poster" style="background:radial-gradient(circle at 68% 24%, #F6E7C6 0 6.4%, rgba(246,231,198,0) 7.4%),radial-gradient(circle at 70% 22%, rgba(251,240,212,.28) 0 16%, rgba(251,240,212,0) 24%),linear-gradient(180deg, transparent 50%, rgba(3,4,9,.9) 84%),linear-gradient(172deg, #3B4A7E 0%, #1D2542 48%, #0B0E1A 100%)"><div class="sheen"></div><div class="scrim"></div>
+        <div style="position:absolute;left:14px;right:14px;bottom:12px;height:5px;border-radius:3px;background:rgba(255,255,255,.22)"></div>
+        <div style="position:absolute;left:14px;bottom:12px;width:62%;height:5px;border-radius:3px;background:#9A8BFF;box-shadow:0 0 10px rgba(154,139,255,.5)"></div>
+      </div><div class="label">夜行列车</div></div>
+    <div class="card"><div class="poster" style="background:radial-gradient(circle at 52% 62%, #C2452F 0 11%, rgba(194,69,47,0) 12.2%),radial-gradient(circle at 52% 62%, rgba(194,69,47,.22) 0 22%, rgba(194,69,47,0) 30%),linear-gradient(180deg, transparent 56%, rgba(6,3,3,.94) 84%),linear-gradient(178deg, #4A1D1A 0%, #2A0F0E 52%, #120607 100%)"><div class="scrim"></div></div><div class="label">赤月</div></div>
+    <div class="card"><div class="poster" style="background:linear-gradient(115deg, rgba(190,255,220,.16) 0%, rgba(190,255,220,0) 38%),linear-gradient(180deg, transparent 52%, rgba(3,8,6,.94) 84%),linear-gradient(186deg, #2F6052 0%, #17362D 52%, #081310 100%)"><div class="scrim"></div></div><div class="label">深绿</div></div>
+    <div class="card"><div class="poster" style="background:radial-gradient(120% 60% at 50% 104%, #B98A44 0%, rgba(185,138,68,0) 62%),linear-gradient(180deg, transparent 56%, rgba(8,5,2,.9) 86%),linear-gradient(182deg, #6A4B22 0%, #3A2711 50%, #150E05 100%)"><div class="scrim"></div></div><div class="label">麦田与铁塔</div></div>
+    <div class="card"><div class="poster" style="background:linear-gradient(90deg, rgba(255,214,150,.20) 0%, rgba(255,214,150,0) 22%),repeating-linear-gradient(90deg, rgba(255,236,200,.045) 0 26px, rgba(255,236,200,0) 26px 74px),linear-gradient(180deg, transparent 50%, rgba(3,5,10,.92) 84%),linear-gradient(174deg, #3B4B84 0%, #1E2646 52%, #0B0E1A 100%)"><div class="scrim"></div></div><div class="label">第七车厢</div></div>
+    <div class="card"><div class="poster" style="background:repeating-linear-gradient(102deg, rgba(210,220,255,.06) 0 1px, rgba(210,220,255,0) 1px 7px),linear-gradient(180deg, transparent 54%, rgba(5,3,6,.94) 84%),linear-gradient(176deg, #4A2E4A 0%, #2A1730 52%, #120A15 100%)"><div class="scrim"></div></div><div class="label">无声的雨</div></div>
+  </div>
+
+  <div class="row2">
+    <div class="p2" style="background:linear-gradient(160deg,#2A3550,#141A28)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#402A3C,#1A1018)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#25402F,#101A14)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#3C3020,#181208)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#2B2F4A,#12141F)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#3A2630,#170F14)"></div>
+    <div class="p2" style="background:linear-gradient(160deg,#233A3C,#0F191A)"></div>
+  </div>
+</div>
+</body></html>

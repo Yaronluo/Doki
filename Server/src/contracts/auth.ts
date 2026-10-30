@@ -1,0 +1,10 @@
+import { z } from "zod";
+import { catalogSubjectSchema } from "./catalog.js";
+export const pairingRequestSchema=z.object({name:z.string().trim().min(1).max(100).default("Apple TV")});
+export const pairingResponseSchema=z.object({id:z.uuid(),code:z.string().regex(/^[0-9]{6}$/),secret:z.string().min(32),expiresIn:z.number()});
+export const pairingStatusSchema=z.object({state:z.enum(["pending","approved","claimed","expired","cancelled"])});
+export const pairingClaimSchema=z.object({deviceId:z.uuid(),token:z.string().min(32)});
+export const accountProfileSchema=z.object({id:z.number().int().positive(),username:z.string(),nickname:z.string(),avatar:z.string().optional()});
+export const accountStatusSchema=z.object({paired:z.literal(true),bangumi:accountProfileSchema.nullable()});
+export const accountCollectionSchema=z.object({total:z.number(),data:z.array(z.object({subject_id:z.number().int().positive(),type:z.number().int().min(1).max(5),subject:catalogSubjectSchema}))});
+export const webLoginSchema=z.object({email:z.email().max(200),password:z.string().min(1).max(512),captcha:z.string().trim().min(1).max(32)});

@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.secrets/
+.local/
+DerivedData/
+.build/
+node_modules/
+*.p8
+*.p12
+*.mobileprovision
+*.xcuserstate
+xcuserdata/

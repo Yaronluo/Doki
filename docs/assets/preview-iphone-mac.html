@@ -1,0 +1,255 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:2320px;height:1360px;overflow:hidden;background:#EDECE8;
+    font-family:"SF Pro Display","SF Pro Text","PingFang SC","Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+  .cap{position:absolute;font-size:22px;color:#6F6F69;letter-spacing:.5px}
+  .cap b{color:#1A1A18;font-weight:700;font-size:24px}
+  .note{position:absolute;font-size:19px;color:#8A8A85}
+
+  /* ---------------- iPhone ---------------- */
+  .phone{position:absolute;left:100px;top:150px;width:400px;height:866px;border-radius:56px;
+    background:#0A0A0C;padding:9px;box-shadow:0 40px 80px rgba(0,0,0,.28),0 0 0 1px rgba(0,0,0,.35) inset}
+  .screen{position:relative;width:382px;height:848px;border-radius:48px;overflow:hidden;background:#2C2C2E}
+  .island{position:absolute;left:50%;transform:translateX(-50%);top:12px;width:118px;height:34px;border-radius:20px;background:#000;z-index:20}
+  .statusbar{position:absolute;top:18px;left:0;right:0;display:flex;justify-content:space-between;
+    padding:0 34px;font-size:15px;font-weight:600;color:#fff;z-index:19}
+  .p-scene{position:absolute;left:0;right:0;top:0;height:430px;
+    background:
+      radial-gradient(circle at 84% 15%, #F6E7C6 0 4.6%, rgba(246,231,198,0) 5.6%),
+      radial-gradient(circle at 84% 15%, rgba(246,231,198,.20) 0 14%, rgba(246,231,198,0) 21%),
+      linear-gradient(180deg, transparent 46%, rgba(44,44,46,.55) 66%, #2C2C2E 86%),
+      radial-gradient(120% 90% at 70% 6%, #47507E 0%, #2A3255 34%, #171C33 62%, #0C0F1B 88%)}
+  .p-hero{position:absolute;left:0;right:0;top:96px;padding:0 22px}
+  .p-logo{font-size:52px;font-weight:800;letter-spacing:.5px;color:#fff;line-height:1}
+  .p-en{margin-top:9px;display:flex;align-items:center;gap:9px}
+  .p-en .bar{width:30px;height:2.5px;border-radius:2px;background:#9A8BFF}
+  .p-en .txt{font-size:9px;letter-spacing:4.4px;color:rgba(255,255,255,.55);font-weight:600}
+  .p-meta{margin-top:16px;display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.62);white-space:nowrap}
+  .p-meta .s{color:#F3C264;font-size:12px}
+  .p-meta .sc{font-size:15px;font-weight:700;color:#fff}
+  .p-meta .d{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.3)}
+  .p-actions{margin-top:20px;display:flex;gap:10px;align-items:center}
+  .p-btn{height:46px;border-radius:14px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;padding:0 20px;color:#fff;
+    background:linear-gradient(180deg,rgba(146,131,255,.97),rgba(108,90,232,.97));
+    border:1px solid rgba(255,255,255,.24);
+    box-shadow:0 10px 24px rgba(92,74,226,.38),inset 0 1px 0 rgba(255,255,255,.42)}
+  .p-btn2{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+
+  .p-sec{position:absolute;left:0;right:0;top:408px;padding:0 22px;display:flex;justify-content:space-between;align-items:baseline}
+  .p-sec .t{font-size:20px;font-weight:700;color:#fff;letter-spacing:.3px}
+  .p-sec .m{font-size:13px;color:#8A8BFF;font-weight:600}
+  .p-row{position:absolute;left:22px;right:0;top:434px;display:flex;gap:12px;overflow:hidden}
+  .p-card{width:150px;flex:0 0 auto}
+  .p-poster{width:150px;height:208px;border-radius:14px;border:1px solid rgba(255,255,255,.09);position:relative;overflow:hidden}
+  .p-poster .sc{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 52%,rgba(0,0,0,.45) 100%)}
+  .p-label{margin-top:9px;font-size:14px;color:rgba(255,255,255,.62)}
+
+  .p-shelf2{position:absolute;left:22px;right:22px;top:790px}
+  .p-shelf2 .t{font-size:20px;font-weight:700;color:#fff;margin-bottom:14px}
+  .p-line{height:56px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.07);margin-bottom:10px}
+
+  .tabbar{position:absolute;left:16px;right:16px;bottom:14px;height:66px;border-radius:26px;
+    background:rgba(70,70,76,.55);border:1px solid rgba(255,255,255,.14);
+    backdrop-filter:blur(28px) saturate(200%);-webkit-backdrop-filter:blur(28px) saturate(200%);
+    box-shadow:0 16px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.22);
+    display:flex;align-items:center;justify-content:space-around;padding:0 12px}
+  .tabbar .t{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:rgba(255,255,255,.55)}
+  .tabbar .t.on{color:#fff}
+  .tabbar .t svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+
+  /* ---------------- Mac ---------------- */
+  .mac{position:absolute;left:600px;top:150px;width:1420px;height:900px;border-radius:16px;overflow:hidden;
+    box-shadow:0 50px 100px rgba(0,0,0,.30),0 0 0 1px rgba(0,0,0,.28);background:#232326}
+  .titlebar{position:absolute;left:0;right:0;top:0;height:52px;background:linear-gradient(180deg,#2E2E32,#26262A);border-bottom:1px solid rgba(255,255,255,.06)}
+  .lights{position:absolute;left:18px;top:19px;display:flex;gap:8px}
+  .lights i{width:12px;height:12px;border-radius:50%;display:block}
+  .mtitle{position:absolute;left:0;right:0;top:0;height:52px;display:flex;align-items:center;justify-content:center;
+    font-size:13px;color:rgba(255,255,255,.45);font-weight:500}
+
+  .sidebar{position:absolute;left:0;top:52px;bottom:0;width:250px;
+    background:rgba(40,40,44,.75);border-right:1px solid rgba(255,255,255,.06);
+    backdrop-filter:blur(30px) saturate(160%);-webkit-backdrop-filter:blur(30px) saturate(160%);padding:18px 12px}
+  .sbi{display:flex;align-items:center;gap:11px;height:38px;border-radius:9px;padding:0 12px;font-size:14px;color:rgba(255,255,255,.66)}
+  .sbi.on{background:rgba(255,255,255,.10);color:#fff;font-weight:600}
+  .sbi svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+  .sbgroup{margin:20px 12px 8px;font-size:11px;letter-spacing:.8px;color:rgba(255,255,255,.32);font-weight:600}
+
+  .mcontent{position:absolute;left:250px;top:52px;right:0;bottom:0;overflow:hidden;background:#1E1E21}
+  .mhero{position:absolute;left:0;right:0;top:0;height:340px;
+    background:
+      radial-gradient(circle at 68% 34%, #F6E7C6 0 4.6%, rgba(246,231,198,0) 5.6%),
+      linear-gradient(180deg, transparent 44%, rgba(30,30,33,.6) 70%, #1E1E21 92%),
+      radial-gradient(120% 100% at 66% 0%, #46507C 0%, #2A3255 36%, #161B31 66%, #0C0F1B 92%)}
+  .mhero .txt{position:absolute;left:34px;top:92px;width:520px}
+  .mhero .lg{font-size:60px;font-weight:800;color:#fff;letter-spacing:.5px;line-height:1}
+  .mhero .en{margin-top:10px;display:flex;align-items:center;gap:10px}
+  .mhero .en .bar{width:34px;height:2.5px;background:#9A8BFF;border-radius:2px}
+  .mhero .en .t{font-size:10px;letter-spacing:5px;color:rgba(255,255,255,.55);font-weight:600}
+  .mhero .meta{margin-top:14px;font-size:14px;color:rgba(255,255,255,.62)}
+  .mhero .acts{margin-top:18px;display:flex;gap:10px}
+  .mbtn{height:40px;border-radius:11px;padding:0 18px;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#fff;
+    background:linear-gradient(180deg,rgba(146,131,255,.97),rgba(108,90,232,.97));border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 8px 20px rgba(92,74,226,.35),inset 0 1px 0 rgba(255,255,255,.4)}
+  .mbtn2{height:40px;border-radius:11px;padding:0 16px;display:flex;align-items:center;font-size:14px;font-weight:600;color:rgba(255,255,255,.9);
+    background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.15);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+
+  .mgrid{position:absolute;left:34px;right:34px;top:346px;display:flex;gap:22px}
+  .mcard{width:236px}
+  .mposter{width:236px;height:328px;border-radius:14px;border:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;
+    box-shadow:0 12px 26px rgba(0,0,0,.35);transition:none}
+  .mposter .sc{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 52%,rgba(0,0,0,.42) 100%)}
+  .mlabel{margin-top:11px;font-size:15px;color:rgba(255,255,255,.60)}
+  .mcard.hover .mposter{transform:scale(1.035);border-color:rgba(255,255,255,.22);
+    box-shadow:0 26px 50px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08)}
+  .mcard.hover .mlabel{color:#fff}
+  .playdot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;
+    background:rgba(255,255,255,.86);display:flex;align-items:center;justify-content:center;color:#111;font-size:15px;
+    box-shadow:0 10px 20px rgba(0,0,0,.35)}
+
+  .mtoolbar{position:absolute;right:16px;top:10px;display:flex;gap:8px;align-items:center;z-index:5}
+  .search{width:210px;height:32px;border-radius:8px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.1);
+    display:flex;align-items:center;gap:7px;padding:0 10px;font-size:12px;color:rgba(255,255,255,.45)}
+</style></head><body>
+
+<div class="cap" style="left:100px;top:96px"><b>iPhone</b> · 触控 · 单手 · 竖向滚动</div>
+<div class="cap" style="left:600px;top:96px"><b>Mac</b> · 指针悬停 · 键盘 · 可缩放窗口</div>
+
+<!-- ============ iPhone ============ -->
+<div class="phone"><div class="screen">
+  <div class="p-scene"></div>
+  <div class="island"></div>
+  <div class="statusbar"><span>9:41</span><span style="display:flex;gap:6px;align-items:center">
+    <svg width="17" height="12" viewBox="0 0 17 12" fill="#fff"><rect x="0" y="7.5" width="3" height="4.5" rx="1"/><rect x="4.6" y="5.4" width="3" height="6.6" rx="1"/><rect x="9.2" y="3.2" width="3" height="8.8" rx="1"/><rect x="13.8" y="1" width="3" height="11" rx="1" opacity=".45"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#fff" stroke-width="1.5"><path d="M1.4 4.2a9 9 0 0 1 13.2 0M3.9 6.9a5.5 5.5 0 0 1 8.2 0M6.4 9.5a2.2 2.2 0 0 1 3.2 0"/></svg>
+    <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x=".7" y=".7" width="19.6" height="10.6" rx="3" stroke="#fff" stroke-opacity=".5"/><rect x="2.4" y="2.4" width="14" height="7.2" rx="1.8" fill="#fff"/><path d="M22 4.4v3.2" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/></svg>
+  </span></div>
+
+  <div class="p-hero">
+    <div class="p-logo">夜行列车</div>
+    <div class="p-en"><span class="bar"></span><span class="txt">NIGHT TRAIN</span></div>
+    <div class="p-meta">
+      <span class="s">★</span><span class="sc">8.7</span><span>Bangumi</span>
+      <span class="d"></span><span>IMDb 8.3</span><span class="d"></span><span>全 24 话</span>
+    </div>
+    <div class="p-actions">
+      <div class="p-btn"><span>▶</span><span>继续观看</span></div>
+      <div class="p-btn2">＋</div>
+    </div>
+  </div>
+
+  <div class="p-sec"><span class="t">继续观看</span><span class="m">全部</span></div>
+  <div class="p-row">
+    <div class="p-card"><div class="p-poster" style="background:
+      radial-gradient(circle at 70% 24%, #F6E7C6 0 7%, rgba(246,231,198,0) 8.4%),
+      linear-gradient(180deg,transparent 52%,rgba(3,4,9,.9) 84%),
+      linear-gradient(172deg,#3B4A7E,#1D2542 48%,#0B0E1A)"><div class="sc"></div></div>
+      <div class="p-label">第 12 话</div></div>
+    <div class="p-card"><div class="p-poster" style="background:
+      radial-gradient(circle at 52% 62%, #C2452F 0 11%, rgba(194,69,47,0) 12.2%),
+      linear-gradient(180deg,transparent 56%,rgba(6,3,3,.9) 84%),linear-gradient(178deg,#4A1D1A,#2A0F0E 52%,#120607)"><div class="sc"></div></div>
+      <div class="p-label">赤月</div></div>
+    <div class="p-card"><div class="p-poster" style="background:
+      linear-gradient(115deg,rgba(190,255,220,.14),rgba(190,255,220,0) 40%),
+      linear-gradient(180deg,transparent 52%,rgba(3,8,6,.9) 84%),linear-gradient(186deg,#2F6052,#17362D 52%,#081310)"><div class="sc"></div></div>
+      <div class="p-label">深绿</div></div>
+  </div>
+
+  <div class="p-sec" style="top:694px"><span class="t">本季新番</span><span class="m">时间表</span></div>
+  <div class="p-row" style="top:732px;gap:10px">
+    <div class="p-card" style="width:132px"><div style="width:132px;height:74px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(160deg,#2A3550,#141A28)"></div></div>
+    <div class="p-card" style="width:132px"><div style="width:132px;height:74px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(160deg,#402A3C,#1A1018)"></div></div>
+    <div class="p-card" style="width:132px"><div style="width:132px;height:74px;border-radius:12px;border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(160deg,#25402F,#101A14)"></div></div>
+  </div>
+
+  <div class="tabbar">
+    <div class="t on"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg>首页</div>
+    <div class="t"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v3.4M16 3v3.4"/></svg>新番</div>
+    <div class="t"><svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6"/><path d="M15 15l5 5"/></svg>搜索</div>
+    <div class="t"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c1.5-3.5 3.9-5 7-5s5.5 1.5 7 5"/></svg>我的</div>
+  </div>
+</div></div>
+
+<!-- ============ Mac ============ -->
+<div class="mac">
+  <div class="titlebar"></div>
+  <div class="lights"><i style="background:#FF5F57"></i><i style="background:#FEBC2E"></i><i style="background:#28C840"></i></div>
+  <div class="mtitle">Doki</div>
+  <div class="mtoolbar"><div class="search"><span>⌕</span><span>搜索番剧、声优、标签</span></div></div>
+
+  <div class="sidebar">
+    <div class="sbi on"><svg viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/></svg>首页</div>
+    <div class="sbi"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v3.4M16 3v3.4"/></svg>新番时间表</div>
+    <div class="sbi"><svg viewBox="0 0 24 24"><path d="M12 4.2l2.4 5.2 5.7.7-4.2 4 1.1 5.7L12 17l-5 2.8 1.1-5.7-4.2-4 5.7-.7z"/></svg>我的追番</div>
+    <div class="sbi"><svg viewBox="0 0 24 24"><circle cx="10.6" cy="10.6" r="6"/><path d="M15 15l5 5"/></svg>搜索</div>
+    <div class="sbgroup">资料库</div>
+    <div class="sbi"><svg viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><path d="M7 4.5v15"/></svg>最近播放</div>
+    <div class="sbi"><svg viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 19h14"/></svg>离线下载</div>
+  </div>
+
+  <div class="mcontent">
+    <div class="mhero">
+      <div class="txt">
+        <div class="lg">夜行列车</div>
+        <div class="en"><span class="bar"></span><span class="t">NIGHT TRAIN</span></div>
+        <div class="meta">★ 8.7 Bangumi · IMDb 8.3 · 全 24 话 · 2026 年 10 月</div>
+        <div class="acts"><div class="mbtn">▶ 继续观看 · 第 12 话</div><div class="mbtn2">＋ 加入追番</div></div>
+      </div>
+    </div>
+
+    <div class="mgrid">
+      <div class="mcard"><div class="mposter" style="background:
+        radial-gradient(circle at 70% 22%, #FBF0D4 0 6.4%, rgba(251,240,212,0) 7.4%),
+        linear-gradient(180deg,transparent 50%,rgba(3,4,9,.9) 84%),linear-gradient(172deg,#3B4A7E,#1D2542 48%,#0B0E1A)"><div class="sc"></div></div>
+        <div class="mlabel">夜行列车</div></div>
+
+      <div class="mcard hover"><div class="mposter" style="background:
+        radial-gradient(circle at 54% 60%, #C2452F 0 10%, rgba(194,69,47,0) 11.4%),
+        linear-gradient(180deg,transparent 56%,rgba(6,3,3,.9) 84%),linear-gradient(178deg,#4A1D1A,#2A0F0E 52%,#120607)">
+        <div class="sc"></div><div class="playdot">▶</div></div>
+        <div class="mlabel">赤月</div></div>
+
+      <div class="mcard"><div class="mposter" style="background:
+        linear-gradient(115deg,rgba(190,255,220,.14),rgba(190,255,220,0) 40%),
+        linear-gradient(180deg,transparent 52%,rgba(3,8,6,.9) 84%),linear-gradient(186deg,#2F6052,#17362D 52%,#081310)"><div class="sc"></div></div>
+        <div class="mlabel">深绿</div></div>
+
+      <div class="mcard"><div class="mposter" style="background:
+        radial-gradient(120% 60% at 50% 104%, #B98A44 0%, rgba(185,138,68,0) 62%),
+        linear-gradient(180deg,transparent 56%,rgba(8,5,2,.9) 86%),linear-gradient(182deg,#6A4B22,#3A2711 50%,#150E05)"><div class="sc"></div></div>
+        <div class="mlabel">麦田与铁塔</div></div>
+
+      <div class="mcard"><div class="mposter" style="background:
+        linear-gradient(90deg,rgba(255,214,150,.18),rgba(255,214,150,0) 22%),
+        linear-gradient(180deg,transparent 50%,rgba(3,5,10,.92) 84%),linear-gradient(174deg,#3B4B84,#1E2646 52%,#0B0E1A)"><div class="sc"></div></div>
+        <div class="mlabel">第七车厢</div></div>
+    </div>
+
+    <div style="position:absolute;left:34px;right:-40px;top:800px;display:flex;gap:22px;opacity:.92">
+      <div style="width:236px;height:150px;border-radius:14px;background:linear-gradient(160deg,#2A3550,#141A28)"></div>
+      <div style="width:236px;height:150px;border-radius:14px;background:linear-gradient(160deg,#402A3C,#1A1018)"></div>
+      <div style="width:236px;height:150px;border-radius:14px;background:linear-gradient(160deg,#25402F,#101A14)"></div>
+      <div style="width:236px;height:150px;border-radius:14px;background:linear-gradient(160deg,#3C3020,#181208)"></div>
+      <div style="width:236px;height:150px;border-radius:14px;background:linear-gradient(160deg,#2B2F4A,#12141F)"></div>
+    </div>
+  </div>
+</div>
+
+<div class="note" style="left:100px;top:1060px;width:400px;line-height:1.7">
+  <b style="color:#1A1A18">iPhone</b>：剧照仍然全出血，但标题缩到 52pt、<br>
+  动作收成一个主按钮 + 一个圆形次按钮，<br>
+  导航从左侧栏换成 iOS 26 的浮动玻璃 TabBar（拇指可达）。
+</div>
+<div class="note" style="left:600px;top:1100px;width:1420px;line-height:1.7">
+  <b style="color:#1A1A18">Mac</b>：窗口可缩放，所以没有固定栅格——栏宽由容器宽度算。侧边栏带文字（指针不靠图标猜），<br>
+  悬停出播放按钮，右键有上下文菜单，空格预览。同样的 token：同一套圆角、同一套取色、同一套玻璃。
+</div>
+
+</body></html>
