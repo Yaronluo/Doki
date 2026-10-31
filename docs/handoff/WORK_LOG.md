@@ -315,3 +315,37 @@ xcrun simctl launch <UDID> com.doki.tv --bangumi-route auto --demo-route diagnos
 更新文档：CURRENT_STATE、WORK_LOG、DECISIONS（ADR-018）、INTEGRATIONS_SETUP。
 
 归档复核：`ac746e0`（feat: add Bangumi route fallback for tvOS direct reads）已推送至 `origin/main`；本地 HEAD 与 `git ls-remote origin refs/heads/main` 一致，工作树清洁。未创建 PR、未部署；Apple TV 真机、大陆裸网、真实账号和 Hub 端线路层仍未验收。
+
+## 2026-10-31 · ENV-002：本机磁盘占用排查与验证产物约束
+
+用户反馈 Mac 存储持续变少，排查确认与本仓库产物有关的部分如下（`df`、`du` 实测，非估算）：
+
+- `/private/tmp/doki-focus-probe.mp4.sb-d86a9d5c-n2O1Ct` 19.9 GB，10-30 19:42 创建、10-31 13:06 停止增长，被 `SimRenderServer`（PID 38853）持有句柄未回收。已删除并终止该进程，空间归还；终止渲染服务导致 tvOS 模拟器 `A3FD875C` 关机，已重新 `simctl boot`，`com.doki.tv` 仍安装在同一容器。
+- `.local/artifacts` 11 GB / 176 个 `.xcresult`，其中 FOCUS-001 一批 126 个、5.5 GB。按"每任务目录保留最新 2 个"执行后释放 8.3 GB，剩余 2.4 GB。文档引用中只有 `.local/artifacts/REWORK-003/ui-matte-2.xcresult` 指向具体包，该包是最新一个，保留后路径仍有效。
+- 清理前 `.local` 13 GB，其中源码仅 440 MB、`.git` 46 MB。
+
+新增约束（已写入 `AGENTS.md` 验证与交接、`SETUP.md` §2.2）：
+
+- `scripts/local-cleanup.sh`：默认干跑，`--apply` 执行；只删 `.xcresult`，不动 postgres、日志、截图和录屏；`--check` 超 3 GB 预算时退出码 1。
+- `scripts/tv-record.sh`：录屏包装，硬超时默认 60 s、上限 600 s，固定写入 `.local/artifacts/<任务ID>/`，拒绝 `/private/tmp` 与越界路径。
+
+验证状态：`bash -n` 两个脚本通过；`local-cleanup.sh` 干跑与 `--apply` 均实跑；`--check` 在 2.4 GB 时返回 0；`--budget-mb 100` 干跑触发逐出分支并正确提示非 `.xcresult` 证据不可逐出；`--derived` 干跑正确报出 1517 MB；`tv-record.sh` 以 5 s 上限实测产出 26 K `mp4`，结束后无残留 `recordVideo` 进程。未验证：`--derived --apply` 的真实删除、录屏超过 500 MB 时的告警分支。
+
+未做的事：未改 Xcode 侧既有占用（iOS DeviceSupport 13 GB 两个版本、iPhone 17 模拟器 5.4 GB、CoreSimulator 7.1 GB），这些不属于本仓库产物，需用户自行决定。`git commit` 未执行。
+
+### 第二轮：按"不影响项目才删"再收 8.5 GB
+
+| 处理 | 对象 | 释放 | 判断依据 |
+|---|---|---|---|
+| 删除 | `REWORK-007` 7 支录屏草稿 | 404 MB | 文档只引用目录、不引用具体 mp4；保留 `verified-motion.mp4` 与 `delivery-motion.mp4` |
+| 删除 | `.local/DerivedData` | 1517 MB | 纯构建缓存，自动重建；不影响模拟器上已安装的 app |
+| 删除 | `iOS DeviceSupport/iPhone18,3 27.0.1 (24A446)` | 6.6 GB | tvOS 项目不使用；旧系统符号在连接对应设备时自动重下；保留 27.2 (24B119) |
+| 保留 | iPhone 17 模拟器 | — | 清理时正在 `Booted`，有其它用途，删除会中断别的工作 |
+| 保留 | `.local/backups` | — | 仅 168 MB，是重构前回滚保险 |
+| 保留 | `.local/postgres-hub`、`.local/logs` | — | Hub 本地开发依赖 |
+
+验证：`xcodebuild -list` 通过，四个 Swift 包正常解析，工程未受损；`local-cleanup.sh --apply --derived` 实跑；两个模拟器清理后仍为 `Booted`。未做完整构建（避免立刻把 DerivedData 重新写回，构建行为未改变，只是缓存被清空）。
+
+累计：可用空间 245 GB → 279 GB；`.local` 13 GB → 2.3 GB。
+
+

@@ -92,6 +92,27 @@ xcodebuild test \
 
 本轮工具链存在一个限制：测试断言通过后，`xcodebuild test` 有时不退出。测试结果可在日志中确认；如需截图，使用测试运行期间的 `simctl io`，不要把该现象当作 CI 通过。真实源 UI 测试需要外部站、本地 Hub 和本地数据库，已从默认测试目标移除。
 
+### 2.2 验证产物的保留与清理
+
+验证产物只写被忽略的 `.local/artifacts/<任务ID>/`，不进 `/private/tmp`，也不提交。每个任务目录保留最新 2 个 `.xcresult`，`.local/artifacts` 预算 3 GB：单个 `.xcresult` 会内嵌约 98 MB 模拟器日志归档，一次密集 UI 验证可产生上百个包、数 GB 占用。
+
+```sh
+scripts/local-cleanup.sh           # 干跑：列出超出的 .xcresult 及可回收量
+scripts/local-cleanup.sh --check   # 超预算时退出码 1，用于批次收尾
+scripts/local-cleanup.sh --apply   # 按保留策略删除
+scripts/local-cleanup.sh --apply --derived   # 同时清 DerivedData（下次构建重建）
+```
+
+脚本只删 `.xcresult`，不动 `.local/postgres-hub`、`.local/logs`、截图、录屏和日志；删除前会确认 `.local` 解析后仍在仓库内。
+
+录屏必须走带硬超时的包装脚本，不能直接调无上限的 `simctl io recordVideo`：
+
+```sh
+scripts/tv-record.sh FOCUS-002 focus-motion 45   # 任务ID、文件名、最长秒数（默认 60，上限 600）
+```
+
+2026-10-31 清理时发现一个中断后无人回收的 `simctl` 录屏残留，单文件 19.9 GB（`/private/tmp/doki-focus-probe.mp4.sb-*`），并一直被模拟器渲染进程持有句柄。包装脚本的时长上限和固定输出目录就是为了不再产生这类孤儿文件。
+
 ## 3. Hub 本地运行
 
 ```sh
