@@ -57,5 +57,7 @@
 - 外部接口回放、真实 API 调用、模拟器播放、真机完整播放分开报告，附时间、设备/系统、网络、命令和结果；日志必须脱敏。
 - 每个开发批次结束更新 `docs/handoff/CURRENT_STATE.md` 和 `docs/handoff/WORK_LOG.md`；架构取舍变动追加到 `docs/architecture/DECISIONS.md`，同步受影响的接口、设计和验收。
 - 验证产物只写 `.local/artifacts/<任务ID>/`，不落 `/private/tmp`；每个任务目录保留最新 2 个 `.xcresult`，`.local/artifacts` 预算 3 GB。批次结束先跑 `scripts/local-cleanup.sh --check`，超出再 `--apply`。模拟器录屏必须用 `scripts/tv-record.sh`（硬超时，默认 60 s、上限 600 s），不直接调用无上限的 `simctl io recordVideo`。
+- 不要把同一组截图反复复制到多个目录（`*-screens`、`*-attachments`、`evidence-*`）；一份画面只留一套可读路径，其余交给 `local-cleanup.sh --apply` 的硬链去重。证据目录按任务 ID + 阶段命名，不要用 `fix1/fix2/final/final3` 这类会无限增殖的名字。
+- 清理范围只限仓库内：`.local/`、git 忽略的构建产物、以及本项目自己写出的临时文件。不删仓库外的 Xcode 资源（`iOS DeviceSupport`、模拟器设备、`CoreSimulator`、系统缓存、其他仓库和他人目录）——它们不属于本项目，删除有真实代价，也不在实现请求的授权范围内。
 - 当前文档检查：`python3 scripts/check-docs.py`。该检查不验证编译、真实接口或播放。
 - 不引入新的过期平行方案；v0.2/v0.3 是历史，v0.4 的 TV 首发修订是当前基线；引用到的 iPhone/Mac 规划只作后续参考。工作未完成时交接清楚下一步，不虚报完成。

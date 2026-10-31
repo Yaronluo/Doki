@@ -9,13 +9,19 @@
 #
 # Usage:
 #   local-cleanup.sh                 # dry-run: show what would be removed
-#   local-cleanup.sh --apply         # delete old bundles
+#   local-cleanup.sh --apply         # delete old bundles, hardlink duplicate images
 #   local-cleanup.sh --derived       # also remove .local/DerivedData build caches
 #   local-cleanup.sh --check         # exit 1 when artifacts exceed the budget
+#   local-cleanup.sh --no-dedupe     # skip the duplicate-image hardlinking pass
 #
 # Options:
 #   --keep N         newest .xcresult kept per task directory (default 2)
 #   --budget-mb N    target ceiling for .local/artifacts in MB (default 3072)
+#
+# Verification rounds often copy the same screenshot set into several sibling
+# directories. Byte-identical images are replaced with hardlinks so every path
+# keeps working while the duplicate blocks are released; content is never
+# changed and nothing is deleted by this pass.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -26,6 +32,7 @@ DERIVED="$LOCAL/DerivedData"
 APPLY=0
 CHECK=0
 DERIVED_CLEAN=0
+DEDUPE=1
 KEEP=2
 BUDGET_MB=3072
 BACKUPS_DAYS=7
@@ -35,9 +42,10 @@ while [ $# -gt 0 ]; do
     --apply) APPLY=1 ;;
     --check) CHECK=1 ;;
     --derived) DERIVED_CLEAN=1 ;;
+    --no-dedupe) DEDUPE=0 ;;
     --keep) KEEP="${2:?--keep needs a number}"; shift ;;
     --budget-mb) BUDGET_MB="${2:?--budget-mb needs a number}"; shift ;;
-    -h|--help) sed -n '2,22p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown option: $1" >&2; exit 2 ;;
   esac
   shift
@@ -146,6 +154,66 @@ EOF
     echo "  within budget"
   fi
   echo
+fi
+
+# ------------------------------------------------------------------ dedupe
+# Verification rounds re-copy the same screenshot set into several sibling
+# directories (FIX7-screens, FIX7-attachments, evidence-screens-final, ...).
+# Byte-identical images are replaced with hardlinks: every path still opens,
+# the content is unchanged, and the duplicate blocks are released.
+if [ "$DEDUPE" -eq 1 ] && [ -d "$ARTIFACTS" ]; then
+  hash_file="$(mktemp "${TMPDIR:-/tmp}/doki-dedupe.XXXXXX")"
+  trap 'rm -f "$hash_file"' EXIT
+  find "$ARTIFACTS" -type f \( -name '*.png' -o -name '*.jpg' -o -name '*.jpeg' \) \
+    ! -path '*.xcresult/*' -print0 2>/dev/null |
+  while IFS= read -r -d '' img; do
+    h=$(md5 -q "$img" 2>/dev/null) || continue
+    printf '%s\t%s\n' "$h" "$img" >> "$hash_file"
+  done
+
+  dup_kb=0
+  dup_count=0
+  prev_hash=""
+  keeper=""
+  while IFS=$'\t' read -r h img; do
+    [ -n "$h" ] || continue
+    if [ "$h" = "$prev_hash" ]; then
+      # Already the same inode from an earlier run: nothing to reclaim, so the
+      # pass stays idempotent and reports zero the second time.
+      same_inode=0
+      if [ -n "$keeper" ]; then
+        ki=$(stat -f%i "$keeper" 2>/dev/null)
+        ii=$(stat -f%i "$img" 2>/dev/null)
+        [ -n "$ki" ] && [ "$ki" = "$ii" ] && same_inode=1
+      fi
+      [ "$same_inode" -eq 1 ] && continue
+      kb=$(du -sk "$img" 2>/dev/null | cut -f1)
+      kb=${kb:-0}
+      dup_kb=$((dup_kb + kb))
+      dup_count=$((dup_count + 1))
+      if [ "$APPLY" -eq 1 ] && [ -n "$keeper" ]; then
+        ln -f -- "$keeper" "$img" 2>/dev/null || true
+      fi
+    else
+      prev_hash="$h"
+      keeper="$img"
+    fi
+  done <<EOF
+$(sort "$hash_file" 2>/dev/null)
+EOF
+
+  rm -f "$hash_file"
+  trap - EXIT
+
+  if [ "$dup_count" -gt 0 ]; then
+    if [ "$APPLY" -eq 1 ]; then
+      echo "deduped: $dup_count byte-identical image(s) hardlinked, $((dup_kb / 1024)) MB released"
+    else
+      echo "dedupe: $dup_count byte-identical image(s) could be hardlinked, $((dup_kb / 1024)) MB"
+      removed_kb=$((removed_kb + dup_kb))
+    fi
+    echo
+  fi
 fi
 
 # ------------------------------------------------------------ derived data

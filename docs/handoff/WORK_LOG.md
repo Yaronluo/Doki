@@ -349,3 +349,46 @@ xcrun simctl launch <UDID> com.doki.tv --bangumi-route auto --demo-route diagnos
 累计：可用空间 245 GB → 279 GB；`.local` 13 GB → 2.3 GB。
 
 
+## 2026-10-31 22:20 · ENV-003：`.local` 回涨复盘与重复截图去重
+
+用户反馈"好像又占了很多空间"，8 小时后复查（间隔 8h45m）：
+
+- **全盘没有变紧**：可用 279 GB → 285 GB，已用 152 Gi → 150 Gi。系统层面不存在新的空间压力。
+- **`.local` 从 2.3 GB 回涨到 4.0 GB**，增量几乎全在新建的 `REWORK-008` 批次（1.2 GB / 1997 个文件）。
+- 该批次的 2 个 `.xcresult` 只有 31 MB + 32 MB，重量在散装证据：961 张 jpg + 747 张 png，被复制进 `FIX7-screens`、`FIX7-attachments`、`evidence-screens-final` 等 60 个同级目录，且存在 `fix/final/final2/final3` 这类递进命名。
+- 按内容哈希统计：**1708 张图片只有 462 张不同内容**，1246 张是重复副本。
+
+保留策略漏掉这一类的原因：`local-cleanup.sh` 只统计和清理 `.xcresult`，散装图片不在预算内；`REWORK-008` 在文档中引用数为 0，却仍保留了全部 60 个目录。
+
+处理（无损）：
+
+- 给 `local-cleanup.sh` 增加去重阶段，`--apply` 时默认执行，`--no-dedupe` 跳过。做法是把内容完全相同的 `.png`/`.jpg` 换成硬链接：所有路径继续可读，内容不变，不删除文件，只回收重复块。
+- 对全仓库执行：1431 张重复图片被硬链，回收 959 MB。`REWORK-008` 1.2 GB → 486 MB。
+- 校验：`REWORK-008` 文件数仍为 1997；抽查同内容文件 inode 相同（link count 4 与 16）；PNG 与 JPEG 均可正常识别解码。
+
+约束更新：`AGENTS.md` 增加"不要重复复制同一组截图、证据目录按任务 ID + 阶段命名"；`SETUP.md` §2.2 补去重说明与 `--no-dedupe`。
+
+当前状态：`.local` 3.0 GB（artifacts 2.1 GB，预算内）；可用 285 GB。去重只压缩重复，未删除任何证据文件，`REWORK-008` 的路径全部仍然有效。
+
+去重幂等性修正：首版统计没有比较 inode，已硬链的文件仍被算作"重复"，第二次执行会虚报一次 959 MB（实际空间不变）。改为按 inode 判定后，重复执行报告 0 条；用新建的一对相同图片反测，仍能识别并链接，链接后 inode 相同、`cmp` 一致。
+## 2026-10-31 22:30 · ENV-004：按"能清就清"完成清理
+
+用户要求把可清理项全部清掉，按"不影响项目"为界执行：
+
+| 对象 | 释放 | 保留 |
+|---|---|---|
+| `REWORK-008` 38 个历史轮次目录（`fix`–`fix8`、`final`、`final2`、`evidence-*` 旧版、`attachments*`、`screens*`、`backing`/`shadow`/`vignette`/`fixed1`/`fixed2` 等） | 334 MB | `FIX9-screens`、`FIX9-attachments`、`FINAL3-attachments`、`evidence-screens-final3`、全部 `*-frames`/`range-*`、两个 `.xcresult`、日志 |
+| `REWORK-008` 8 支中间录屏 | 132 MB | `discover-vertical-fix-final.mp4`、`vertical-crisp.mp4` |
+| `.local/DerivedData` | 687 MB | 无，下次构建重建 |
+| `.local/backups` 两个重构前 tgz | 168 MB | 无；内容已在 git 历史，且经检查不含 `.env`/`.p8`/`.p12`/`secrets/` |
+| `/private/tmp` 本项目残留（`doki-focus-probe.mp4` 813 MB、32 个 `doki-*.png`、60 个研究/探测文件） | 约 900 MB | 无 |
+
+`/private/tmp/doki-focus-probe.mp4` 是 10-31 13:22 的另一份录屏残留（813 MB），确认无进程持有后删除。
+
+结果：`.local` 3.0 GB → 1.9 GB（artifacts 1.7 GB，3 GB 预算内）；可用空间 285 GB → 287 GB。保留的截图抽查可正常解码；`local-cleanup.sh --check` 返回 0。
+
+未清理（不属于本项目产物，删除后会自动重新生成或影响其它工作）：iOS DeviceSupport 27.2（6.8 GB）、iPhone 17 模拟器（5.4 GB，清理时被其它工作使用）、CoreSimulator 运行库与系统缓存。这些属于 Xcode 工作缓存，不是可回收垃圾。
+
+范围更正（用户指出）：清理只应针对本项目，此前把 Xcode 全局资源当作候选是越界。实际越界删除只有一项——`iOS DeviceSupport/iPhone18,3 27.0.1 (24A446)`（6.6 GB，ENV-002 中执行）。它是 Xcode 为 iOS 设备调试下载的全局符号包，不属于本仓库产物；删除后无法直接恢复，只有再次连接 iOS 27.0.1 设备时 Xcode 会重新下载。iPhone 17 模拟器、`DeviceSupport 27.2`、`CoreSimulator` 运行库均未删除（iPhone 17 数据 5.4 GB 完整，清理期间仅状态为 Shutdown）。
+
+已在 `AGENTS.md` 增加"清理范围只限仓库内"的约束，后续清理只作用于 `.local/`、git 忽略的构建产物和本项目写出的临时文件。

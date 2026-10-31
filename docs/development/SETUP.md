@@ -99,11 +99,14 @@ xcodebuild test \
 ```sh
 scripts/local-cleanup.sh           # 干跑：列出超出的 .xcresult 及可回收量
 scripts/local-cleanup.sh --check   # 超预算时退出码 1，用于批次收尾
-scripts/local-cleanup.sh --apply   # 按保留策略删除
+scripts/local-cleanup.sh --apply   # 按保留策略删除，并硬链去重重复截图
 scripts/local-cleanup.sh --apply --derived   # 同时清 DerivedData（下次构建重建）
+scripts/local-cleanup.sh --no-dedupe         # 跳过去重，只看保留策略
 ```
 
 脚本只删 `.xcresult`，不动 `.local/postgres-hub`、`.local/logs`、截图、录屏和日志；删除前会确认 `.local` 解析后仍在仓库内。
+
+去重是第二道防线：同一轮验证常把相同画面复制到 `FIX7-screens`、`FIX7-attachments`、`evidence-screens-final` 等多个目录。`--apply` 会把内容完全相同的 `.png`/`.jpg` 换成硬链接——**路径全部保留、内容不变、不删除任何文件**，只回收重复占用的磁盘块。2026-10-31 的 `REWORK-008` 批次里 1708 张截图仅有 462 张不同内容，去重回收 959 MB。
 
 录屏必须走带硬超时的包装脚本，不能直接调无上限的 `simctl io recordVideo`：
 
